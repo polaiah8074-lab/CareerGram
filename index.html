@@ -8,11 +8,23 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="CareerGram"/>
 <link rel="manifest" href="manifest.json"/>
-<link rel="apple-touch-icon" href="icon.png"/>
+<script>
+// Inline manifest so external manifest.json is not required
+(function(){
+  const m={name:'CareerGram',short_name:'CareerGram',start_url:'.',display:'standalone',
+    background_color:'#0f172a',theme_color:'#6366f1',
+    icons:[{src:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%22 text-anchor=%22middle%22>📈</text></svg>',sizes:'192x192',type:'image/svg+xml'}]};
+  const blob=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});
+  document.querySelector('link[rel="manifest"]').href=URL.createObjectURL(blob);
+})();
+</script>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='70' x='50' text-anchor='middle'>📈</text></svg>"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>CareerGram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --bg:#0f172a;--card:rgba(30,27,75,0.55);--card2:rgba(30,27,75,0.75);
@@ -23,10 +35,117 @@
   --red:#f87171;--ai:linear-gradient(135deg,#ec4899,#a855f7);--aiglow:rgba(236,72,153,0.2);
 }
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
-body.light{--bg:#f8fafc;--card:rgba(255,255,255,0.9);--card2:rgba(255,255,255,0.95);--border:rgba(99,102,241,0.15);--borderh:rgba(99,102,241,0.35);--text:#334155;--text2:#64748b;--bright:#1e293b;}
-body.light #topbar,body.light #bottombar{background:rgba(255,255,255,0.95)!important;}
-body.light .card{background:rgba(255,255,255,0.85);}
-body.light .post-body,body.light .ctext{color:#334155;}
+body.light{
+  --bg:#f1f5f9;--card:rgba(255,255,255,1);--card2:rgba(255,255,255,1);
+  --border:rgba(99,102,241,0.18);--borderh:rgba(99,102,241,0.45);
+  --accent:#4f46e5;--accent2:#6366f1;--adim:rgba(99,102,241,0.1);
+  --text:#1e293b;--text2:#475569;--bright:#0f172a;
+  --green:#16a34a;--gdim:rgba(22,163,74,0.1);--gborder:rgba(22,163,74,0.3);
+  --red:#dc2626;background:#f1f5f9;color:#1e293b;
+}
+/* Topbar & bottombar */
+body.light #topbar{background:rgba(255,255,255,0.97)!important;border-bottom:1px solid rgba(99,102,241,0.15)!important;box-shadow:0 1px 8px rgba(0,0,0,0.07);}
+body.light #bottombar{background:rgba(255,255,255,0.97)!important;border-top:1px solid rgba(99,102,241,0.15)!important;box-shadow:0 -1px 8px rgba(0,0,0,0.07);}
+/* Cards */
+body.light .card{background:#fff;border-color:rgba(99,102,241,0.15);box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+body.light .card:hover{border-color:rgba(99,102,241,0.4);box-shadow:0 4px 16px rgba(99,102,241,0.1);}
+/* Text */
+body.light .post-body,body.light .ctext{color:#1e293b;}
+body.light .post-head .info .name{color:#0f172a!important;}
+body.light .post-head .info .meta{color:#64748b!important;}
+body.light .post-stats{color:#64748b;}
+body.light .pab{color:#475569;}
+body.light .pab:hover{background:rgba(99,102,241,0.08);}
+/* Story section labels */
+body.light h4{color:#0f172a;}
+/* Logo */
+body.light .toplogo span{color:#0f172a;}
+/* Search bar */
+body.light .si-wrap input{background:#fff;color:#1e293b;border-color:rgba(99,102,241,0.2);}
+body.light .si-wrap input::placeholder{color:#94a3b8;}
+/* Chat items */
+body.light .chat-item{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .ci-info .ci-name{color:#0f172a!important;}
+body.light .ci-info .ci-last{color:#64748b!important;}
+/* Bottom bar buttons */
+body.light .bb-btn .bbl{color:#64748b;}
+body.light .bb-btn.active .bbl{color:var(--accent2);}
+/* Profile */
+body.light .prof-card{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .prof-card h2{color:#0f172a;}
+body.light .prof-role{color:var(--accent2);}
+body.light .prof-meta{color:#64748b;}
+body.light .prof-bio{color:#475569;}
+body.light .stat-val{color:#0f172a;}
+body.light .prof-section{background:#fff;}
+body.light .prof-section h4{color:#0f172a;}
+/* Skills */
+body.light .skill-tag{background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);color:var(--accent);}
+/* People rows */
+body.light .people-row{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .people-row .info .name{color:#0f172a;}
+body.light .people-row .info .sub{color:#64748b;}
+/* Reels */
+body.light .reels-catbar{background:rgba(241,245,249,0.97)!important;}
+body.light .cat-btn{background:#fff;color:#475569;border-color:rgba(99,102,241,0.2);}
+body.light .reel-card{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .reel-info .r-title{color:#1e293b;}
+body.light .reel-info .r-author span,body.light .reel-info .r-views{color:#64748b;}
+/* Feed create box */
+body.light .cpb-input{background:#f8fafc;color:#64748b;border-color:rgba(99,102,241,0.2);}
+body.light .cpb-tags span{background:rgba(99,102,241,0.07);color:var(--accent);}
+/* Job cards */
+body.light .filter-chip{background:#fff;border-color:rgba(99,102,241,0.2);color:#475569;}
+body.light .filter-chip.active{background:rgba(99,102,241,0.1);color:var(--accent);}
+/* Comment bubble */
+body.light .cbubble{background:#f8fafc;border-color:rgba(99,102,241,0.12);}
+body.light .cbubble .cname{color:#0f172a!important;}
+body.light .comment-input-row input{background:#f8fafc;border-color:rgba(99,102,241,0.2);color:#1e293b;}
+/* Section title */
+body.light .sec-title{color:#475569;}
+/* Profile banners and raised backgrounds */
+body.light .bg-raised,body.light [style*="rgba(30,27,75"]{background:rgba(241,245,249,1)!important;}
+/* Connections section */
+body.light .conn-tabs button{color:#475569;}
+body.light .conn-tabs button.active{background:var(--accent);color:#fff;}
+/* Notifications */
+body.light .notif-panel{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .ni-text{color:#334155;}
+body.light .ni-time{color:#64748b;}
+body.light .notif-hdr h4{color:#0f172a;}
+/* Login screen stays dark */
+body.light #login-screen{background:linear-gradient(135deg,#0f172a,#1e1b4b,#0f172a)!important;}
+/* Story rows */
+body.light .story-name{color:#334155;}
+/* Reels catbar sticky */
+body.light #reels-screen [style*="rgba(15,23,42"]{background:rgba(241,245,249,0.97)!important;color:#1e293b!important;}
+body.light .playlist-card{background:rgba(99,102,241,0.07);border-color:rgba(99,102,241,0.2);}
+/* Bottom nav active indicator */
+body.light .bb-btn.active::before{background:linear-gradient(90deg,var(--accent),var(--accent2));}
+/* Chat input */
+body.light .chat-input-bar{background:rgba(255,255,255,0.97);border-top-color:rgba(99,102,241,0.15);}
+body.light .chat-input-bar input{background:#f1f5f9;border-color:rgba(99,102,241,0.2);color:#1e293b;}
+/* Inline hardcoded dark backgrounds in feed */
+body.light .comments-panel{background:rgba(241,245,249,0.8);}
+body.light .post-actions{border-top-color:rgba(99,102,241,0.1);}
+/* Edit modal */
+body.light .em-card{background:#fff;}
+body.light .em-header h3{color:#0f172a;}
+body.light .em-section label{color:#475569;}
+body.light .em-section input,body.light .em-section textarea,body.light .em-section select{background:#f8fafc;border-color:rgba(99,102,241,0.2);color:#1e293b;}
+/* Chat window */
+body.light #chat-window{background:#f1f5f9;}
+body.light .chat-msgs{background:rgba(241,245,249,0.5);}
+body.light .msg-row:not(.me) .bubble{background:#fff;border-color:rgba(99,102,241,0.18);color:#1e293b;}
+body.light .msg-row:not(.me) .bubble .btime{color:#64748b;}
+/* Settings toggles */
+body.light .settings-toggle{background:#e2e8f0;}
+body.light [style*="color:#fff"][style*="font-size:14px"]{color:#1e293b!important;}
+/* Profile completion card */
+body.light [style*="rgba(99,102,241,.08)"]{background:rgba(99,102,241,0.05)!important;}
+/* Generic white text fix for light mode */
+body.light h2,body.light h3{color:#0f172a;}
+body.light p{color:#475569;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(99,102,241,0.25);border-radius:10px;}
 .screen{display:none;min-height:100vh;padding-top:60px;padding-bottom:80px;}
@@ -37,7 +156,7 @@ body.light .post-body,body.light .ctext{color:#334155;}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;transition:border-color .2s;}
 .card:hover{border-color:var(--borderh);}
 /* TOPBAR */
-#topbar{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(15,23,42,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;}
+#topbar{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(15,23,42,0.97);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;will-change:transform;}
 .toplogo{display:flex;align-items:center;gap:8px;}
 .toplogo .li{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:15px;}
 .toplogo span{font-size:17px;font-weight:800;color:#fff;}
@@ -47,7 +166,7 @@ body.light .post-body,body.light .ctext{color:#334155;}
 .toptabs button.active{background:rgba(99,102,241,0.18);color:var(--accent2);}
 @media(max-width:768px){.toptabs{display:none;}}
 /* BOTTOMBAR */
-#bottombar{position:fixed;bottom:0;left:0;right:0;height:66px;background:rgba(15,23,42,0.92);backdrop-filter:blur(18px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;padding:0 2px;}
+#bottombar{position:fixed;bottom:0;left:0;right:0;height:66px;background:rgba(15,23,42,0.97);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;padding:0 2px;will-change:transform;}
 .bb-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:5px 6px;position:relative;flex:1;max-width:80px;}
 .bb-btn .bbi{font-size:18px;filter:grayscale(0.5);transition:filter .2s;}
 .bb-btn .bbl{font-size:9px;font-weight:600;color:var(--text2);}
@@ -405,8 +524,18 @@ input[type="file"]{display:none;}
 // ============================================
 const SUPABASE_URL = 'https://pkcypbdggjjeqqcfchcs.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_AehaUv3d5GETe2U2PjgcLg_rOl8_5aX';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-console.log('✅ Supabase connected');
+
+// FIX DataCloneError: custom fetch wrapper prevents Headers object postMessage clash
+const _safeFetch = (...args) => fetch(...args);
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  global: { fetch: _safeFetch },
+  auth: { persistSession: true, autoRefreshToken: false },
+  realtime: { timeout: 10000 }
+});
+
+// Validate key — accepts both new sb_publishable_ format and legacy eyJ format
+window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('sb_publishable_') || SUPABASE_KEY.startsWith('sb_');
 </script>
 </head>
 <body>
@@ -492,6 +621,7 @@ console.log('✅ Supabase connected');
         <input class="otp-input" maxlength="1" inputmode="numeric"/>
         <input class="otp-input" maxlength="1" inputmode="numeric"/>
       </div>
+      <div id="otpDisplayBox" style="display:none;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:10px 16px;text-align:center;font-size:18px;font-weight:700;color:#c7d2fe;letter-spacing:2px;margin-bottom:10px;cursor:pointer;" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent.replace('Your OTP: ',''));showToast('Copied!','success')"></div>
       <div class="otp-timer" id="otpTimerEl">Resend in <span id="otpTimerCount">60</span>s</div>
       <div class="otp-resend" id="resendOtpBtn">Resend OTP</div>
       <div class="err" id="otpErr"></div>
@@ -539,10 +669,26 @@ console.log('✅ Supabase connected');
 <!-- COURSES -->
 <div id="courses-screen" class="screen">
   <div class="wrap">
-    <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:8px;">📚 My Courses</h2>
-    <p style="color:var(--text2);margin-bottom:20px;font-size:13px;">Upload video tutorials — they appear here and in Reels.</p>
-    <div class="reels-grid" id="coursesGrid"></div>
-    <button class="btn-accent" id="uploadCourseBtn" style="margin-top:20px;width:100%;padding:12px;">➕ Upload New Course</button>
+    <!-- Creator view -->
+    <div id="coursesCreatorView">
+      <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:4px;">🎬 My Courses</h2>
+      <p style="color:var(--text2);margin-bottom:20px;font-size:13px;">Upload video tutorials — they appear here and in Reels for everyone to watch.</p>
+      <div class="reels-grid" id="coursesGrid"></div>
+      <button class="btn-accent" id="uploadCourseBtn" style="margin-top:20px;width:100%;padding:12px;">➕ Upload New Course</button>
+    </div>
+    <!-- Non-creator view -->
+    <div id="coursesGuestView" style="display:none;">
+      <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:4px;">📚 Courses</h2>
+      <p style="color:var(--text2);margin-bottom:20px;font-size:13px;">Browse video tutorials uploaded by Content Creators.</p>
+      <div style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:14px;padding:20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-size:32px;flex-shrink:0;">🔒</div>
+        <div>
+          <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:4px;">Course upload is for Content Creators only</div>
+          <div style="color:var(--text2);font-size:13px;line-height:1.6;">Videos upload చేయాలంటే Content Creator account కావాలి. కానీ నువ్వు ఇక్కడ అందరి courses చూడవచ్చు!</div>
+        </div>
+      </div>
+      <div class="reels-grid" id="coursesGuestGrid"></div>
+    </div>
   </div>
 </div>
 
@@ -798,12 +944,17 @@ console.log('✅ Supabase connected');
     </div>
     <input type="text" id="vidTitle" placeholder="Video title..." style="width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/>
     <textarea id="vidDesc" placeholder="Description..." style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;resize:none;height:80px;font-family:inherit;outline:none;margin-bottom:10px;"></textarea>
-    <select id="vidCat" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
+    <select id="vidCat" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:10px;font-family:inherit;">
       <option value="">Select category</option>
       <option value="Python">Python</option><option value="React">React</option><option value="AWS">AWS</option>
       <option value="DevOps">DevOps</option><option value="ML/AI">ML/AI</option>
       <option value="JavaScript">JavaScript</option><option value="Interview Prep">Interview Prep</option>
       <option value="System Design">System Design</option>
+    </select>
+    <select id="vidLevel" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
+      <option value="beginner">🟢 Beginner</option>
+      <option value="intermediate" selected>🟡 Intermediate</option>
+      <option value="advanced">🔴 Advanced</option>
     </select>
     <div class="cm-footer">
       <div style="color:var(--text2);font-size:12px;">Appears on your profile & in Reels</div>
@@ -1001,11 +1152,16 @@ console.log('✅ Supabase connected');
     <div class="card prof-section" style="margin-bottom:14px;">
       <h4>ℹ️ App Info</h4>
       <div style="color:var(--text2);font-size:13px;line-height:1.8;">
-        <div>App: <span style="color:#fff;">CareerGram v2.0</span></div>
+        <div>App: <span style="color:#fff;">CareerGram v2.1</span></div>
         <div>User ID: <span style="color:var(--accent2);" id="settingsUserId"></span></div>
         <div>Account Type: <span style="color:var(--accent2);" id="settingsAccType"></span></div>
         <div>Member since: <span style="color:#fff;" id="settingsJoined"></span></div>
+        <div>Multi-user sync: <span id="sbStatusText" style="color:var(--red);">Key invalid — local only</span></div>
       </div>
+    </div>
+    <div id="sbKeyWarning" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="color:#f59e0b;font-size:13px;font-weight:700;margin-bottom:8px;">⚠️ Supabase Key Invalid</div>
+      <div style="color:#94a3b8;font-size:12px;line-height:1.7;">Multi-user sync పని చేయడం లేదు. Fix చేయడానికి:<br/>1. <a href="https://supabase.com" target="_blank" style="color:var(--accent2);">supabase.com</a> → నీ project open చేయి<br/>2. Settings → API → <b>anon public</b> key copy చేయి<br/>3. Code లో <code style="background:rgba(99,102,241,.2);padding:2px 6px;border-radius:4px;">SUPABASE_KEY</code> replace చేయి</div>
     </div>
 
     <button class="logout-btn" onclick="logout()" style="width:100%;padding:12px;margin-bottom:20px;">🚪 Logout</button>
@@ -1371,9 +1527,10 @@ function renderPollResults(storyId){
 
 // ── USERS ──
 async function sbLoadUsers(){
+  if(!window._sbKeyValid) return;
   try{
     const {data,error}=await sb.from('cg_users').select('*');
-    if(error){console.warn('sbLoadUsers:',error.message);return;}
+    if(error) return;
     if(data&&data.length){
       const deletedIds=getDeletedIds();
       registeredUsers=data.filter(u=>!deletedIds.includes(u.user_id)).map(u=>({
@@ -1387,11 +1544,13 @@ async function sbLoadUsers(){
         isAdmin:u.is_admin||false,connections:0,followers:0,posts:0
       }));
       localStorage.setItem('cg_users',JSON.stringify(registeredUsers));
+      rebuildUserMap();
     }
-  }catch(e){console.warn('sbLoadUsers error:',e);}
+  }catch(e){} // silently ignore — app works offline with localStorage
 }
 
 async function sbSaveUser(user){
+  if(!window._sbKeyValid) return;
   try{
     await sb.from('cg_users').upsert({
       user_id:user.userId,password:user.password,name:user.name,
@@ -1402,47 +1561,51 @@ async function sbSaveUser(user){
       experience:user.experience||'Fresher',online:user.online!==false,
       profile_pic:user.profilePic||'',is_admin:user.isAdmin||false
     },{onConflict:'user_id'});
-  }catch(e){console.warn('sbSaveUser:',e);}
+  }catch(e){}
 }
 
 // ── POSTS ──
 async function sbLoadPosts(){
+  if(!window._sbKeyValid) return;
   try{
     const {data,error}=await sb.from('cg_posts').select('*').order('created_at',{ascending:false});
-    if(error){console.warn('sbLoadPosts:',error.message);return;}
+    if(error) return;
     if(data){
       posts=data.map(p=>({
         id:p.id,userId:p.user_id,content:p.content,
         isJob:p.is_job||false,likes:p.likes||0,shares:p.shares||0,
         accountType:p.account_type||'jobseeker',image:p.image||'',
-        time:timeAgo(p.created_at)
+        time:_timeAgoCompat(p.created_at)
       }));
       save.posts();
     }
-  }catch(e){console.warn('sbLoadPosts:',e);}
+  }catch(e){}
 }
 
 async function sbSavePost(post){
+  if(!window._sbKeyValid) return;
   try{
     await sb.from('cg_posts').upsert({
       id:post.id,user_id:post.userId,content:post.content,
       is_job:post.isJob||false,likes:post.likes||0,shares:post.shares||0,
       account_type:post.accountType||'jobseeker',image:post.image||''
     },{onConflict:'id'});
-  }catch(e){console.warn('sbSavePost:',e);}
+  }catch(e){}
 }
 
 async function sbDeletePost(postId){
+  if(!window._sbKeyValid) return;
   try{await sb.from('cg_posts').delete().eq('id',postId);}
-  catch(e){console.warn('sbDeletePost:',e);}
+  catch(e){}
 }
 
 // ── STORIES ──
 async function sbLoadStories(){
+  if(!window._sbKeyValid) return;
   try{
     const now=Date.now();
     const {data,error}=await sb.from('cg_stories').select('*').gt('expires_at',now);
-    if(error){console.warn('sbLoadStories:',error.message);return;}
+    if(error) return;
     if(data){
       stories=data.map(s=>({
         id:s.id,userId:s.user_id,type:s.type||'emoji',
@@ -1451,72 +1614,90 @@ async function sbLoadStories(){
       }));
       save.stories();
     }
-  }catch(e){console.warn('sbLoadStories:',e);}
+  }catch(e){}
 }
 
 async function sbSaveStory(story){
+  if(!window._sbKeyValid) return;
   try{
     await sb.from('cg_stories').insert({
       id:story.id,user_id:story.userId,type:story.type||'emoji',
       data:story.data||'',emoji:story.emoji||'📸',caption:story.caption||'',
       posted_at:story.postedAt,expires_at:story.expiresAt
     });
-  }catch(e){console.warn('sbSaveStory:',e);}
+  }catch(e){}
 }
 
 // ── VIDEOS ──
 async function sbLoadVideos(){
+  if(!window._sbKeyValid) return;
   try{
     const {data,error}=await sb.from('cg_videos').select('*').order('created_at',{ascending:false});
-    if(error){console.warn('sbLoadVideos:',error.message);return;}
+    if(error) return;
     if(data){
-      userVideos={};
+      const merged={};
       data.forEach(v=>{
-        if(!userVideos[v.user_id]) userVideos[v.user_id]=[];
-        userVideos[v.user_id].push({
+        if(!merged[v.user_id]) merged[v.user_id]=[];
+        // Get local per-user videoData if available
+        const localUserVids=JSON.parse(localStorage.getItem('cg_vids_'+v.user_id)||'[]');
+        const localVid=localUserVids.find(lv=>lv.id===v.id);
+        merged[v.user_id].push({
           id:v.id,title:v.title,duration:v.duration||'0:00',
           views:v.views||'0',category:v.category||'',level:v.level||'intermediate',
           thumbnail:v.thumbnail||'🎬',description:v.description||'',
-          videoData:v.video_data||''
+          videoData:v.video_data||localVid?.videoData||'', // Prefer cloud URL
+          isCloud:!!v.video_data,storagePath:v.storage_path||''
         });
       });
-      save.videos();
+      // Also keep local-only videos from per-user keys
+      registeredUsers.forEach(u=>{
+        const localVids=JSON.parse(localStorage.getItem('cg_vids_'+u.userId)||'[]');
+        if(!merged[u.userId]) merged[u.userId]=[];
+        localVids.forEach(lv=>{
+          if(!merged[u.userId].find(mv=>mv.id===lv.id)) merged[u.userId].push(lv);
+        });
+      });
+      userVideos=merged;
     }
-  }catch(e){console.warn('sbLoadVideos:',e);}
+  }catch(e){}
 }
 
 async function sbSaveVideo(userId,video){
+  if(!window._sbKeyValid) return;
   try{
-    await sb.from('cg_videos').insert({
+    await sb.from('cg_videos').upsert({
       id:video.id,user_id:userId,title:video.title,duration:video.duration||'0:00',
       views:video.views||'0',category:video.category||'',level:video.level||'intermediate',
       thumbnail:video.thumbnail||'🎬',description:video.description||'',
-      video_data:video.videoData||''
-    });
-  }catch(e){console.warn('sbSaveVideo:',e);}
+      video_data:video.videoData&&video.isCloud?video.videoData:'', // Store cloud URL only
+      storage_path:video.storagePath||''
+    },{onConflict:'id'});
+  }catch(e){}
 }
 
 // ── MESSAGES ──
 async function sbLoadMessages(roomId){
+  if(!window._sbKeyValid) return [];
   try{
     const {data,error}=await sb.from('cg_messages').select('*')
       .eq('room_id',roomId).order('created_at',{ascending:true});
-    if(error){console.warn('sbLoadMessages:',error.message);return [];}
+    if(error){return [];}
     return (data||[]).map(m=>({from:m.from_user,text:m.text||'',image:m.image||'',time:m.time}));
-  }catch(e){console.warn('sbLoadMessages:',e);return [];}
+  }catch(e){return [];}
 }
 
 function sbSendMessage(roomId,msg){
-  // Fire-and-forget: don't await so UI is instant
+  if(!window._sbKeyValid) return;
   sb.from('cg_messages').insert({
     room_id:roomId,from_user:msg.from,text:msg.text||'',
     image:msg.image||'',time:msg.time,
     msg_id:msg.msgId||('msg_'+Date.now())
-  }).then(({error})=>{if(error) console.warn('sbSendMessage:',error.message);});
+  }).then(()=>{}).catch(()=>{});
 }
 
 // ── CONNECTIONS ──
 async function sbToggleFollow(followerId,followingId){
+  if(!window._sbKeyValid) return null;
   try{
     const {data}=await sb.from('cg_connections').select('id')
       .eq('follower_id',followerId).eq('following_id',followingId).maybeSingle();
@@ -1527,10 +1708,11 @@ async function sbToggleFollow(followerId,followingId){
       await sb.from('cg_connections').insert({follower_id:followerId,following_id:followingId});
       return true; // followed
     }
-  }catch(e){console.warn('sbToggleFollow:',e);return null;}
+  }catch(e){return null;}
 }
 
 async function sbLoadConnections(){
+  if(!window._sbKeyValid) return;
   try{
     const {data}=await sb.from('cg_connections').select('*');
     if(!data) return;
@@ -1543,12 +1725,12 @@ async function sbLoadConnections(){
       userConnections[c.following_id].followers.push(c.follower_id);
     });
     save.connections();
-  }catch(e){console.warn('sbLoadConnections:',e);}
+  }catch(e){}
 }
 
 // ── REALTIME SUBSCRIPTIONS ──
 function startRealtimeSync(){
-  // New posts
+  if(!window._sbKeyValid) return; // Skip realtime if key invalid
   sb.channel('cg_posts_rt').on('postgres_changes',
     {event:'INSERT',schema:'public',table:'cg_posts'},
     (payload)=>{
@@ -1634,7 +1816,6 @@ function subscribeToRoom(roomId){
 
 // ── MASTER LOAD: fetch all data from Supabase on login ──
 async function loadAllFromSupabase(){
-  showToast('🔄 Loading data...','success');
   await Promise.all([
     sbLoadUsers(),
     sbLoadPosts(),
@@ -1642,20 +1823,13 @@ async function loadAllFromSupabase(){
     sbLoadVideos(),
     sbLoadConnections()
   ]);
-  showToast('✅ Data loaded!','success');
   startRealtimeSync();
 }
 
-// Helper: time ago from ISO string
-function timeAgo(isoStr){
+// Helper: time ago — defined once above in HELPERS section
+function _timeAgoCompat(isoStr){
   if(!isoStr) return 'Just now';
-  const diff=Date.now()-new Date(isoStr).getTime();
-  const mins=Math.floor(diff/60000);
-  if(mins<1) return 'Just now';
-  if(mins<60) return mins+'m ago';
-  const hrs=Math.floor(mins/60);
-  if(hrs<24) return hrs+'h ago';
-  return Math.floor(hrs/24)+'d ago';
+  return timeAgo(new Date(isoStr).getTime());
 }
 
 
@@ -1665,13 +1839,17 @@ function timeAgo(isoStr){
 // Get list of permanently deleted user IDs
 function getDeletedIds(){return JSON.parse(localStorage.getItem('cg_deleted_users')||'[]');}
 
+// Fast user lookup map — rebuilt when registeredUsers changes
+let _userMap={};
+function rebuildUserMap(){_userMap={};registeredUsers.forEach(u=>{_userMap[u.userId]=u;});}
+
 function getMember(id){
   if(!id) return null;
   if(id==='rishi') return RISHI;
   if(id==='me'&&ME) return ME;
   const deleted=getDeletedIds();
-  if(deleted.includes(id)) return null; // deleted user — hide everywhere
-  return registeredUsers.find(u=>u.userId===id&&!deleted.includes(u.userId))||null;
+  if(deleted.includes(id)) return null;
+  return _userMap[id]||registeredUsers.find(u=>u.userId===id&&!deleted.includes(u.userId))||null;
 }
 function avHTML(color,text,size,online,isAI,accountType){
   const ds=size*0.3;
@@ -1703,6 +1881,7 @@ function updateTopAvatar(){
 // AUTH
 // =============================================
 function checkSession(){
+  rebuildUserMap();
   const saved=JSON.parse(localStorage.getItem('cg_session')||'null');
   if(saved&&saved.userId){
     const u=registeredUsers.find(u=>u.userId===saved.userId)||saved;
@@ -1719,6 +1898,11 @@ function showApp(){
   showScreen('home');
   renderNotifications();
   if(!userConnections[ME.userId]) userConnections[ME.userId]={followers:[],following:[]};
+  // Update Courses tab label based on account type
+  const isCreator=ME.accountType==='creator';
+  document.querySelectorAll('[data-tab="courses"] .bbl').forEach(el=>el.textContent=isCreator?'My Courses':'Courses');
+  document.querySelectorAll('[data-tab="courses"] .bbi').forEach(el=>el.textContent=isCreator?'🎬':'📚');
+  document.querySelectorAll('.toptabs button[data-tab="courses"]').forEach(el=>el.textContent=isCreator?'🎬 My Courses':'📚 Courses');
   // Load fresh data from Supabase for all users
   loadAllFromSupabase().then(()=>{
     renderFeed();
@@ -1788,9 +1972,11 @@ document.getElementById('sendOtpBtn').addEventListener('click',()=>{
   document.getElementById('otpCard').style.display='block';
   document.getElementById('otpSentTo').textContent=`OTP sent to ${email}`;
   startOtpTimer();
-  // FIX BUG 12: auto-focus first OTP input
   setTimeout(()=>document.querySelectorAll('.otp-input')[0]?.focus(),100);
-  alert(`Demo OTP for ${email}: ${otp}`);
+  // Show OTP in card (no browser alert — works on mobile)
+  const otpDisplay=document.getElementById('otpDisplayBox');
+  if(otpDisplay){otpDisplay.textContent='Your OTP: '+otp;otpDisplay.style.display='block';}
+  showToast('OTP: '+otp+' (copy చేయి)','success');
 });
 
 // FIX BUG 12: OTP auto-advance between boxes
@@ -1828,7 +2014,9 @@ document.getElementById('resendOtpBtn').addEventListener('click',()=>{
   document.querySelectorAll('.otp-input').forEach(i=>i.value='');
   document.querySelectorAll('.otp-input')[0]?.focus();
   startOtpTimer();
-  alert(`New OTP: ${otp}`);
+  const otpDisplay=document.getElementById('otpDisplayBox');
+  if(otpDisplay){otpDisplay.textContent='Your OTP: '+otp;otpDisplay.style.display='block';}
+  showToast('New OTP: '+otp,'success');
 });
 
 document.getElementById('verifyOtpBtn').addEventListener('click',()=>{
@@ -1861,6 +2049,7 @@ document.getElementById('completeSignupBtn').addEventListener('click',()=>{
   };
   registeredUsers.unshift(newU);save.users();
   sbSaveUser(newU); // Sync to Supabase — visible to all users
+  rebuildUserMap();
   userConnections[userId]={followers:[],following:[]};save.connections();
   err.classList.remove('show');
   // Reset forms
@@ -1892,6 +2081,12 @@ function showScreen(name){
   if(name==='home'){renderFeed();renderStories();}
   if(name==='reels') renderReels();
   if(name==='courses') renderCourses();
+  // Update courses tab label based on account type
+  if(name==='courses'&&ME){
+    const isCreator=ME.accountType==='creator';
+    document.querySelectorAll('[data-tab="courses"] .bbl').forEach(el=>el.textContent=isCreator?'My Courses':'Courses');
+    document.querySelectorAll('[data-tab="courses"] .bbi').forEach(el=>el.textContent=isCreator?'🎬':'📚');
+  }
   if(name==='jobs') renderJobs();
   if(name==='search') renderSearch('');
   if(name==='chat') renderChatList();
@@ -1988,7 +2183,7 @@ document.getElementById('storyFileInp').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f) return;
   const r=new FileReader();
   r.onload=ev=>{
-    state.selectedStoryFile={data:ev.target.result,type:f.type.startsWith('image/')?'image':'video'};
+    state.selectedStoryFile={data:ev.target.result,type:f.type.startsWith('image/')?'image':'video',rawFile:f};
     document.getElementById('storyUploadArea').style.display='none';
     document.getElementById('storyPreviewWrap').style.display='block';
     if(state.selectedStoryFile.type==='image'){
@@ -2006,30 +2201,36 @@ document.getElementById('storyFileInp').addEventListener('change',e=>{
   r.readAsDataURL(f);
 });
 document.getElementById('rmStoryFile').addEventListener('click',e=>{e.stopPropagation();resetStoryModal();});
-document.getElementById('postStoryBtn').addEventListener('click',()=>{
+document.getElementById('postStoryBtn').addEventListener('click',async()=>{
   if(!ME){showToast('Login చేయండి','error');return;}
   const hasPollNow=document.getElementById('addPollChk')?.checked&&document.getElementById('pollQuestion')?.value.trim()&&document.getElementById('pollOpt1')?.value.trim()&&document.getElementById('pollOpt2')?.value.trim();
   if(!state.selectedStoryFile&&!hasPollNow){showToast('Image/video upload చేయండి లేదా Poll add చేయండి','error');return;}
+  const postBtn=document.getElementById('postStoryBtn');
+  postBtn.disabled=true;postBtn.textContent='Posting...';
   const storyId='s_'+Date.now();
   const hasPoll=document.getElementById('addPollChk')?.checked;
   const pollQ=document.getElementById('pollQuestion')?.value.trim();
   const pOpt1=document.getElementById('pollOpt1')?.value.trim();
   const pOpt2=document.getElementById('pollOpt2')?.value.trim();
+  // Try uploading image/video to Supabase Storage
+  let storyDataUrl=state.selectedStoryFile?state.selectedStoryFile.data:'';
+  let storyType=state.selectedStoryFile?state.selectedStoryFile.type:'emoji';
+  if(state.selectedStoryFile&&state.selectedStoryFile.rawFile){
+    const spath=`stories/${ME.userId}/${storyId}`;
+    const cloudUrl=await uploadFileToStorage(state.selectedStoryFile.rawFile,'stories',spath);
+    if(cloudUrl) storyDataUrl=cloudUrl;
+    // If cloud fails, keep base64 (works locally, not cross-user)
+  }
   const newStory={
-    id:storyId,
-    userId:ME.userId,
-    type:state.selectedStoryFile?state.selectedStoryFile.type:'emoji',
-    data:state.selectedStoryFile?state.selectedStoryFile.data:'',
+    id:storyId,userId:ME.userId,type:storyType,
+    data:storyDataUrl,
     caption:document.getElementById('storyCaption').value.trim(),
-    emoji:'📸',
-    postedAt:Date.now(),
-    expiresAt:Date.now()+86400000,
+    emoji:'📸',postedAt:Date.now(),expiresAt:Date.now()+86400000,
     ...(hasPoll&&pollQ&&pOpt1&&pOpt2?{hasPoll:true,pollQuestion:pollQ,pollOptions:[{text:pOpt1,votes:0},{text:pOpt2,votes:0}],pollVotes:{}}:{})
   };
   stories.unshift(newStory);
   save.stories();
-  // Save metadata only to Supabase (no image data)
-  try{sbSaveStory({...newStory,data:''});}catch(e){}
+  try{sbSaveStory({...newStory});}catch(e){}
   showToast('✅ Story posted! Visible for 24h.','success');
   document.getElementById('storyModal').classList.remove('open');
   resetStoryModal();
@@ -2113,13 +2314,15 @@ function openStoryViewer(storyId){
   hlBtn.textContent='⭐ Highlight';
   hlBtn.style.display=ME&&s.userId===ME.userId?'block':'none';
   const sv=document.getElementById('story-viewer');
+  // Always clear any existing timer before opening new story
+  clearTimeout(window._svTimer);
+  document.getElementById('svVideo').pause();
   sv.classList.add('open');
   // Progress bar
   const pb=document.getElementById('svProgressBar');
   pb.style.transition='none';pb.style.width='0%';
   setTimeout(()=>{pb.style.transition='width 5s linear';pb.style.width='100%';},50);
-  clearTimeout(window._svTimer);
-  window._svTimer=setTimeout(()=>{sv.classList.remove('open');pb.style.width='0%';svVid.pause();},5200);
+  window._svTimer=setTimeout(()=>{sv.classList.remove('open');pb.style.width='0%';document.getElementById('svVideo').pause();},5200);
 }
 // Add to highlights button in story viewer
 document.addEventListener('click',e=>{
@@ -2139,11 +2342,12 @@ document.getElementById('svClose').addEventListener('click',()=>{
 // FEED / POSTS
 // =============================================
 function initDemoPosts(){
-  posts=[{
-    id:'post_demo1',userId:'poli',
-    content:'Hey everyone! 👋 Excited to be on CareerGram. Looking to connect with fellow professionals. What are you all working on? 🚀',
-    isJob:false,time:'2h ago',likes:12,shares:3,accountType:'jobseeker'
-  }];
+  posts=[
+    {id:'post_demo1',userId:'poli',content:'Hey everyone! 👋 Excited to be on CareerGram. Looking to connect with fellow professionals. What are you all working on? 🚀',isJob:false,time:'2h ago',likes:12,shares:3,accountType:'jobseeker'},
+    {id:'post_job1',userId:'poli',content:'🚀 WE ARE HIRING — React Developer\n\n📍 Hyderabad (Hybrid)\n💰 18–28 LPA\n\nRequirements:\n• 2+ years React experience\n• Node.js knowledge\n• Good communication\n\nFreshers with strong projects also welcome!\n\nDM me or comment below to apply. 📩',isJob:true,time:'3h ago',likes:24,shares:8,accountType:'recruiter'},
+    {id:'post_job2',userId:'poli',content:'💼 URGENT HIRING — Python Backend Engineer\n\n🌐 Remote | Full-time\n💰 25–40 LPA\n\nSkills needed:\n• Python (Django/FastAPI)\n• PostgreSQL or MongoDB\n• AWS basics\n• 3+ years experience\n\nSend your resume to careers@techcorp.com\n#hiring #python #remote',isJob:true,time:'5h ago',likes:41,shares:15,accountType:'recruiter'},
+    {id:'post_job3',userId:'poli',content:'🎯 Fresher Opportunity — Full Stack Developer\n\n📍 Bangalore / Remote\n💰 6–10 LPA\n\nLooking for:\n• React + Node.js basics\n• Good DSA knowledge\n• 2024/2025 passout\n\n✅ Training provided\n✅ Work from home option\n\nApply now — limited seats! 🔥',isJob:true,time:'1d ago',likes:67,shares:29,accountType:'recruiter'},
+  ];
   save.posts();
 }
 
@@ -2479,14 +2683,15 @@ function renderReels(){
 </div></div></div>`;
   }).join('');
 }
-document.getElementById('reelsSearch').addEventListener('input',renderReels);
+let _reelSearchTimer=null;
+document.getElementById('reelsSearch').addEventListener('input',()=>{clearTimeout(_reelSearchTimer);_reelSearchTimer=setTimeout(renderReels,300);});
 document.getElementById('catScroll').addEventListener('click',e=>{const b=e.target.closest('.cat-btn');if(b){state.currentReelCat=b.dataset.cat;renderReels();}});
 document.getElementById('playlists').addEventListener('click',e=>{const p=e.target.closest('.playlist-card');if(p){state.currentReelLevel=p.dataset.level;renderReels();}});
 document.addEventListener('click',e=>{
   const rc=e.target.closest('.reel-card[data-rid]');
   if(rc&&document.getElementById('reels-screen').classList.contains('active')){openReelViewer(rc.dataset.rid);return;}
-  // Courses grid
-  const cv=e.target.closest('#coursesGrid .reel-card[data-rid]');
+  // Courses grid — both creator and guest grids
+  const cv=e.target.closest('#coursesGrid .reel-card[data-rid],#coursesGuestGrid .reel-card[data-rid]');
   if(cv){openReelViewer(cv.dataset.rid);return;}
 });
 
@@ -2541,112 +2746,184 @@ document.addEventListener('click',e=>{
 });
 
 // =============================================
-// VIDEO UPLOAD (FIX: saves base64, no illegal await)
+// SUPABASE STORAGE HELPER
+// =============================================
+async function uploadFileToStorage(file, bucket, filePath){
+  if(!window._sbKeyValid) return null;
+  try{
+    const {data,error}=await sb.storage.from(bucket).upload(filePath,file,{cacheControl:'3600',upsert:true});
+    if(error) return null;
+    const {data:urlData}=sb.storage.from(bucket).getPublicUrl(filePath);
+    return urlData?.publicUrl||null;
+  }catch(e){return null;}
+}
+
+// =============================================
+// VIDEO UPLOAD (FIXED: Supabase Storage + objectURL fallback)
 // =============================================
 let _selVidFile=null;
 document.getElementById('videoFileInp').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f||!f.type.startsWith('video/')) return;
-  if(f.size>100*1024*1024){showToast('File too large! Max 100MB','error');return;}
+  if(f.size>500*1024*1024){showToast('File too large! Max 500MB','error');return;}
   _selVidFile=f;
-  const rd=new FileReader();
-  rd.onload=ev=>{
-    document.getElementById('videoPreview').src=ev.target.result;
-    document.getElementById('videoPreview').style.display='block';
-    document.getElementById('uploadVideoBtn').disabled=false;
-    document.getElementById('uploadVideoBtn').style.opacity='1';
-    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;">✅</div><div style="color:var(--green);font-weight:600;margin-top:8px;">Video selected!</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">${f.name}</div>`;
-    _selVidFile._data=ev.target.result;
-  };
-  rd.readAsDataURL(f);
+  // Use objectURL for instant preview — no FileReader needed
+  const previewUrl=URL.createObjectURL(f);
+  document.getElementById('videoPreview').src=previewUrl;
+  document.getElementById('videoPreview').style.display='block';
+  document.getElementById('uploadVideoBtn').disabled=false;
+  document.getElementById('uploadVideoBtn').style.opacity='1';
+  document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;">✅</div><div style="color:var(--green);font-weight:600;margin-top:8px;">Video selected!</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">${f.name} (${(f.size/1048576).toFixed(1)} MB)</div>`;
 });
-document.getElementById('uploadVideoBtn').addEventListener('click',()=>{
+document.getElementById('uploadVideoBtn').addEventListener('click',async()=>{
   const title=document.getElementById('vidTitle').value.trim();
   const cat=document.getElementById('vidCat').value;
   if(!title||!cat){showToast('Please fill title and category','error');return;}
-  if(!_selVidFile?._data){showToast('Please select a video','error');return;}
+  if(!_selVidFile){showToast('Please select a video','error');return;}
   const pw=document.getElementById('uploadProgressWrap');pw.style.display='block';
-  const pb=document.getElementById('uploadProgressBar');let p=0;
-  const videoData=_selVidFile._data;
-  const iv=setInterval(()=>{p+=10;pb.style.width=p+'%';if(p>=100){
-    clearInterval(iv);
-    const uid=ME?.userId||'me';
-    if(!userVideos[uid]) userVideos[uid]=[];
-    const newVid={
-      id:'v_'+Date.now(),title,duration:'3:'+String(Math.floor(Math.random()*60)).padStart(2,'0'),
-      views:'0',category:cat,level:'intermediate',
-      thumbnail:{Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'}[cat]||'🎬',
-      description:document.getElementById('vidDesc').value.trim(),
-      videoData
-    };
-    userVideos[uid].unshift(newVid);
-    save.videos();
-    sbSaveVideo(uid,newVid); // Sync to Supabase
+  const pb=document.getElementById('uploadProgressBar');
+  const uid=ME?.userId||'me';
+  const vidId='v_'+Date.now();
+  const THUMB={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'};
+  // Animate progress to 40% while uploading
+  let fakeP=0;
+  const fakeIv=setInterval(()=>{fakeP=Math.min(fakeP+5,40);pb.style.width=fakeP+'%';},120);
+  showToast('⬆️ Uploading video...','success');
+  // Try Supabase Storage upload
+  const storagePath=`${uid}/${vidId}_${_selVidFile.name.replace(/[^a-z0-9.]/gi,'_')}`;
+  let videoUrl=await uploadFileToStorage(_selVidFile,'videos',storagePath);
+  clearInterval(fakeIv);
+  // If Supabase Storage fails, use in-memory objectURL (session only)
+  const isCloud=!!videoUrl;
+  if(!isCloud){
+    videoUrl=URL.createObjectURL(_selVidFile);
+    showToast('⚠️ Cloud upload failed — video visible this session only','error');
+  }
+  pb.style.width='90%';
+  const newVid={
+    id:vidId,title,
+    duration:Math.floor(_selVidFile.size/1500000/60)+':'+String(Math.floor(_selVidFile.size/1500000%60)).padStart(2,'0'),
+    views:'0',category:cat,level:document.getElementById('vidLevel')?.value||'intermediate',
+    thumbnail:THUMB[cat]||'🎬',
+    description:document.getElementById('vidDesc').value.trim(),
+    videoData:videoUrl,   // cloud URL or objectURL
+    isCloud,              // true = survives reload, false = session only
+    storagePath:isCloud?storagePath:''
+  };
+  if(!userVideos[uid]) userVideos[uid]=[];
+  userVideos[uid].unshift(newVid);
+  // Save per-user key to avoid serializing all users
+  localStorage.setItem('cg_vids_'+uid,JSON.stringify(userVideos[uid].map(v=>({...v,videoData:v.isCloud?v.videoData:''}))));
+  userVideos[uid]=JSON.parse(localStorage.getItem('cg_vids_'+uid));
+  // Re-attach objectURL for session (cloud videos already have URL)
+  if(!isCloud) userVideos[uid][0].videoData=videoUrl;
+  sbSaveVideo(uid,{...newVid,videoData:isCloud?videoUrl:''});
+  pb.style.width='100%';
+  setTimeout(()=>{
     ['vidTitle','vidDesc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('vidCat').value='';
     document.getElementById('videoPreview').style.display='none';
+    document.getElementById('videoPreview').src='';
     document.getElementById('uploadVideoBtn').disabled=true;
     document.getElementById('uploadVideoBtn').style.opacity='.5';
     pb.style.width='0%';pw.style.display='none';
     _selVidFile=null;document.getElementById('videoFileInp').value='';
-    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;margin-bottom:12px;">🎬</div><div style="color:var(--text);font-size:15px;font-weight:600;">Upload Video Tutorial</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Max 100MB</div>`;
+    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;margin-bottom:12px;">🎬</div><div style="color:var(--text);font-size:15px;font-weight:600;">Upload Video Tutorial</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Max 500MB</div>`;
     document.getElementById('videoUploadModal').classList.remove('open');
     renderCourses();renderReels();
     if(state.currentProfileId===uid) renderCreatorVideos(uid);
-    showToast('✅ Video uploaded successfully!','success');
-  }},200);
+    showToast(isCloud?'✅ Video uploaded to cloud!':'✅ Video ready (this session)','success');
+  },400);
 });
 document.getElementById('videoModalClose').addEventListener('click',()=>document.getElementById('videoUploadModal').classList.remove('open'));
 document.getElementById('videoUploadModal').addEventListener('click',e=>{if(e.target===document.getElementById('videoUploadModal')) document.getElementById('videoUploadModal').classList.remove('open');});
-document.getElementById('uploadCourseBtn').addEventListener('click',()=>document.getElementById('videoUploadModal').classList.add('open'));
+document.getElementById('uploadCourseBtn').addEventListener('click',()=>{
+  if(!ME){showToast('Login చేయండి','error');return;}
+  if(ME.accountType!=='creator'){
+    showToast('⚠️ Video upload only Content Creators కి మాత్రమే available!','error');
+    return;
+  }
+  document.getElementById('videoUploadModal').classList.add('open');
+});
 
 // =============================================
 // COURSES
 // =============================================
 function renderCourses(){
-  const grid=document.getElementById('coursesGrid');
-  if(!ME){grid.innerHTML='';return;}
-  // Group by category = playlist style
-  const vids=userVideos[ME.userId]||[];
-  if(!vids.length){
-    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">
-      <div style="font-size:48px;">📚</div>
-      <div style="color:#fff;font-size:15px;font-weight:600;margin-top:12px;">No courses yet</div>
-      <div style="color:var(--text2);font-size:13px;margin-top:8px;">Upload video tutorials below</div>
-    </div>`;
-    return;
-  }
-  // Group videos by category (playlist)
-  const playlists={};
-  vids.forEach(v=>{
-    const cat=v.category||'Uncategorized';
-    if(!playlists[cat]) playlists[cat]=[];
-    playlists[cat].push(v);
-  });
-  let html='';
-  Object.entries(playlists).forEach(([cat,cvids])=>{
-    const emoji={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'}[cat]||'📚';
-    html+=`<div style="grid-column:1/-1;margin-bottom:8px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="font-size:18px;">${emoji}</span>
-        <span style="color:#fff;font-size:14px;font-weight:700;">${cat}</span>
-        <span style="color:var(--text2);font-size:12px;">${cvids.length} video${cvids.length>1?'s':''}</span>
-      </div>
-    </div>`;
-    cvids.forEach(v=>{
-      html+=`<div class="reel-card" data-rid="${v.id}" style="cursor:pointer;">
-        <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${ME.color||'#6366f1'}33);">
-          <span class="r-emoji">${v.thumbnail||'🎬'}</span><span class="r-dur">${v.duration}</span>
-        </div>
-        <div class="reel-info"><div class="r-title">${v.title}</div>
-          <div class="r-bottom">
-            <span class="r-views">👁 ${v.views} views</span>
-            <button onclick="event.stopPropagation();deleteCourseVideo('${v.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;padding:2px 4px;">🗑️</button>
-          </div>
-        </div>
+  if(!ME) return;
+  const isCreator=ME.accountType==='creator';
+  // Toggle views
+  document.getElementById('coursesCreatorView').style.display=isCreator?'block':'none';
+  document.getElementById('coursesGuestView').style.display=isCreator?'none':'block';
+
+  if(isCreator){
+    // ── CREATOR: show their own uploaded videos ──
+    const grid=document.getElementById('coursesGrid');
+    const vids=userVideos[ME.userId]||[];
+    if(!vids.length){
+      grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">
+        <div style="font-size:48px;">🎬</div>
+        <div style="color:#fff;font-size:15px;font-weight:600;margin-top:12px;">No courses yet</div>
+        <div style="color:var(--text2);font-size:13px;margin-top:8px;">Upload button తో మొదలు పెట్టు!</div>
       </div>`;
+      return;
+    }
+    const playlists={};
+    vids.forEach(v=>{const cat=v.category||'Uncategorized';if(!playlists[cat]) playlists[cat]=[];playlists[cat].push(v);});
+    let html='';
+    const EMOJI={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'};
+    Object.entries(playlists).forEach(([cat,cvids])=>{
+      html+=`<div style="grid-column:1/-1;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:18px;">${EMOJI[cat]||'📚'}</span><span style="color:#fff;font-size:14px;font-weight:700;">${cat}</span><span style="color:var(--text2);font-size:12px;">${cvids.length} video${cvids.length>1?'s':''}</span></div></div>`;
+      cvids.forEach(v=>{
+        html+=`<div class="reel-card" data-rid="${v.id}" style="cursor:pointer;">
+          <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${ME.color||'#6366f1'}33);">
+            <span class="r-emoji">${v.thumbnail||'🎬'}</span><span class="r-dur">${v.duration}</span>
+          </div>
+          <div class="reel-info"><div class="r-title">${v.title}</div>
+            <div class="r-bottom">
+              <span class="r-views">👁 ${v.views} views</span>
+              <button onclick="event.stopPropagation();deleteCourseVideo('${v.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;padding:2px 4px;">🗑️</button>
+            </div>
+          </div>
+        </div>`;
+      });
     });
-  });
-  grid.innerHTML=html;
+    grid.innerHTML=html;
+  } else {
+    // ── NON-CREATOR: show all creators' videos to browse ──
+    const grid=document.getElementById('coursesGuestGrid');
+    let allVids=[];
+    Object.keys(userVideos).forEach(uid=>{
+      const u=getMember(uid);
+      if(!u||u.accountType!=='creator') return;
+      (userVideos[uid]||[]).forEach(v=>{
+        allVids.push({...v,authorName:u.name,authorColor:u.color||'#6366f1',authorId:uid});
+      });
+    });
+    if(!allVids.length){
+      grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">
+        <div style="font-size:48px;">📭</div>
+        <div style="color:#fff;font-size:15px;font-weight:600;margin-top:12px;">No courses yet</div>
+        <div style="color:var(--text2);font-size:13px;margin-top:8px;">Content Creators videos upload చేసినప్పుడు ఇక్కడ కనిపిస్తాయి.</div>
+      </div>`;
+      return;
+    }
+    const lc=lv=>lv==='beginner'?'beg':lv==='advanced'?'adv':'int';
+    const le=lv=>lv==='beginner'?'🟢':lv==='advanced'?'🔴':'🟡';
+    grid.innerHTML=allVids.map(v=>`<div class="reel-card" data-rid="${v.id}" style="cursor:pointer;">
+      <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${v.authorColor}33);">
+        <span class="r-emoji">${v.thumbnail||'🎬'}</span>
+        <span class="r-dur">${v.duration}</span>
+        <span class="revel-badge ${lc(v.level)}">${le(v.level)} ${v.level||'int'}</span>
+      </div>
+      <div class="reel-info">
+        <div class="r-title">${v.title}</div>
+        <div class="r-bottom">
+          <div class="r-author"><span>${v.authorName}</span></div>
+          <span class="r-views">👁 ${v.views}</span>
+        </div>
+      </div>
+    </div>`).join('');
+  }
 }
 function deleteCourseVideo(vidId){
   if(!confirm('Delete this video?')) return;
@@ -3132,7 +3409,16 @@ function renderCreatorVideos(userId){
   const vids=userVideos[userId]||[];
   if(!vids.length){grid.innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px;">No videos uploaded yet</div>';return;}
   const u=getMember(userId);
-  grid.innerHTML=vids.map(v=>`<div class="vid-thumb" data-vid="${v.id}" data-user="${userId}"><div style="width:100%;height:100%;background:linear-gradient(135deg,${u?.color||'#6366f1'}33,${u?.color||'#6366f1'}11);display:flex;align-items:center;justify-content:center;font-size:48px;">${v.thumbnail||'🎬'}</div><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0"><div style="color:#fff;font-size:24px;background:rgba(0,0,0,.5);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">▶</div></div><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;">${v.duration}</div></div>`).join('');
+  // Delete button only for: logged-in user viewing their OWN profile AND they are a creator
+  const canDelete=ME&&ME.userId===userId&&ME.accountType==='creator';
+  grid.innerHTML=vids.map(v=>`<div class="vid-thumb" data-vid="${v.id}" data-user="${userId}" style="position:relative;">
+    <div style="width:100%;height:100%;background:linear-gradient(135deg,${u?.color||'#6366f1'}33,${u?.color||'#6366f1'}11);display:flex;align-items:center;justify-content:center;font-size:48px;">${v.thumbnail||'🎬'}</div>
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">
+      <div style="color:#fff;font-size:24px;background:rgba(0,0,0,.5);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">▶</div>
+    </div>
+    <div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;">${v.duration}</div>
+    ${canDelete?`<button onclick="event.stopPropagation();deleteCourseVideo('${v.id}')" style="position:absolute;top:6px;right:6px;background:rgba(239,68,68,.85);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;" title="Delete">🗑️</button>`:''}
+  </div>`).join('');
 }
 document.addEventListener('click',e=>{
   const vt=e.target.closest('.vid-thumb[data-vid]');
@@ -3171,12 +3457,20 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id==='newSkillInput'){e.preventDefault();document.getElementById('addSkillBtn')?.click();}
 });
 
-// FIX BUG 7: Resume upload via event delegation
+// FIX: Resume upload via event delegation
 document.addEventListener('change',e=>{
   if(e.target.id==='resumeUpload'){
     const f=e.target.files[0];if(!f||!ME) return;
+    if(f.size>5*1024*1024){showToast('Resume too large! Max 5MB','error');return;}
     const r=new FileReader();
-    r.onload=ev=>{localStorage.setItem(`cg_resume_${ME.userId}`,ev.target.result);showToast(`✅ Resume "${f.name}" uploaded!`,'success');openFullProfile(ME.userId);};
+    r.onload=ev=>{
+      localStorage.setItem(`cg_resume_${ME.userId}`,ev.target.result);
+      // Also update ME so profile shows it
+      ME.hasResume=true;
+      save.me();
+      showToast(`✅ Resume "${f.name}" uploaded!`,'success');
+      openFullProfile(ME.userId);
+    };
     r.readAsDataURL(f);
   }
 });
@@ -3335,7 +3629,11 @@ function updateSettingsUI(){
     tth.style.left=isLight?'25px':'3px';
     tth.textContent=isLight?'☀️':'🌙';
   }
-  // Info
+  // Supabase key status
+  const sbWarn=document.getElementById('sbKeyWarning');
+  const sbStatus=document.getElementById('sbStatusText');
+  if(sbWarn) sbWarn.style.display=window._sbKeyValid?'none':'block';
+  if(sbStatus){sbStatus.textContent=window._sbKeyValid?'✅ Connected':'⚠️ Key invalid — local only';sbStatus.style.color=window._sbKeyValid?'var(--green)':'var(--warn)';}
   if(document.getElementById('settingsUserId')) document.getElementById('settingsUserId').textContent=ME.userId;
   if(document.getElementById('settingsAccType')) document.getElementById('settingsAccType').textContent=ME.accountType;
   if(document.getElementById('settingsJoined')) document.getElementById('settingsJoined').textContent=ME.createdAt?new Date(ME.createdAt).toLocaleDateString():'Unknown';
@@ -3426,32 +3724,28 @@ function applyTheme(){
 applyTheme();
 document.getElementById('themeToggle').addEventListener('click',()=>{isLight=!isLight;localStorage.setItem('cg_theme',isLight?'light':'dark');applyTheme();showToast(isLight?'☀️ Light mode':'🌙 Dark mode','success');});
 
-// Video upload button in profile
+// Video upload button in profile — creators only
 document.addEventListener('click',e=>{
   const vu=e.target.closest('#openVideoUploadBtn');
-  if(vu) document.getElementById('videoUploadModal').classList.add('open');
+  if(vu){
+    if(ME?.accountType!=='creator'){showToast('⚠️ Content Creators only!','error');return;}
+    document.getElementById('videoUploadModal').classList.add('open');
+  }
 });
 
 // =============================================
 // INIT
 // =============================================
 document.addEventListener('DOMContentLoaded',()=>{
+  rebuildUserMap();
   checkSession();
-  if(posts.length===0) initDemoPosts();
+  // Only init demo posts if truly empty after session check
+  setTimeout(()=>{if(posts.length===0) initDemoPosts();},100);
 });
 </script>
 
 <script>
-// PWA Service Worker Registration
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js')
-      .then(reg=>console.log('✅ SW registered'))
-      .catch(err=>console.log('SW error:',err));
-  });
-}
-
-// Install prompt (Android)
+// PWA Install prompt (Android) — SW registration skipped (blob URL not supported in most browsers)
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();
