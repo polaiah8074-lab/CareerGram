@@ -1665,7 +1665,7 @@ async function sbLoadVideos(){
 async function sbSaveVideo(userId,video){
   if(!window._sbKeyValid) return;
   try{
-    await sb.from('cg_videos').upsert({
+    const {error}=await sb.from('cg_videos').upsert({
       id:video.id,
       user_id:userId,
       title:video.title,
@@ -1675,10 +1675,11 @@ async function sbSaveVideo(userId,video){
       level:video.level||'intermediate',
       thumbnail:video.thumbnail||'🎬',
       description:video.description||'',
-      video_data:video.isCloud&&video.videoData?video.videoData:'',
+      video_data:video.videoData||'',
       storage_path:video.storagePath||''
     },{onConflict:'id'});
-  }catch(e){}
+    if(error) showToast('DB save error: '+error.message,'error');
+  }catch(e){showToast('DB error: '+e.message,'error');}
 }
 
 // ── MESSAGES ──
