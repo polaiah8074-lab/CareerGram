@@ -8,11 +8,23 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="CareerGram"/>
 <link rel="manifest" href="manifest.json"/>
-<link rel="apple-touch-icon" href="icon.png"/>
+<script>
+// Inline manifest so external manifest.json is not required
+(function(){
+  const m={name:'CareerGram',short_name:'CareerGram',start_url:'.',display:'standalone',
+    background_color:'#0f172a',theme_color:'#6366f1',
+    icons:[{src:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%22 text-anchor=%22middle%22>📈</text></svg>',sizes:'192x192',type:'image/svg+xml'}]};
+  const blob=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});
+  document.querySelector('link[rel="manifest"]').href=URL.createObjectURL(blob);
+})();
+</script>
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='70' x='50' text-anchor='middle'>📈</text></svg>"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>CareerGram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
   --bg:#0f172a;--card:rgba(30,27,75,0.55);--card2:rgba(30,27,75,0.75);
@@ -23,10 +35,117 @@
   --red:#f87171;--ai:linear-gradient(135deg,#ec4899,#a855f7);--aiglow:rgba(236,72,153,0.2);
 }
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
-body.light{--bg:#f8fafc;--card:rgba(255,255,255,0.9);--card2:rgba(255,255,255,0.95);--border:rgba(99,102,241,0.15);--borderh:rgba(99,102,241,0.35);--text:#334155;--text2:#64748b;--bright:#1e293b;}
-body.light #topbar,body.light #bottombar{background:rgba(255,255,255,0.95)!important;}
-body.light .card{background:rgba(255,255,255,0.85);}
-body.light .post-body,body.light .ctext{color:#334155;}
+body.light{
+  --bg:#f1f5f9;--card:rgba(255,255,255,1);--card2:rgba(255,255,255,1);
+  --border:rgba(99,102,241,0.18);--borderh:rgba(99,102,241,0.45);
+  --accent:#4f46e5;--accent2:#6366f1;--adim:rgba(99,102,241,0.1);
+  --text:#1e293b;--text2:#475569;--bright:#0f172a;
+  --green:#16a34a;--gdim:rgba(22,163,74,0.1);--gborder:rgba(22,163,74,0.3);
+  --red:#dc2626;background:#f1f5f9;color:#1e293b;
+}
+/* Topbar & bottombar */
+body.light #topbar{background:rgba(255,255,255,0.97)!important;border-bottom:1px solid rgba(99,102,241,0.15)!important;box-shadow:0 1px 8px rgba(0,0,0,0.07);}
+body.light #bottombar{background:rgba(255,255,255,0.97)!important;border-top:1px solid rgba(99,102,241,0.15)!important;box-shadow:0 -1px 8px rgba(0,0,0,0.07);}
+/* Cards */
+body.light .card{background:#fff;border-color:rgba(99,102,241,0.15);box-shadow:0 1px 6px rgba(0,0,0,0.06);}
+body.light .card:hover{border-color:rgba(99,102,241,0.4);box-shadow:0 4px 16px rgba(99,102,241,0.1);}
+/* Text */
+body.light .post-body,body.light .ctext{color:#1e293b;}
+body.light .post-head .info .name{color:#0f172a!important;}
+body.light .post-head .info .meta{color:#64748b!important;}
+body.light .post-stats{color:#64748b;}
+body.light .pab{color:#475569;}
+body.light .pab:hover{background:rgba(99,102,241,0.08);}
+/* Story section labels */
+body.light h4{color:#0f172a;}
+/* Logo */
+body.light .toplogo span{color:#0f172a;}
+/* Search bar */
+body.light .si-wrap input{background:#fff;color:#1e293b;border-color:rgba(99,102,241,0.2);}
+body.light .si-wrap input::placeholder{color:#94a3b8;}
+/* Chat items */
+body.light .chat-item{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .ci-info .ci-name{color:#0f172a!important;}
+body.light .ci-info .ci-last{color:#64748b!important;}
+/* Bottom bar buttons */
+body.light .bb-btn .bbl{color:#64748b;}
+body.light .bb-btn.active .bbl{color:var(--accent2);}
+/* Profile */
+body.light .prof-card{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .prof-card h2{color:#0f172a;}
+body.light .prof-role{color:var(--accent2);}
+body.light .prof-meta{color:#64748b;}
+body.light .prof-bio{color:#475569;}
+body.light .stat-val{color:#0f172a;}
+body.light .prof-section{background:#fff;}
+body.light .prof-section h4{color:#0f172a;}
+/* Skills */
+body.light .skill-tag{background:rgba(99,102,241,0.08);border-color:rgba(99,102,241,0.2);color:var(--accent);}
+/* People rows */
+body.light .people-row{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .people-row .info .name{color:#0f172a;}
+body.light .people-row .info .sub{color:#64748b;}
+/* Reels */
+body.light .reels-catbar{background:rgba(241,245,249,0.97)!important;}
+body.light .cat-btn{background:#fff;color:#475569;border-color:rgba(99,102,241,0.2);}
+body.light .reel-card{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .reel-info .r-title{color:#1e293b;}
+body.light .reel-info .r-author span,body.light .reel-info .r-views{color:#64748b;}
+/* Feed create box */
+body.light .cpb-input{background:#f8fafc;color:#64748b;border-color:rgba(99,102,241,0.2);}
+body.light .cpb-tags span{background:rgba(99,102,241,0.07);color:var(--accent);}
+/* Job cards */
+body.light .filter-chip{background:#fff;border-color:rgba(99,102,241,0.2);color:#475569;}
+body.light .filter-chip.active{background:rgba(99,102,241,0.1);color:var(--accent);}
+/* Comment bubble */
+body.light .cbubble{background:#f8fafc;border-color:rgba(99,102,241,0.12);}
+body.light .cbubble .cname{color:#0f172a!important;}
+body.light .comment-input-row input{background:#f8fafc;border-color:rgba(99,102,241,0.2);color:#1e293b;}
+/* Section title */
+body.light .sec-title{color:#475569;}
+/* Profile banners and raised backgrounds */
+body.light .bg-raised,body.light [style*="rgba(30,27,75"]{background:rgba(241,245,249,1)!important;}
+/* Connections section */
+body.light .conn-tabs button{color:#475569;}
+body.light .conn-tabs button.active{background:var(--accent);color:#fff;}
+/* Notifications */
+body.light .notif-panel{background:#fff;border-color:rgba(99,102,241,0.15);}
+body.light .ni-text{color:#334155;}
+body.light .ni-time{color:#64748b;}
+body.light .notif-hdr h4{color:#0f172a;}
+/* Login screen stays dark */
+body.light #login-screen{background:linear-gradient(135deg,#0f172a,#1e1b4b,#0f172a)!important;}
+/* Story rows */
+body.light .story-name{color:#334155;}
+/* Reels catbar sticky */
+body.light #reels-screen [style*="rgba(15,23,42"]{background:rgba(241,245,249,0.97)!important;color:#1e293b!important;}
+body.light .playlist-card{background:rgba(99,102,241,0.07);border-color:rgba(99,102,241,0.2);}
+/* Bottom nav active indicator */
+body.light .bb-btn.active::before{background:linear-gradient(90deg,var(--accent),var(--accent2));}
+/* Chat input */
+body.light .chat-input-bar{background:rgba(255,255,255,0.97);border-top-color:rgba(99,102,241,0.15);}
+body.light .chat-input-bar input{background:#f1f5f9;border-color:rgba(99,102,241,0.2);color:#1e293b;}
+/* Inline hardcoded dark backgrounds in feed */
+body.light .comments-panel{background:rgba(241,245,249,0.8);}
+body.light .post-actions{border-top-color:rgba(99,102,241,0.1);}
+/* Edit modal */
+body.light .em-card{background:#fff;}
+body.light .em-header h3{color:#0f172a;}
+body.light .em-section label{color:#475569;}
+body.light .em-section input,body.light .em-section textarea,body.light .em-section select{background:#f8fafc;border-color:rgba(99,102,241,0.2);color:#1e293b;}
+/* Chat window */
+body.light #chat-window{background:#f1f5f9;}
+body.light .chat-msgs{background:rgba(241,245,249,0.5);}
+body.light .msg-row:not(.me) .bubble{background:#fff;border-color:rgba(99,102,241,0.18);color:#1e293b;}
+body.light .msg-row:not(.me) .bubble .btime{color:#64748b;}
+/* Settings toggles */
+body.light .settings-toggle{background:#e2e8f0;}
+body.light [style*="color:#fff"][style*="font-size:14px"]{color:#1e293b!important;}
+/* Profile completion card */
+body.light [style*="rgba(99,102,241,.08)"]{background:rgba(99,102,241,0.05)!important;}
+/* Generic white text fix for light mode */
+body.light h2,body.light h3{color:#0f172a;}
+body.light p{color:#475569;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-thumb{background:rgba(99,102,241,0.25);border-radius:10px;}
 .screen{display:none;min-height:100vh;padding-top:60px;padding-bottom:80px;}
@@ -37,7 +156,7 @@ body.light .post-body,body.light .ctext{color:#334155;}
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;transition:border-color .2s;}
 .card:hover{border-color:var(--borderh);}
 /* TOPBAR */
-#topbar{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(15,23,42,0.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;}
+#topbar{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(15,23,42,0.97);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:100;will-change:transform;}
 .toplogo{display:flex;align-items:center;gap:8px;}
 .toplogo .li{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:15px;}
 .toplogo span{font-size:17px;font-weight:800;color:#fff;}
@@ -47,7 +166,7 @@ body.light .post-body,body.light .ctext{color:#334155;}
 .toptabs button.active{background:rgba(99,102,241,0.18);color:var(--accent2);}
 @media(max-width:768px){.toptabs{display:none;}}
 /* BOTTOMBAR */
-#bottombar{position:fixed;bottom:0;left:0;right:0;height:66px;background:rgba(15,23,42,0.92);backdrop-filter:blur(18px);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;padding:0 2px;}
+#bottombar{position:fixed;bottom:0;left:0;right:0;height:66px;background:rgba(15,23,42,0.97);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-around;z-index:100;padding:0 2px;will-change:transform;}
 .bb-btn{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:none;cursor:pointer;padding:5px 6px;position:relative;flex:1;max-width:80px;}
 .bb-btn .bbi{font-size:18px;filter:grayscale(0.5);transition:filter .2s;}
 .bb-btn .bbl{font-size:9px;font-weight:600;color:var(--text2);}
@@ -391,6 +510,11 @@ body.light .post-body,body.light .ctext{color:#334155;}
 .profile-pic-wrapper{position:relative;display:inline-block;}
 .pp-edit{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;cursor:pointer;border:2px solid var(--bg);display:none;}
 .profile-pic-wrapper:hover .pp-edit{display:flex;}
+/* Settings toggles */
+.settings-toggle{width:48px;height:26px;border-radius:13px;background:var(--card);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s;}
+.settings-toggle.active{background:var(--accent);}
+.st-thumb{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--text2);transition:all .3s;}
+.settings-toggle.active .st-thumb{left:25px;background:#fff;}
 input[type="file"]{display:none;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -400,8 +524,18 @@ input[type="file"]{display:none;}
 // ============================================
 const SUPABASE_URL = 'https://pkcypbdggjjeqqcfchcs.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_AehaUv3d5GETe2U2PjgcLg_rOl8_5aX';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-console.log('✅ Supabase connected');
+
+// FIX DataCloneError: custom fetch wrapper prevents Headers object postMessage clash
+const _safeFetch = (...args) => fetch(...args);
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  global: { fetch: _safeFetch },
+  auth: { persistSession: true, autoRefreshToken: false },
+  realtime: { timeout: 10000 }
+});
+
+// Validate key — accepts both new sb_publishable_ format and legacy eyJ format
+window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('sb_publishable_') || SUPABASE_KEY.startsWith('sb_');
 </script>
 </head>
 <body>
@@ -416,6 +550,7 @@ console.log('✅ Supabase connected');
     <button data-tab="reels">Reels</button>
     <button data-tab="search">Search</button>
     <button data-tab="chat">Chat</button>
+    <button data-tab="settings">⚙️</button>
   </div>
   <div style="display:flex;align-items:center;gap:12px;">
     <div class="theme-toggle" id="themeToggle"><div class="toggle-thumb">🌙</div></div>
@@ -437,6 +572,7 @@ console.log('✅ Supabase connected');
   <button class="bb-btn" data-tab="search"><span class="bbi">🔍</span><span class="bbl">Search</span></button>
   <button class="bb-btn" data-tab="chat"><span class="bbi">💬</span><span class="bbl">Chats</span></button>
   <button class="bb-btn" id="profileBtn"><span class="bbi">👤</span><span class="bbl">Profile</span></button>
+  <button class="bb-btn" data-tab="settings"><span class="bbi">⚙️</span><span class="bbl">Settings</span></button>
 </div>
 
 <!-- LOGIN -->
@@ -454,7 +590,7 @@ console.log('✅ Supabase connected');
       <label>Password</label><input id="loginPw" type="password" placeholder="Password"/>
       <div class="err" id="loginErr">⚠️ Invalid credentials</div>
       <button class="sign-btn" id="signInBtn">Sign In</button>
-      <div class="lhint">💡 <strong style="color:#a5b4fc;">Demo:</strong> ID: <code>poli</code> | Pass: <code>poli123</code></div>
+      <!-- Admin hint removed for production -->
       <div style="text-align:center;margin-top:16px;"><span style="color:var(--text2);font-size:13px;">No account? </span><span style="color:var(--accent2);font-weight:600;cursor:pointer;font-size:13px;" id="showSignupBtn">Create Account</span></div>
     </div>
     <!-- Signup Step 1 -->
@@ -485,6 +621,7 @@ console.log('✅ Supabase connected');
         <input class="otp-input" maxlength="1" inputmode="numeric"/>
         <input class="otp-input" maxlength="1" inputmode="numeric"/>
       </div>
+      <div id="otpDisplayBox" style="display:none;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);border-radius:10px;padding:10px 16px;text-align:center;font-size:18px;font-weight:700;color:#c7d2fe;letter-spacing:2px;margin-bottom:10px;cursor:pointer;" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.textContent.replace('Your OTP: ',''));showToast('Copied!','success')"></div>
       <div class="otp-timer" id="otpTimerEl">Resend in <span id="otpTimerCount">60</span>s</div>
       <div class="otp-resend" id="resendOtpBtn">Resend OTP</div>
       <div class="err" id="otpErr"></div>
@@ -532,10 +669,26 @@ console.log('✅ Supabase connected');
 <!-- COURSES -->
 <div id="courses-screen" class="screen">
   <div class="wrap">
-    <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:8px;">📚 My Courses</h2>
-    <p style="color:var(--text2);margin-bottom:20px;font-size:13px;">Upload video tutorials — they appear here and in Reels.</p>
-    <div class="reels-grid" id="coursesGrid"></div>
-    <button class="btn-accent" id="uploadCourseBtn" style="margin-top:20px;width:100%;padding:12px;">➕ Upload New Course</button>
+    <!-- Creator view -->
+    <div id="coursesCreatorView">
+      <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:4px;">🎬 My Courses</h2>
+      <p style="color:var(--text2);margin-bottom:20px;font-size:13px;">Upload video tutorials — they appear here and in Reels for everyone to watch.</p>
+      <div class="reels-grid" id="coursesGrid"></div>
+      <button class="btn-accent" id="uploadCourseBtn" style="margin-top:20px;width:100%;padding:12px;">➕ Upload New Course</button>
+    </div>
+    <!-- Non-creator view -->
+    <div id="coursesGuestView" style="display:none;">
+      <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:4px;">📚 Courses</h2>
+      <p style="color:var(--text2);margin-bottom:20px;font-size:13px;">Browse video tutorials uploaded by Content Creators.</p>
+      <div style="background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);border-radius:14px;padding:20px;margin-bottom:20px;display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-size:32px;flex-shrink:0;">🔒</div>
+        <div>
+          <div style="color:#fff;font-size:14px;font-weight:700;margin-bottom:4px;">Course upload is for Content Creators only</div>
+          <div style="color:var(--text2);font-size:13px;line-height:1.6;">Videos upload చేయాలంటే Content Creator account కావాలి. కానీ నువ్వు ఇక్కడ అందరి courses చూడవచ్చు!</div>
+        </div>
+      </div>
+      <div class="reels-grid" id="coursesGuestGrid"></div>
+    </div>
   </div>
 </div>
 
@@ -633,6 +786,8 @@ console.log('✅ Supabase connected');
       <div class="videos-grid" id="creatorVideosGrid"></div>
       <button class="btn-outline" id="openVideoUploadBtn" style="margin-top:12px;width:100%;padding:10px;">➕ Upload Video</button>
     </div>
+    <div id="profileHighlights" style="display:none;padding:18px 0 0;"></div>
+    <div id="profileViewsSection" style="display:none;"></div>
     <div class="card prof-section">
       <h4>🏷️ Skills</h4>
       <div class="skill-tags" id="profSkills"></div>
@@ -734,11 +889,12 @@ console.log('✅ Supabase connected');
       <div><div class="cma-name" id="storyPostName">Poli</div><div class="cma-sub">Story • 24h visibility</div></div>
     </div>
     <div style="margin:16px 0;">
-      <input type="file" id="storyFileInp" accept="image/*,video/*"/>
-      <div id="storyUploadArea" style="border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;" onclick="document.getElementById('storyFileInp').click()">
+      <input type="file" id="storyFileInp" accept="image/*,video/*" style="position:absolute;opacity:0;width:1px;height:1px;"/>
+      <div id="storyUploadArea" style="border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;">
         <div style="font-size:48px;margin-bottom:12px;">📸</div>
-        <div style="color:var(--text);font-size:15px;font-weight:600;">Upload Image or Video</div>
-        <div style="color:var(--text2);font-size:12px;margin-top:4px;">Click to browse files</div>
+        <div style="color:var(--text);font-size:15px;font-weight:600;">Tap here to Upload</div>
+        <div style="color:var(--text2);font-size:12px;margin-top:4px;">Image or Video select చేయండి</div>
+        <button type="button" id="storyPickBtn" style="margin-top:16px;padding:10px 28px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:14px;cursor:pointer;">📁 Choose File</button>
       </div>
       <div id="storyPreviewWrap" style="display:none;position:relative;border-radius:12px;overflow:hidden;background:#000;">
         <img id="storyPreviewImg" src="" style="width:100%;max-height:400px;object-fit:contain;display:none;"/>
@@ -747,6 +903,20 @@ console.log('✅ Supabase connected');
       </div>
     </div>
     <textarea id="storyCaption" placeholder="Add a caption... (optional)" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;resize:none;height:80px;font-family:inherit;outline:none;"></textarea>
+    <!-- Poll option -->
+    <div style="margin:12px 0;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <input type="checkbox" id="addPollChk" style="width:16px;height:16px;accent-color:#6366f1;cursor:pointer;"/>
+        <label for="addPollChk" style="color:#94a3b8;font-size:13px;font-weight:600;cursor:pointer;">📊 Add Poll</label>
+      </div>
+      <div id="pollInputArea" style="display:none;">
+        <input id="pollQuestion" placeholder="Poll question..." style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;margin-bottom:8px;font-family:inherit;"/>
+        <div style="display:flex;gap:8px;margin-bottom:6px;">
+          <input id="pollOpt1" placeholder="Option 1" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;"/>
+          <input id="pollOpt2" placeholder="Option 2" style="flex:1;padding:8px;border-radius:8px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;"/>
+        </div>
+      </div>
+    </div>
     <div class="cm-footer">
       <div style="color:var(--text2);font-size:12px;">Visible for 24 hours</div>
       <button class="cm-post-btn" id="postStoryBtn" disabled style="opacity:.5;">Post Story</button>
@@ -774,12 +944,17 @@ console.log('✅ Supabase connected');
     </div>
     <input type="text" id="vidTitle" placeholder="Video title..." style="width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/>
     <textarea id="vidDesc" placeholder="Description..." style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;resize:none;height:80px;font-family:inherit;outline:none;margin-bottom:10px;"></textarea>
-    <select id="vidCat" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
+    <select id="vidCat" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:10px;font-family:inherit;">
       <option value="">Select category</option>
       <option value="Python">Python</option><option value="React">React</option><option value="AWS">AWS</option>
       <option value="DevOps">DevOps</option><option value="ML/AI">ML/AI</option>
       <option value="JavaScript">JavaScript</option><option value="Interview Prep">Interview Prep</option>
       <option value="System Design">System Design</option>
+    </select>
+    <select id="vidLevel" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
+      <option value="beginner">🟢 Beginner</option>
+      <option value="intermediate" selected>🟡 Intermediate</option>
+      <option value="advanced">🔴 Advanced</option>
     </select>
     <div class="cm-footer">
       <div style="color:var(--text2);font-size:12px;">Appears on your profile & in Reels</div>
@@ -831,7 +1006,10 @@ console.log('✅ Supabase connected');
         <div id="svTime" style="color:rgba(255,255,255,.7);font-size:11px;">2h ago</div>
       </div>
     </div>
-    <span style="color:#fff;font-size:26px;cursor:pointer;font-weight:700;" id="svClose">✕</span>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <span id="svDeleteBtn" style="display:none;color:#f87171;font-size:14px;font-weight:700;cursor:pointer;padding:4px 10px;border-radius:8px;background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.3);">🗑️ Delete</span>
+      <span style="color:#fff;font-size:26px;cursor:pointer;font-weight:700;" id="svClose">✕</span>
+    </div>
   </div>
   <div class="sv-body">
     <img id="svImage" src="" style="max-width:100%;max-height:60vh;display:none;border-radius:12px;"/>
@@ -858,6 +1036,15 @@ console.log('✅ Supabase connected');
     <div class="em-section"><label>Role</label><input id="editRole" placeholder="e.g., Full Stack Developer"/></div>
     <div class="em-section"><label>Company</label><input id="editCompany" placeholder="Current company"/></div>
     <div class="em-section"><label>City</label><input id="editCity" placeholder="Your city"/></div>
+    <div class="em-section" style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;">
+      <div>
+        <div style="color:#fff;font-size:14px;font-weight:600;">🔒 Private Account</div>
+        <div style="color:var(--text2);font-size:12px;">Only mutual followers can message you</div>
+      </div>
+      <div id="privateToggle" onclick="togglePrivateAccount()" style="width:48px;height:26px;border-radius:13px;background:var(--card);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s;">
+        <div id="privateThumb" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--text2);transition:all .3s;"></div>
+      </div>
+    </div>
     <div class="em-actions"><button class="btn-cancel" id="emCancel">Cancel</button><button class="btn-save" id="emSave">Save Changes</button></div>
   </div>
 </div>
@@ -894,6 +1081,90 @@ console.log('✅ Supabase connected');
     <div class="em-section"><label>Issuer *</label><input id="certIssuer" placeholder="e.g., Amazon Web Services"/></div>
     <div class="em-section"><label>Date *</label><input id="certDate" placeholder="e.g., March 2024"/></div>
     <div class="em-actions"><button class="btn-cancel" onclick="document.getElementById('certModal').classList.remove('open')">Cancel</button><button class="btn-save" onclick="addCert()">Add Cert</button></div>
+  </div>
+</div>
+
+<!-- SETTINGS SCREEN -->
+<div id="settings-screen" class="screen">
+  <div class="wrap">
+    <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:20px;">⚙️ Settings</h2>
+
+    <!-- Account Settings -->
+    <div class="card prof-section" style="margin-bottom:14px;">
+      <h4>👤 Account</h4>
+      <div id="settingsAccountType" style="color:var(--text2);font-size:13px;margin-bottom:12px;"></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="color:#fff;font-size:14px;font-weight:600;">🔒 Private Account</div><div style="color:var(--text2);font-size:12px;">Only connections can message you</div></div>
+          <div id="settingsPrivateToggle" onclick="togglePrivateAccount();updateSettingsUI();" style="width:48px;height:26px;border-radius:13px;background:var(--card);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s;"><div id="settingsPrivateThumb" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--text2);transition:all .3s;"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="color:#fff;font-size:14px;font-weight:600;">🌙 Dark Mode</div><div style="color:var(--text2);font-size:12px;">Toggle dark/light theme</div></div>
+          <div id="settingsThemeToggle" onclick="isLight=!isLight;localStorage.setItem('cg_theme',isLight?'light':'dark');applyTheme();updateSettingsUI();" style="width:48px;height:26px;border-radius:13px;background:var(--card);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s;"><div id="settingsThemeThumb" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:var(--text2);transition:all .3s;display:flex;align-items:center;justify-content:center;font-size:10px;">🌙</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notifications Settings -->
+    <div class="card prof-section" style="margin-bottom:14px;">
+      <h4>🔔 Notifications</h4>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="color:#fff;font-size:14px;">Post likes & comments</div>
+          <div class="settings-toggle active" data-key="notif_likes" onclick="toggleSettingKey(this)"><div class="st-thumb"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="color:#fff;font-size:14px;">New messages</div>
+          <div class="settings-toggle active" data-key="notif_msgs" onclick="toggleSettingKey(this)"><div class="st-thumb"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div style="color:#fff;font-size:14px;">New followers</div>
+          <div class="settings-toggle active" data-key="notif_follow" onclick="toggleSettingKey(this)"><div class="st-thumb"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Privacy Settings -->
+    <div class="card prof-section" style="margin-bottom:14px;">
+      <h4>🔐 Privacy</h4>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="color:#fff;font-size:14px;font-weight:600;">Show Profile Views</div><div style="color:var(--text2);font-size:12px;">Others can see you viewed their profile</div></div>
+          <div class="settings-toggle active" data-key="show_pviews" onclick="toggleSettingKey(this)"><div class="st-thumb"></div></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <div><div style="color:#fff;font-size:14px;font-weight:600;">Read Receipts</div><div style="color:var(--text2);font-size:12px;">Show ✓✓ in messages</div></div>
+          <div class="settings-toggle active" data-key="read_receipts" onclick="toggleSettingKey(this)"><div class="st-thumb"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Danger Zone -->
+    <div class="card prof-section" style="margin-bottom:14px;border-color:rgba(239,68,68,.3);">
+      <h4 style="color:#f87171;">⚠️ Danger Zone</h4>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <button onclick="clearAllData()" style="padding:10px;border-radius:10px;border:1px solid rgba(239,68,68,.3);background:transparent;color:#f87171;font-weight:700;font-size:13px;cursor:pointer;text-align:left;">🗑️ Clear All My Posts & Data</button>
+        <button onclick="deleteAccount()" style="padding:10px;border-radius:10px;border:none;background:rgba(239,68,68,.15);color:#f87171;font-weight:700;font-size:14px;cursor:pointer;text-align:left;">❌ Delete Account Permanently</button>
+      </div>
+    </div>
+
+    <!-- App Info -->
+    <div class="card prof-section" style="margin-bottom:14px;">
+      <h4>ℹ️ App Info</h4>
+      <div style="color:var(--text2);font-size:13px;line-height:1.8;">
+        <div>App: <span style="color:#fff;">CareerGram v2.1</span></div>
+        <div>User ID: <span style="color:var(--accent2);" id="settingsUserId"></span></div>
+        <div>Account Type: <span style="color:var(--accent2);" id="settingsAccType"></span></div>
+        <div>Member since: <span style="color:#fff;" id="settingsJoined"></span></div>
+        <div>Multi-user sync: <span id="sbStatusText" style="color:var(--red);">Key invalid — local only</span></div>
+      </div>
+    </div>
+    <div id="sbKeyWarning" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px;margin-bottom:14px;">
+      <div style="color:#f59e0b;font-size:13px;font-weight:700;margin-bottom:8px;">⚠️ Supabase Key Invalid</div>
+      <div style="color:#94a3b8;font-size:12px;line-height:1.7;">Multi-user sync పని చేయడం లేదు. Fix చేయడానికి:<br/>1. <a href="https://supabase.com" target="_blank" style="color:var(--accent2);">supabase.com</a> → నీ project open చేయి<br/>2. Settings → API → <b>anon public</b> key copy చేయి<br/>3. Code లో <code style="background:rgba(99,102,241,.2);padding:2px 6px;border-radius:4px;">SUPABASE_KEY</code> replace చేయి</div>
+    </div>
+
+    <button class="logout-btn" onclick="logout()" style="width:100%;padding:12px;margin-bottom:20px;">🚪 Logout</button>
   </div>
 </div>
 
@@ -1071,17 +1342,198 @@ const CHANNELS=[
 ];
 
 // ============================================
+// NEW FEATURES: Private Account, Highlights, Post Pin, Profile Views, Polls
+// ============================================
+
+// ── PRIVATE ACCOUNT + MESSAGE REQUESTS ──
+function isFollowing(targetId){
+  return (userConnections[ME?.userId]?.following||[]).includes(targetId);
+}
+function isFollowedBy(targetId){
+  return (userConnections[ME?.userId]?.followers||[]).includes(targetId);
+}
+function canMessage(targetId){
+  const target=getMember(targetId);
+  if(!target||target.isAI) return true;
+  if(targetId===ME?.userId) return false;
+  // Private account: must be mutual connection
+  if(target.isPrivate){
+    const isMutual=isFollowing(targetId)&&isFollowedBy(targetId);
+    return isMutual;
+  }
+  // Default: anyone can message (like Instagram public)
+  return true;
+}
+function sendMessageRequest(targetId){
+  const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
+  if(!reqs[targetId]) reqs[targetId]=[];
+  reqs[targetId].push({from:ME.userId,time:new Date().toISOString()});
+  localStorage.setItem('cg_msgreqs',JSON.stringify(reqs));
+  showToast('📨 Message request sent!','success');
+}
+function getMessageRequests(){
+  const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
+  return reqs[ME?.userId]||[];
+}
+
+// ── STORY HIGHLIGHTS ──
+function addToHighlights(storyId){
+  const h=JSON.parse(localStorage.getItem('cg_highlights_'+ME?.userId)||'[]');
+  const story=stories.find(s=>s.id===storyId);
+  if(!story){showToast('Story not found','error');return;}
+  if(h.find(x=>x.id===storyId)){showToast('Already in highlights','error');return;}
+  // Save story data permanently (highlights don't expire)
+  h.unshift({...story,highlightedAt:Date.now()});
+  localStorage.setItem('cg_highlights_'+ME.userId,JSON.stringify(h));
+  showToast('⭐ Added to Highlights!','success');
+  renderHighlights();
+}
+function renderHighlights(){
+  const uid=state.currentProfileId||ME?.userId;
+  if(!uid) return;
+  const h=JSON.parse(localStorage.getItem('cg_highlights_'+uid)||'[]');
+  let el=document.getElementById('profileHighlights');
+  if(!el) return;
+  if(!h.length){el.style.display='none';return;}
+  el.style.display='block';
+  el.innerHTML=`<h4 style="color:#fff;font-size:14px;font-weight:700;margin-bottom:10px;">⭐ Highlights</h4>
+  <div style="display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;">
+    ${h.map(s=>`<div class="story-item" onclick="openHighlightViewer('${s.id}','${uid}')" style="cursor:pointer;">
+      <div class="story-ring" style="background:linear-gradient(135deg,#f59e0b,#f97316);padding:3px;">
+        <div class="story-av" style="background:rgba(245,158,11,.2);font-size:22px;">${s.emoji||'📸'}</div>
+      </div>
+      <div class="story-name">${(s.caption||'Story').slice(0,8)}</div>
+    </div>`).join('')}
+  </div>`;
+}
+function openHighlightViewer(storyId,userId){
+  const h=JSON.parse(localStorage.getItem('cg_highlights_'+userId)||'[]');
+  const s=h.find(x=>x.id===storyId);
+  if(!s) return;
+  const u=getMember(userId);if(!u) return;
+  document.getElementById('svAv').style.background=`linear-gradient(135deg,${u.color},${u.color}cc)`;
+  document.getElementById('svAv').textContent=u.avatar;
+  document.getElementById('svName').textContent=u.name+' ⭐';
+  document.getElementById('svTime').textContent='Highlight';
+  document.getElementById('svTitle').textContent=s.caption||'';
+  const svImg=document.getElementById('svImage');
+  const svVid=document.getElementById('svVideo');
+  const svEm=document.getElementById('svEmoji');
+  if(s.type==='image'&&s.data){svImg.src=s.data;svImg.style.display='block';svVid.style.display='none';svEm.style.display='none';}
+  else if(s.type==='video'&&s.data){svVid.src=s.data;svVid.style.display='block';svImg.style.display='none';svEm.style.display='none';}
+  else{svEm.style.display='block';svEm.textContent=s.emoji||'📸';svImg.style.display='none';svVid.style.display='none';}
+  document.getElementById('story-viewer').classList.add('open');
+  const pb=document.getElementById('svProgressBar');
+  pb.style.transition='none';pb.style.width='0%';
+  setTimeout(()=>{pb.style.transition='width 5s linear';pb.style.width='100%';},50);
+  clearTimeout(window._svTimer);
+  window._svTimer=setTimeout(()=>{document.getElementById('story-viewer').classList.remove('open');pb.style.width='0%';},5200);
+}
+
+// ── POST PINNING ──
+function togglePinPost(postId){
+  const pinned=JSON.parse(localStorage.getItem('cg_pinned_posts_'+ME?.userId)||'[]');
+  const idx=pinned.indexOf(postId);
+  if(idx>=0){
+    pinned.splice(idx,1);
+    showToast('📌 Post unpinned','success');
+  } else {
+    if(pinned.length>=3){showToast('Max 3 posts can be pinned','error');return;}
+    pinned.unshift(postId);
+    showToast('📌 Post pinned!','success');
+  }
+  localStorage.setItem('cg_pinned_posts_'+ME.userId,JSON.stringify(pinned));
+  renderFeed();
+}
+function isPinned(postId){
+  const pinned=JSON.parse(localStorage.getItem('cg_pinned_posts_'+ME?.userId)||'[]');
+  return pinned.includes(postId);
+}
+
+// ── PROFILE VIEWS TRACKING ──
+function trackProfileView(userId){
+  if(!ME||userId===ME.userId) return;
+  const key='cg_pviews_'+userId;
+  const views=JSON.parse(localStorage.getItem(key)||'[]');
+  // Don't duplicate same viewer in last 1 hour
+  const recent=views.find(v=>v.viewerId===ME.userId&&Date.now()-v.time<3600000);
+  if(!recent){
+    views.unshift({viewerId:ME.userId,viewerName:ME.name,viewerAvatar:ME.avatar,viewerColor:ME.color,time:Date.now()});
+    if(views.length>50) views.pop(); // keep last 50
+    localStorage.setItem(key,JSON.stringify(views));
+  }
+}
+function getProfileViews(userId){
+  return JSON.parse(localStorage.getItem('cg_pviews_'+userId)||'[]');
+}
+function renderProfileViews(userId){
+  const views=getProfileViews(userId);
+  const el=document.getElementById('profileViewsSection');
+  if(!el) return;
+  if(!views.length){el.style.display='none';return;}
+  el.style.display='block';
+  el.innerHTML=`<div class="card prof-section">
+    <h4>👁️ Profile Views (${views.length})</h4>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+      ${views.slice(0,8).map(v=>`<div title="${v.viewerName}" style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,${v.viewerColor||'#6366f1'},${v.viewerColor||'#6366f1'}cc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;cursor:pointer;" onclick="openMiniProfile('${v.viewerId}')">${v.viewerAvatar||'?'}</div>`).join('')}
+      ${views.length>8?`<div style="width:36px;height:36px;border-radius:50%;background:var(--adim);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--accent2);font-size:10px;font-weight:700;">+${views.length-8}</div>`:''}
+    </div>
+    <div style="color:var(--text2);font-size:11px;margin-top:6px;">${views[0]?`Last viewed by ${views[0].viewerName} ${timeAgo(views[0].time)}`:'No recent views'}</div>
+  </div>`;
+}
+
+// ── STORY POLLS ──
+function addPollToStory(question,options){
+  return {
+    type:'poll',
+    pollQuestion:question,
+    pollOptions:options.map(o=>({text:o,votes:0})),
+    pollVotes:{}
+  };
+}
+function votePoll(storyId,optionIdx){
+  const story=stories.find(s=>s.id===storyId);
+  if(!story||!story.pollOptions) return;
+  if(story.pollVotes[ME?.userId]!==undefined){showToast('Already voted!','error');return;}
+  story.pollOptions[optionIdx].votes++;
+  if(!story.pollVotes) story.pollVotes={};
+  story.pollVotes[ME.userId]=optionIdx;
+  save.stories();
+  showToast('✅ Vote counted!','success');
+  renderPollResults(storyId);
+}
+function renderPollResults(storyId){
+  const el=document.getElementById('pollContainer');
+  if(!el) return;
+  const story=stories.find(s=>s.id===storyId);
+  if(!story||!story.pollOptions) return;
+  const total=story.pollOptions.reduce((s,o)=>s+o.votes,0)||1;
+  el.innerHTML=story.pollOptions.map((o,i)=>`
+    <div style="margin-bottom:8px;">
+      <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+        <span style="color:#fff;font-size:13px;font-weight:600;">${o.text}</span>
+        <span style="color:var(--accent2);font-size:12px;">${Math.round(o.votes/total*100)}%</span>
+      </div>
+      <div style="height:8px;background:rgba(99,102,241,.2);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${Math.round(o.votes/total*100)}%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:4px;transition:width .5s;"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ============================================
 // SUPABASE SYNC LAYER
 // All data syncs to Supabase for real-time multi-user
 // ============================================
 
 // ── USERS ──
 async function sbLoadUsers(){
+  if(!window._sbKeyValid) return;
   try{
     const {data,error}=await sb.from('cg_users').select('*');
-    if(error){console.warn('sbLoadUsers:',error.message);return;}
+    if(error) return;
     if(data&&data.length){
-      registeredUsers=data.map(u=>({
+      const deletedIds=getDeletedIds();
+      registeredUsers=data.filter(u=>!deletedIds.includes(u.user_id)).map(u=>({
         id:u.id,userId:u.user_id,password:u.password,name:u.name,
         email:u.email,accountType:u.account_type,role:u.role||'',
         city:u.city||'',avatar:u.avatar||u.name?.slice(0,2).toUpperCase()||'??',
@@ -1092,11 +1544,13 @@ async function sbLoadUsers(){
         isAdmin:u.is_admin||false,connections:0,followers:0,posts:0
       }));
       localStorage.setItem('cg_users',JSON.stringify(registeredUsers));
+      rebuildUserMap();
     }
-  }catch(e){console.warn('sbLoadUsers error:',e);}
+  }catch(e){} // silently ignore — app works offline with localStorage
 }
 
 async function sbSaveUser(user){
+  if(!window._sbKeyValid) return;
   try{
     await sb.from('cg_users').upsert({
       user_id:user.userId,password:user.password,name:user.name,
@@ -1107,47 +1561,51 @@ async function sbSaveUser(user){
       experience:user.experience||'Fresher',online:user.online!==false,
       profile_pic:user.profilePic||'',is_admin:user.isAdmin||false
     },{onConflict:'user_id'});
-  }catch(e){console.warn('sbSaveUser:',e);}
+  }catch(e){}
 }
 
 // ── POSTS ──
 async function sbLoadPosts(){
+  if(!window._sbKeyValid) return;
   try{
     const {data,error}=await sb.from('cg_posts').select('*').order('created_at',{ascending:false});
-    if(error){console.warn('sbLoadPosts:',error.message);return;}
+    if(error) return;
     if(data){
       posts=data.map(p=>({
         id:p.id,userId:p.user_id,content:p.content,
         isJob:p.is_job||false,likes:p.likes||0,shares:p.shares||0,
         accountType:p.account_type||'jobseeker',image:p.image||'',
-        time:timeAgo(p.created_at)
+        time:_timeAgoCompat(p.created_at)
       }));
       save.posts();
     }
-  }catch(e){console.warn('sbLoadPosts:',e);}
+  }catch(e){}
 }
 
 async function sbSavePost(post){
+  if(!window._sbKeyValid) return;
   try{
     await sb.from('cg_posts').upsert({
       id:post.id,user_id:post.userId,content:post.content,
       is_job:post.isJob||false,likes:post.likes||0,shares:post.shares||0,
       account_type:post.accountType||'jobseeker',image:post.image||''
     },{onConflict:'id'});
-  }catch(e){console.warn('sbSavePost:',e);}
+  }catch(e){}
 }
 
 async function sbDeletePost(postId){
+  if(!window._sbKeyValid) return;
   try{await sb.from('cg_posts').delete().eq('id',postId);}
-  catch(e){console.warn('sbDeletePost:',e);}
+  catch(e){}
 }
 
 // ── STORIES ──
 async function sbLoadStories(){
+  if(!window._sbKeyValid) return;
   try{
     const now=Date.now();
     const {data,error}=await sb.from('cg_stories').select('*').gt('expires_at',now);
-    if(error){console.warn('sbLoadStories:',error.message);return;}
+    if(error) return;
     if(data){
       stories=data.map(s=>({
         id:s.id,userId:s.user_id,type:s.type||'emoji',
@@ -1156,73 +1614,90 @@ async function sbLoadStories(){
       }));
       save.stories();
     }
-  }catch(e){console.warn('sbLoadStories:',e);}
+  }catch(e){}
 }
 
 async function sbSaveStory(story){
+  if(!window._sbKeyValid) return;
   try{
     await sb.from('cg_stories').insert({
       id:story.id,user_id:story.userId,type:story.type||'emoji',
       data:story.data||'',emoji:story.emoji||'📸',caption:story.caption||'',
       posted_at:story.postedAt,expires_at:story.expiresAt
     });
-  }catch(e){console.warn('sbSaveStory:',e);}
+  }catch(e){}
 }
 
 // ── VIDEOS ──
 async function sbLoadVideos(){
+  if(!window._sbKeyValid) return;
   try{
     const {data,error}=await sb.from('cg_videos').select('*').order('created_at',{ascending:false});
-    if(error){console.warn('sbLoadVideos:',error.message);return;}
+    if(error) return;
     if(data){
-      userVideos={};
+      const merged={};
       data.forEach(v=>{
-        if(!userVideos[v.user_id]) userVideos[v.user_id]=[];
-        userVideos[v.user_id].push({
+        if(!merged[v.user_id]) merged[v.user_id]=[];
+        // Get local per-user videoData if available
+        const localUserVids=JSON.parse(localStorage.getItem('cg_vids_'+v.user_id)||'[]');
+        const localVid=localUserVids.find(lv=>lv.id===v.id);
+        merged[v.user_id].push({
           id:v.id,title:v.title,duration:v.duration||'0:00',
           views:v.views||'0',category:v.category||'',level:v.level||'intermediate',
           thumbnail:v.thumbnail||'🎬',description:v.description||'',
-          videoData:v.video_data||''
+          videoData:v.video_data||localVid?.videoData||'', // Prefer cloud URL
+          isCloud:!!v.video_data,storagePath:v.storage_path||''
         });
       });
-      save.videos();
+      // Also keep local-only videos from per-user keys
+      registeredUsers.forEach(u=>{
+        const localVids=JSON.parse(localStorage.getItem('cg_vids_'+u.userId)||'[]');
+        if(!merged[u.userId]) merged[u.userId]=[];
+        localVids.forEach(lv=>{
+          if(!merged[u.userId].find(mv=>mv.id===lv.id)) merged[u.userId].push(lv);
+        });
+      });
+      userVideos=merged;
     }
-  }catch(e){console.warn('sbLoadVideos:',e);}
+  }catch(e){}
 }
 
 async function sbSaveVideo(userId,video){
+  if(!window._sbKeyValid) return;
   try{
-    await sb.from('cg_videos').insert({
+    await sb.from('cg_videos').upsert({
       id:video.id,user_id:userId,title:video.title,duration:video.duration||'0:00',
       views:video.views||'0',category:video.category||'',level:video.level||'intermediate',
       thumbnail:video.thumbnail||'🎬',description:video.description||'',
-      video_data:video.videoData||''
-    });
-  }catch(e){console.warn('sbSaveVideo:',e);}
+      video_data:video.videoData&&video.isCloud?video.videoData:'', // Store cloud URL only
+      storage_path:video.storagePath||''
+    },{onConflict:'id'});
+  }catch(e){}
 }
 
 // ── MESSAGES ──
 async function sbLoadMessages(roomId){
+  if(!window._sbKeyValid) return [];
   try{
     const {data,error}=await sb.from('cg_messages').select('*')
       .eq('room_id',roomId).order('created_at',{ascending:true});
-    if(error){console.warn('sbLoadMessages:',error.message);return [];}
+    if(error){return [];}
     return (data||[]).map(m=>({from:m.from_user,text:m.text||'',image:m.image||'',time:m.time}));
-  }catch(e){console.warn('sbLoadMessages:',e);return [];}
+  }catch(e){return [];}
 }
 
-async function sbSendMessage(roomId,msg){
-  try{
-    await sb.from('cg_messages').insert({
-      room_id:roomId,from_user:msg.from,text:msg.text||'',
-      image:msg.image||'',time:msg.time,
-      msg_id:msg.msgId||('msg_'+Date.now())
-    });
-  }catch(e){console.warn('sbSendMessage:',e);}
+function sbSendMessage(roomId,msg){
+  if(!window._sbKeyValid) return;
+  sb.from('cg_messages').insert({
+    room_id:roomId,from_user:msg.from,text:msg.text||'',
+    image:msg.image||'',time:msg.time,
+    msg_id:msg.msgId||('msg_'+Date.now())
+  }).then(()=>{}).catch(()=>{});
 }
 
 // ── CONNECTIONS ──
 async function sbToggleFollow(followerId,followingId){
+  if(!window._sbKeyValid) return null;
   try{
     const {data}=await sb.from('cg_connections').select('id')
       .eq('follower_id',followerId).eq('following_id',followingId).maybeSingle();
@@ -1233,10 +1708,11 @@ async function sbToggleFollow(followerId,followingId){
       await sb.from('cg_connections').insert({follower_id:followerId,following_id:followingId});
       return true; // followed
     }
-  }catch(e){console.warn('sbToggleFollow:',e);return null;}
+  }catch(e){return null;}
 }
 
 async function sbLoadConnections(){
+  if(!window._sbKeyValid) return;
   try{
     const {data}=await sb.from('cg_connections').select('*');
     if(!data) return;
@@ -1249,12 +1725,12 @@ async function sbLoadConnections(){
       userConnections[c.following_id].followers.push(c.follower_id);
     });
     save.connections();
-  }catch(e){console.warn('sbLoadConnections:',e);}
+  }catch(e){}
 }
 
 // ── REALTIME SUBSCRIPTIONS ──
 function startRealtimeSync(){
-  // New posts
+  if(!window._sbKeyValid) return; // Skip realtime if key invalid
   sb.channel('cg_posts_rt').on('postgres_changes',
     {event:'INSERT',schema:'public',table:'cg_posts'},
     (payload)=>{
@@ -1298,7 +1774,7 @@ function startRealtimeSync(){
     {event:'INSERT',schema:'public',table:'cg_users'},
     (payload)=>{
       const u=payload.new;
-      if(!registeredUsers.find(x=>x.userId===u.user_id)){
+      if(!registeredUsers.find(x=>x.userId===u.user_id)&&!getDeletedIds().includes(u.user_id)){
         registeredUsers.push({
           userId:u.user_id,name:u.name,email:u.email||'',
           accountType:u.account_type||'jobseeker',role:u.role||'',
@@ -1340,7 +1816,6 @@ function subscribeToRoom(roomId){
 
 // ── MASTER LOAD: fetch all data from Supabase on login ──
 async function loadAllFromSupabase(){
-  showToast('🔄 Loading data...','success');
   await Promise.all([
     sbLoadUsers(),
     sbLoadPosts(),
@@ -1348,31 +1823,33 @@ async function loadAllFromSupabase(){
     sbLoadVideos(),
     sbLoadConnections()
   ]);
-  showToast('✅ Data loaded!','success');
   startRealtimeSync();
 }
 
-// Helper: time ago from ISO string
-function timeAgo(isoStr){
+// Helper: time ago — defined once above in HELPERS section
+function _timeAgoCompat(isoStr){
   if(!isoStr) return 'Just now';
-  const diff=Date.now()-new Date(isoStr).getTime();
-  const mins=Math.floor(diff/60000);
-  if(mins<1) return 'Just now';
-  if(mins<60) return mins+'m ago';
-  const hrs=Math.floor(mins/60);
-  if(hrs<24) return hrs+'h ago';
-  return Math.floor(hrs/24)+'d ago';
+  return timeAgo(new Date(isoStr).getTime());
 }
 
 
 // =============================================
 // HELPERS
 // =============================================
+// Get list of permanently deleted user IDs
+function getDeletedIds(){return JSON.parse(localStorage.getItem('cg_deleted_users')||'[]');}
+
+// Fast user lookup map — rebuilt when registeredUsers changes
+let _userMap={};
+function rebuildUserMap(){_userMap={};registeredUsers.forEach(u=>{_userMap[u.userId]=u;});}
+
 function getMember(id){
   if(!id) return null;
   if(id==='rishi') return RISHI;
   if(id==='me'&&ME) return ME;
-  return registeredUsers.find(u=>u.userId===id)||null;
+  const deleted=getDeletedIds();
+  if(deleted.includes(id)) return null;
+  return _userMap[id]||registeredUsers.find(u=>u.userId===id&&!deleted.includes(u.userId))||null;
 }
 function avHTML(color,text,size,online,isAI,accountType){
   const ds=size*0.3;
@@ -1404,6 +1881,7 @@ function updateTopAvatar(){
 // AUTH
 // =============================================
 function checkSession(){
+  rebuildUserMap();
   const saved=JSON.parse(localStorage.getItem('cg_session')||'null');
   if(saved&&saved.userId){
     const u=registeredUsers.find(u=>u.userId===saved.userId)||saved;
@@ -1420,6 +1898,11 @@ function showApp(){
   showScreen('home');
   renderNotifications();
   if(!userConnections[ME.userId]) userConnections[ME.userId]={followers:[],following:[]};
+  // Update Courses tab label based on account type
+  const isCreator=ME.accountType==='creator';
+  document.querySelectorAll('[data-tab="courses"] .bbl').forEach(el=>el.textContent=isCreator?'My Courses':'Courses');
+  document.querySelectorAll('[data-tab="courses"] .bbi').forEach(el=>el.textContent=isCreator?'🎬':'📚');
+  document.querySelectorAll('.toptabs button[data-tab="courses"]').forEach(el=>el.textContent=isCreator?'🎬 My Courses':'📚 Courses');
   // Load fresh data from Supabase for all users
   loadAllFromSupabase().then(()=>{
     renderFeed();
@@ -1489,9 +1972,11 @@ document.getElementById('sendOtpBtn').addEventListener('click',()=>{
   document.getElementById('otpCard').style.display='block';
   document.getElementById('otpSentTo').textContent=`OTP sent to ${email}`;
   startOtpTimer();
-  // FIX BUG 12: auto-focus first OTP input
   setTimeout(()=>document.querySelectorAll('.otp-input')[0]?.focus(),100);
-  alert(`Demo OTP for ${email}: ${otp}`);
+  // Show OTP in card (no browser alert — works on mobile)
+  const otpDisplay=document.getElementById('otpDisplayBox');
+  if(otpDisplay){otpDisplay.textContent='Your OTP: '+otp;otpDisplay.style.display='block';}
+  showToast('OTP: '+otp+' (copy చేయి)','success');
 });
 
 // FIX BUG 12: OTP auto-advance between boxes
@@ -1529,7 +2014,9 @@ document.getElementById('resendOtpBtn').addEventListener('click',()=>{
   document.querySelectorAll('.otp-input').forEach(i=>i.value='');
   document.querySelectorAll('.otp-input')[0]?.focus();
   startOtpTimer();
-  alert(`New OTP: ${otp}`);
+  const otpDisplay=document.getElementById('otpDisplayBox');
+  if(otpDisplay){otpDisplay.textContent='Your OTP: '+otp;otpDisplay.style.display='block';}
+  showToast('New OTP: '+otp,'success');
 });
 
 document.getElementById('verifyOtpBtn').addEventListener('click',()=>{
@@ -1562,6 +2049,7 @@ document.getElementById('completeSignupBtn').addEventListener('click',()=>{
   };
   registeredUsers.unshift(newU);save.users();
   sbSaveUser(newU); // Sync to Supabase — visible to all users
+  rebuildUserMap();
   userConnections[userId]={followers:[],following:[]};save.connections();
   err.classList.remove('show');
   // Reset forms
@@ -1593,9 +2081,16 @@ function showScreen(name){
   if(name==='home'){renderFeed();renderStories();}
   if(name==='reels') renderReels();
   if(name==='courses') renderCourses();
+  // Update courses tab label based on account type
+  if(name==='courses'&&ME){
+    const isCreator=ME.accountType==='creator';
+    document.querySelectorAll('[data-tab="courses"] .bbl').forEach(el=>el.textContent=isCreator?'My Courses':'Courses');
+    document.querySelectorAll('[data-tab="courses"] .bbi').forEach(el=>el.textContent=isCreator?'🎬':'📚');
+  }
   if(name==='jobs') renderJobs();
   if(name==='search') renderSearch('');
   if(name==='chat') renderChatList();
+  if(name==='settings'){updateSettingsUI();}
   if(ME) updateTopAvatar();
 }
 
@@ -1657,8 +2152,8 @@ document.addEventListener('click',e=>{
     document.getElementById('storyModal').classList.add('open');
     return;
   }
-  const si=e.target.closest('.story-item[data-story-id]');
-  if(si&&si.dataset.storyId){openStoryViewer(si.dataset.storyId);return;}
+  const si=e.target.closest('.story-item[data-story-id],.story-item[data-storyid]');
+  if(si){const sid=si.dataset.storyId||si.dataset.storyid;if(sid){openStoryViewer(sid);return;}}
 });
 
 // Story Modal (FIX: consistent classList)
@@ -1668,11 +2163,27 @@ document.getElementById('storyModalClose').addEventListener('click',()=>{
 document.getElementById('storyModal').addEventListener('click',e=>{
   if(e.target===document.getElementById('storyModal')){document.getElementById('storyModal').classList.remove('open');resetStoryModal();}
 });
+// Poll checkbox toggle
+document.getElementById('addPollChk')?.addEventListener('change',function(){
+  document.getElementById('pollInputArea').style.display=this.checked?'block':'none';
+});
+// Story file pick - reliable cross-browser/mobile
+function triggerStoryPick(e){
+  if(e) e.stopPropagation();
+  const inp=document.getElementById('storyFileInp');
+  inp.value=''; // Reset so same file can be selected again
+  inp.click();
+}
+document.getElementById('storyPickBtn')?.addEventListener('click',triggerStoryPick);
+document.getElementById('storyUploadArea')?.addEventListener('click',function(e){
+  if(e.target.id==='storyPickBtn') return; // btn handles itself
+  triggerStoryPick(e);
+});
 document.getElementById('storyFileInp').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f) return;
   const r=new FileReader();
   r.onload=ev=>{
-    state.selectedStoryFile={data:ev.target.result,type:f.type.startsWith('image/')?'image':'video'};
+    state.selectedStoryFile={data:ev.target.result,type:f.type.startsWith('image/')?'image':'video',rawFile:f};
     document.getElementById('storyUploadArea').style.display='none';
     document.getElementById('storyPreviewWrap').style.display='block';
     if(state.selectedStoryFile.type==='image'){
@@ -1690,15 +2201,36 @@ document.getElementById('storyFileInp').addEventListener('change',e=>{
   r.readAsDataURL(f);
 });
 document.getElementById('rmStoryFile').addEventListener('click',e=>{e.stopPropagation();resetStoryModal();});
-document.getElementById('postStoryBtn').addEventListener('click',()=>{
-  if(!state.selectedStoryFile||!ME) return;
-  const newStory={id:'s_'+Date.now(),userId:ME.userId,type:state.selectedStoryFile.type,
-    data:state.selectedStoryFile.data,caption:document.getElementById('storyCaption').value.trim(),
-    postedAt:Date.now(),expiresAt:Date.now()+86400000
+document.getElementById('postStoryBtn').addEventListener('click',async()=>{
+  if(!ME){showToast('Login చేయండి','error');return;}
+  const hasPollNow=document.getElementById('addPollChk')?.checked&&document.getElementById('pollQuestion')?.value.trim()&&document.getElementById('pollOpt1')?.value.trim()&&document.getElementById('pollOpt2')?.value.trim();
+  if(!state.selectedStoryFile&&!hasPollNow){showToast('Image/video upload చేయండి లేదా Poll add చేయండి','error');return;}
+  const postBtn=document.getElementById('postStoryBtn');
+  postBtn.disabled=true;postBtn.textContent='Posting...';
+  const storyId='s_'+Date.now();
+  const hasPoll=document.getElementById('addPollChk')?.checked;
+  const pollQ=document.getElementById('pollQuestion')?.value.trim();
+  const pOpt1=document.getElementById('pollOpt1')?.value.trim();
+  const pOpt2=document.getElementById('pollOpt2')?.value.trim();
+  // Try uploading image/video to Supabase Storage
+  let storyDataUrl=state.selectedStoryFile?state.selectedStoryFile.data:'';
+  let storyType=state.selectedStoryFile?state.selectedStoryFile.type:'emoji';
+  if(state.selectedStoryFile&&state.selectedStoryFile.rawFile){
+    const spath=`stories/${ME.userId}/${storyId}`;
+    const cloudUrl=await uploadFileToStorage(state.selectedStoryFile.rawFile,'stories',spath);
+    if(cloudUrl) storyDataUrl=cloudUrl;
+    // If cloud fails, keep base64 (works locally, not cross-user)
+  }
+  const newStory={
+    id:storyId,userId:ME.userId,type:storyType,
+    data:storyDataUrl,
+    caption:document.getElementById('storyCaption').value.trim(),
+    emoji:'📸',postedAt:Date.now(),expiresAt:Date.now()+86400000,
+    ...(hasPoll&&pollQ&&pOpt1&&pOpt2?{hasPoll:true,pollQuestion:pollQ,pollOptions:[{text:pOpt1,votes:0},{text:pOpt2,votes:0}],pollVotes:{}}:{})
   };
   stories.unshift(newStory);
   save.stories();
-  sbSaveStory(newStory); // Sync to Supabase
+  try{sbSaveStory({...newStory});}catch(e){}
   showToast('✅ Story posted! Visible for 24h.','success');
   document.getElementById('storyModal').classList.remove('open');
   resetStoryModal();
@@ -1714,7 +2246,24 @@ function resetStoryModal(){
   document.getElementById('storyPreviewVid').src='';
   document.getElementById('postStoryBtn').disabled=true;
   document.getElementById('postStoryBtn').style.opacity='.5';
+  if(document.getElementById('addPollChk')) document.getElementById('addPollChk').checked=false;
+  if(document.getElementById('pollInputArea')) document.getElementById('pollInputArea').style.display='none';
+  if(document.getElementById('pollQuestion')) document.getElementById('pollQuestion').value='';
+  if(document.getElementById('pollOpt1')) document.getElementById('pollOpt1').value='';
+  if(document.getElementById('pollOpt2')) document.getElementById('pollOpt2').value='';
 }
+// Enable Post Story btn when poll question filled
+['pollQuestion','pollOpt1','pollOpt2'].forEach(id=>{
+  document.getElementById(id)?.addEventListener('input',()=>{
+    const q=document.getElementById('pollQuestion')?.value.trim();
+    const o1=document.getElementById('pollOpt1')?.value.trim();
+    const o2=document.getElementById('pollOpt2')?.value.trim();
+    if(q&&o1&&o2){
+      document.getElementById('postStoryBtn').disabled=false;
+      document.getElementById('postStoryBtn').style.opacity='1';
+    }
+  });
+});
 
 // FIX BUG 3: Story viewer uses display:flex via .open class
 function openStoryViewer(storyId){
@@ -1729,6 +2278,26 @@ function openStoryViewer(storyId){
   document.getElementById('svTime').textContent=timeAgo(s.postedAt);
   document.getElementById('svTitle').textContent=s.caption||s.emoji||'';
   document.getElementById('svDesc').textContent=s.caption?'':'';
+  // Show poll if exists
+  let pollEl=document.getElementById('storyPollArea');
+  if(!pollEl){pollEl=document.createElement('div');pollEl.id='storyPollArea';document.querySelector('#story-viewer .sv-body').appendChild(pollEl);}
+  if(s.hasPoll&&s.pollOptions){
+    const myVote=s.pollVotes?.[ME?.userId];
+    const total=s.pollOptions.reduce((t,o)=>t+o.votes,0)||1;
+    pollEl.innerHTML=`<div style="background:rgba(15,23,42,.8);border-radius:16px;padding:16px;margin-top:10px;min-width:260px;">
+      <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:12px;text-align:center;">📊 ${s.pollQuestion}</div>
+      ${s.pollOptions.map((o,i)=>`<div style="margin-bottom:8px;">
+        ${myVote===undefined?
+          `<button onclick="votePoll('${s.id}',${i})" style="width:100%;padding:10px;border-radius:10px;border:2px solid rgba(99,102,241,.4);background:rgba(99,102,241,.1);color:#fff;font-size:14px;font-weight:600;cursor:pointer;">${o.text}</button>`:
+          `<div style="margin-bottom:4px;display:flex;justify-content:space-between;"><span style="color:#fff;font-size:13px;">${o.text}${myVote===i?' ✓':''}</span><span style="color:var(--accent2);font-size:12px;">${Math.round(o.votes/total*100)}%</span></div>
+           <div style="height:6px;background:rgba(99,102,241,.2);border-radius:3px;"><div style="height:100%;width:${Math.round(o.votes/total*100)}%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div></div>`
+        }
+      </div>`).join('')}
+    </div>`;
+    pollEl.style.display='block';
+  } else {
+    pollEl.style.display='none';
+  }
   const svImg=document.getElementById('svImage');
   const svVid=document.getElementById('svVideo');
   const svEm=document.getElementById('svEmoji');
@@ -1736,16 +2305,32 @@ function openStoryViewer(storyId){
   else if(s.type==='video'&&s.data){svVid.src=s.data;svVid.style.display='block';svImg.style.display='none';svEm.style.display='none';}
   else{svEm.style.display='block';svEm.textContent=s.emoji||'💼';svImg.style.display='none';svVid.style.display='none';}
   // Show apply button for recruiters
-  document.getElementById('svApply').style.display=u.accountType==='recruiter'?'block':'none';
+  const hasApplyLink=s.caption&&(s.caption.includes('http')||s.caption.toLowerCase().includes('apply')||s.caption.toLowerCase().includes('hiring')||s.caption.toLowerCase().includes('job'));
+  document.getElementById('svApply').style.display=(u.accountType==='recruiter'&&hasApplyLink)?'block':'none';
+  window._currentStoryId=s.id;
+  // Add highlight button for own stories
+  let hlBtn=document.getElementById('addHighlightBtn');
+  if(!hlBtn){hlBtn=document.createElement('button');hlBtn.id='addHighlightBtn';hlBtn.style.cssText='position:absolute;top:60px;right:16px;padding:6px 14px;border-radius:20px;border:none;background:rgba(245,158,11,.9);color:#fff;font-weight:700;font-size:12px;cursor:pointer;z-index:20;';document.getElementById('story-viewer').appendChild(hlBtn);}
+  hlBtn.textContent='⭐ Highlight';
+  hlBtn.style.display=ME&&s.userId===ME.userId?'block':'none';
   const sv=document.getElementById('story-viewer');
+  // Always clear any existing timer before opening new story
+  clearTimeout(window._svTimer);
+  document.getElementById('svVideo').pause();
   sv.classList.add('open');
   // Progress bar
   const pb=document.getElementById('svProgressBar');
   pb.style.transition='none';pb.style.width='0%';
   setTimeout(()=>{pb.style.transition='width 5s linear';pb.style.width='100%';},50);
-  clearTimeout(window._svTimer);
-  window._svTimer=setTimeout(()=>{sv.classList.remove('open');pb.style.width='0%';svVid.pause();},5200);
+  window._svTimer=setTimeout(()=>{sv.classList.remove('open');pb.style.width='0%';document.getElementById('svVideo').pause();},5200);
 }
+// Add to highlights button in story viewer
+document.addEventListener('click',e=>{
+  const ha=e.target.closest('#addHighlightBtn');
+  if(ha&&window._currentStoryId&&ME){
+    addToHighlights(window._currentStoryId);
+  }
+});
 document.getElementById('svClose').addEventListener('click',()=>{
   document.getElementById('story-viewer').classList.remove('open');
   clearTimeout(window._svTimer);
@@ -1757,11 +2342,12 @@ document.getElementById('svClose').addEventListener('click',()=>{
 // FEED / POSTS
 // =============================================
 function initDemoPosts(){
-  posts=[{
-    id:'post_demo1',userId:'poli',
-    content:'Hey everyone! 👋 Excited to be on CareerGram. Looking to connect with fellow professionals. What are you all working on? 🚀',
-    isJob:false,time:'2h ago',likes:12,shares:3,accountType:'jobseeker'
-  }];
+  posts=[
+    {id:'post_demo1',userId:'poli',content:'Hey everyone! 👋 Excited to be on CareerGram. Looking to connect with fellow professionals. What are you all working on? 🚀',isJob:false,time:'2h ago',likes:12,shares:3,accountType:'jobseeker'},
+    {id:'post_job1',userId:'poli',content:'🚀 WE ARE HIRING — React Developer\n\n📍 Hyderabad (Hybrid)\n💰 18–28 LPA\n\nRequirements:\n• 2+ years React experience\n• Node.js knowledge\n• Good communication\n\nFreshers with strong projects also welcome!\n\nDM me or comment below to apply. 📩',isJob:true,time:'3h ago',likes:24,shares:8,accountType:'recruiter'},
+    {id:'post_job2',userId:'poli',content:'💼 URGENT HIRING — Python Backend Engineer\n\n🌐 Remote | Full-time\n💰 25–40 LPA\n\nSkills needed:\n• Python (Django/FastAPI)\n• PostgreSQL or MongoDB\n• AWS basics\n• 3+ years experience\n\nSend your resume to careers@techcorp.com\n#hiring #python #remote',isJob:true,time:'5h ago',likes:41,shares:15,accountType:'recruiter'},
+    {id:'post_job3',userId:'poli',content:'🎯 Fresher Opportunity — Full Stack Developer\n\n📍 Bangalore / Remote\n💰 6–10 LPA\n\nLooking for:\n• React + Node.js basics\n• Good DSA knowledge\n• 2024/2025 passout\n\n✅ Training provided\n✅ Work from home option\n\nApply now — limited seats! 🔥',isJob:true,time:'1d ago',likes:67,shares:29,accountType:'recruiter'},
+  ];
   save.posts();
 }
 
@@ -1841,7 +2427,7 @@ function renderFeed(){
       commsHTML=`<div class="comments-panel open"><div id="cmts-${post.id}">${rows}</div><div class="comment-input-row">${avHTML(ME.color,ME.avatar,28,true)}<input class="cmt-inp" data-pid="${post.id}" placeholder="Write a comment..."/><button class="cmt-send" data-pid="${post.id}">Send</button></div></div>`;
     }
     const postImgHTML=post.image?`<div style="margin:8px 16px;border-radius:12px;overflow:hidden;max-height:400px;cursor:pointer;" class="post-img-wrap" data-pid="${post.id}"><img src="${post.image}" style="width:100%;max-height:400px;object-fit:cover;display:block;" class="post-img" data-pid="${post.id}"/></div>`:'';
-    c.innerHTML+=`<div class="card post fade-in">${post.isJob?'<div class="job-tag">💼 JOB POST</div>':''}<div class="post-head">${avEl}<div class="info"><span class="name" data-uid="${post.userId}">${a.name}<span class="badge ${at.badge}">${at.name}</span></span><div class="meta">${a.role||''}${a.company?' at '+a.company:''} • ${post.time}</div></div>${isMe?`<div style="display:flex;gap:4px;"><button class="post-edit-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Edit">✏️</button><button class="post-del-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Delete">🗑️</button></div>`:''}</div>${post.content?`<div class="post-body">${post.content}</div>`:''}${postImgHTML}<div class="post-stats" data-pid="${post.id}"><span>👍 ${post.likes+(isLiked?0:0)} likes</span><span>${coms.length} comments • ${post.shares} shares</span></div><div class="post-actions"><button class="pab${isLiked?' active':''}" data-act="like" data-pid="${post.id}">${isLiked?'❤️':'🤍'} Like</button><button class="pab" data-act="comment" data-pid="${post.id}">💬 Comment</button><button class="pab" data-act="share" data-pid="${post.id}">🔗 Share</button><button class="pab${isSaved?' active':''}" data-act="save" data-pid="${post.id}">${isSaved?'🔖':'🏷️'} Save</button>${a.accountType==='recruiter'||post.isJob?'<button class="pab apply-btn" data-act="apply" data-pid="'+post.id+'">📋 Apply</button>':''}</div>${commsHTML}</div>`;
+    c.innerHTML+=`<div class="card post fade-in">${post.isJob?'<div class="job-tag">💼 JOB POST</div>':''}<div class="post-head">${avEl}<div class="info"><span class="name" data-uid="${post.userId}">${a.name}<span class="badge ${at.badge}">${at.name}</span></span><div class="meta">${a.role||''}${a.company?' at '+a.company:''} • ${post.time}</div></div>${isMe?`<div style="display:flex;gap:4px;"><button class="post-pin-btn" data-pid="${post.id}" style="background:none;border:none;color:${isPinned(post.id)?'var(--accent2)':' var(--text2)'};cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Pin">📌</button><button class="post-edit-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Edit">✏️</button><button class="post-del-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Delete">🗑️</button></div>`:''}</div>${post.content?`<div class="post-body">${post.content}</div>`:''}${postImgHTML}<div class="post-stats" data-pid="${post.id}"><span>👍 ${post.likes+(isLiked?0:0)} likes</span><span>${coms.length} comments • ${post.shares} shares</span></div><div class="post-actions"><button class="pab${isLiked?' active':''}" data-act="like" data-pid="${post.id}">${isLiked?'❤️':'🤍'} Like</button><button class="pab" data-act="comment" data-pid="${post.id}">💬 Comment</button><button class="pab" data-act="share" data-pid="${post.id}">🔗 Share</button><button class="pab${isSaved?' active':''}" data-act="save" data-pid="${post.id}">${isSaved?'🔖':'🏷️'} Save</button>${a.accountType==='recruiter'||post.isJob?'<button class="pab apply-btn" data-act="apply" data-pid="'+post.id+'">📋 Apply</button>':''}</div>${commsHTML}</div>`;
   });
 }
 
@@ -1893,6 +2479,8 @@ document.addEventListener('click',e=>{
   const pi=e.target.closest('.post-img[data-pid]');
   if(pi){document.getElementById('modalImg').src=pi.src;document.getElementById('imgModal').classList.add('show');return;}
   // Post edit
+  const pinBtn=e.target.closest('.post-pin-btn[data-pid]');
+  if(pinBtn){togglePinPost(pinBtn.dataset.pid);return;}
   const editBtn=e.target.closest('.post-edit-btn[data-pid]');
   if(editBtn){
     const pid=editBtn.dataset.pid;
@@ -1942,11 +2530,10 @@ document.querySelector('#createModal .cm-icons span:first-child')?.addEventListe
 document.getElementById('cmPostBtn').addEventListener('click',()=>{
   const txt=document.getElementById('createPostTA').value.trim();
   if((txt||_postImg)&&ME){
-    const post={id:'p_'+Date.now(),userId:ME.userId,content:txt,isJob:ME.accountType==='recruiter'||txt.toLowerCase().includes('hiring')||txt.toLowerCase().includes('job'),time:'Just now',likes:0,shares:0,accountType:ME.accountType};
+    const post={id:'p_'+Date.now(),userId:ME.userId,content:txt,isJob:ME.accountType==='recruiter'||ME.accountType==='creator'&&(txt.toLowerCase().includes('hiring')||txt.toLowerCase().includes('job'))||txt.toLowerCase().includes('hiring')||txt.toLowerCase().includes('job'),time:'Just now',likes:0,shares:0,accountType:ME.accountType};
     if(_postImg) post.image=_postImg;
     posts.unshift(post);
     save.posts();
-    sbSavePost(post); // Sync to Supabase
     sbSavePost(post); // Sync to Supabase
     document.getElementById('createPostTA').value='';
     const prev=document.getElementById('cmImgPreview');if(prev) prev.remove();
@@ -2096,14 +2683,15 @@ function renderReels(){
 </div></div></div>`;
   }).join('');
 }
-document.getElementById('reelsSearch').addEventListener('input',renderReels);
+let _reelSearchTimer=null;
+document.getElementById('reelsSearch').addEventListener('input',()=>{clearTimeout(_reelSearchTimer);_reelSearchTimer=setTimeout(renderReels,300);});
 document.getElementById('catScroll').addEventListener('click',e=>{const b=e.target.closest('.cat-btn');if(b){state.currentReelCat=b.dataset.cat;renderReels();}});
 document.getElementById('playlists').addEventListener('click',e=>{const p=e.target.closest('.playlist-card');if(p){state.currentReelLevel=p.dataset.level;renderReels();}});
 document.addEventListener('click',e=>{
   const rc=e.target.closest('.reel-card[data-rid]');
   if(rc&&document.getElementById('reels-screen').classList.contains('active')){openReelViewer(rc.dataset.rid);return;}
-  // Courses grid
-  const cv=e.target.closest('#coursesGrid .reel-card[data-rid]');
+  // Courses grid — both creator and guest grids
+  const cv=e.target.closest('#coursesGrid .reel-card[data-rid],#coursesGuestGrid .reel-card[data-rid]');
   if(cv){openReelViewer(cv.dataset.rid);return;}
 });
 
@@ -2158,73 +2746,193 @@ document.addEventListener('click',e=>{
 });
 
 // =============================================
-// VIDEO UPLOAD (FIX: saves base64, no illegal await)
+// SUPABASE STORAGE HELPER
+// =============================================
+async function uploadFileToStorage(file, bucket, filePath){
+  if(!window._sbKeyValid) return null;
+  try{
+    const {data,error}=await sb.storage.from(bucket).upload(filePath,file,{cacheControl:'3600',upsert:true});
+    if(error) return null;
+    const {data:urlData}=sb.storage.from(bucket).getPublicUrl(filePath);
+    return urlData?.publicUrl||null;
+  }catch(e){return null;}
+}
+
+// =============================================
+// VIDEO UPLOAD (FIXED: Supabase Storage + objectURL fallback)
 // =============================================
 let _selVidFile=null;
 document.getElementById('videoFileInp').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f||!f.type.startsWith('video/')) return;
-  if(f.size>100*1024*1024){showToast('File too large! Max 100MB','error');return;}
+  if(f.size>500*1024*1024){showToast('File too large! Max 500MB','error');return;}
   _selVidFile=f;
-  const rd=new FileReader();
-  rd.onload=ev=>{
-    document.getElementById('videoPreview').src=ev.target.result;
-    document.getElementById('videoPreview').style.display='block';
-    document.getElementById('uploadVideoBtn').disabled=false;
-    document.getElementById('uploadVideoBtn').style.opacity='1';
-    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;">✅</div><div style="color:var(--green);font-weight:600;margin-top:8px;">Video selected!</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">${f.name}</div>`;
-    _selVidFile._data=ev.target.result;
-  };
-  rd.readAsDataURL(f);
+  // Use objectURL for instant preview — no FileReader needed
+  const previewUrl=URL.createObjectURL(f);
+  document.getElementById('videoPreview').src=previewUrl;
+  document.getElementById('videoPreview').style.display='block';
+  document.getElementById('uploadVideoBtn').disabled=false;
+  document.getElementById('uploadVideoBtn').style.opacity='1';
+  document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;">✅</div><div style="color:var(--green);font-weight:600;margin-top:8px;">Video selected!</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">${f.name} (${(f.size/1048576).toFixed(1)} MB)</div>`;
 });
-document.getElementById('uploadVideoBtn').addEventListener('click',()=>{
+document.getElementById('uploadVideoBtn').addEventListener('click',async()=>{
   const title=document.getElementById('vidTitle').value.trim();
   const cat=document.getElementById('vidCat').value;
   if(!title||!cat){showToast('Please fill title and category','error');return;}
-  if(!_selVidFile?._data){showToast('Please select a video','error');return;}
+  if(!_selVidFile){showToast('Please select a video','error');return;}
   const pw=document.getElementById('uploadProgressWrap');pw.style.display='block';
-  const pb=document.getElementById('uploadProgressBar');let p=0;
-  const videoData=_selVidFile._data;
-  const iv=setInterval(()=>{p+=10;pb.style.width=p+'%';if(p>=100){
-    clearInterval(iv);
-    const uid=ME?.userId||'me';
-    if(!userVideos[uid]) userVideos[uid]=[];
-    const newVid={
-      id:'v_'+Date.now(),title,duration:'3:'+String(Math.floor(Math.random()*60)).padStart(2,'0'),
-      views:'0',category:cat,level:'intermediate',
-      thumbnail:{Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'}[cat]||'🎬',
-      description:document.getElementById('vidDesc').value.trim(),
-      videoData
-    };
-    userVideos[uid].unshift(newVid);
-    save.videos();
-    sbSaveVideo(uid,newVid); // Sync to Supabase
+  const pb=document.getElementById('uploadProgressBar');
+  const uid=ME?.userId||'me';
+  const vidId='v_'+Date.now();
+  const THUMB={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'};
+  // Animate progress to 40% while uploading
+  let fakeP=0;
+  const fakeIv=setInterval(()=>{fakeP=Math.min(fakeP+5,40);pb.style.width=fakeP+'%';},120);
+  showToast('⬆️ Uploading video...','success');
+  // Try Supabase Storage upload
+  const storagePath=`${uid}/${vidId}_${_selVidFile.name.replace(/[^a-z0-9.]/gi,'_')}`;
+  let videoUrl=await uploadFileToStorage(_selVidFile,'videos',storagePath);
+  clearInterval(fakeIv);
+  // If Supabase Storage fails, use in-memory objectURL (session only)
+  const isCloud=!!videoUrl;
+  if(!isCloud){
+    videoUrl=URL.createObjectURL(_selVidFile);
+    showToast('⚠️ Cloud upload failed — video visible this session only','error');
+  }
+  pb.style.width='90%';
+  const newVid={
+    id:vidId,title,
+    duration:Math.floor(_selVidFile.size/1500000/60)+':'+String(Math.floor(_selVidFile.size/1500000%60)).padStart(2,'0'),
+    views:'0',category:cat,level:document.getElementById('vidLevel')?.value||'intermediate',
+    thumbnail:THUMB[cat]||'🎬',
+    description:document.getElementById('vidDesc').value.trim(),
+    videoData:videoUrl,   // cloud URL or objectURL
+    isCloud,              // true = survives reload, false = session only
+    storagePath:isCloud?storagePath:''
+  };
+  if(!userVideos[uid]) userVideos[uid]=[];
+  userVideos[uid].unshift(newVid);
+  // Save per-user key to avoid serializing all users
+  localStorage.setItem('cg_vids_'+uid,JSON.stringify(userVideos[uid].map(v=>({...v,videoData:v.isCloud?v.videoData:''}))));
+  userVideos[uid]=JSON.parse(localStorage.getItem('cg_vids_'+uid));
+  // Re-attach objectURL for session (cloud videos already have URL)
+  if(!isCloud) userVideos[uid][0].videoData=videoUrl;
+  sbSaveVideo(uid,{...newVid,videoData:isCloud?videoUrl:''});
+  pb.style.width='100%';
+  setTimeout(()=>{
     ['vidTitle','vidDesc'].forEach(id=>document.getElementById(id).value='');
     document.getElementById('vidCat').value='';
     document.getElementById('videoPreview').style.display='none';
+    document.getElementById('videoPreview').src='';
     document.getElementById('uploadVideoBtn').disabled=true;
     document.getElementById('uploadVideoBtn').style.opacity='.5';
     pb.style.width='0%';pw.style.display='none';
     _selVidFile=null;document.getElementById('videoFileInp').value='';
-    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;margin-bottom:12px;">🎬</div><div style="color:var(--text);font-size:15px;font-weight:600;">Upload Video Tutorial</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Max 100MB</div>`;
+    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;margin-bottom:12px;">🎬</div><div style="color:var(--text);font-size:15px;font-weight:600;">Upload Video Tutorial</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Max 500MB</div>`;
     document.getElementById('videoUploadModal').classList.remove('open');
     renderCourses();renderReels();
     if(state.currentProfileId===uid) renderCreatorVideos(uid);
-    showToast('✅ Video uploaded successfully!','success');
-  }},200);
+    showToast(isCloud?'✅ Video uploaded to cloud!':'✅ Video ready (this session)','success');
+  },400);
 });
 document.getElementById('videoModalClose').addEventListener('click',()=>document.getElementById('videoUploadModal').classList.remove('open'));
 document.getElementById('videoUploadModal').addEventListener('click',e=>{if(e.target===document.getElementById('videoUploadModal')) document.getElementById('videoUploadModal').classList.remove('open');});
-document.getElementById('uploadCourseBtn').addEventListener('click',()=>document.getElementById('videoUploadModal').classList.add('open'));
+document.getElementById('uploadCourseBtn').addEventListener('click',()=>{
+  if(!ME){showToast('Login చేయండి','error');return;}
+  if(ME.accountType!=='creator'){
+    showToast('⚠️ Video upload only Content Creators కి మాత్రమే available!','error');
+    return;
+  }
+  document.getElementById('videoUploadModal').classList.add('open');
+});
 
 // =============================================
 // COURSES
 // =============================================
 function renderCourses(){
-  const grid=document.getElementById('coursesGrid');
-  if(!ME){grid.innerHTML='';return;}
-  const vids=userVideos[ME.userId]||[];
-  if(!vids.length){grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);"><div style="font-size:48px;">📚</div><div style="font-size:15px;font-weight:600;margin-top:12px;">No courses yet</div><div style="font-size:13px;margin-top:8px;">Upload your first video!</div></div>`;return;}
-  grid.innerHTML=vids.map(v=>`<div class="reel-card" data-rid="${v.id}" style="cursor:pointer;"><div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${ME.color||'#6366f1'}33);"><span class="r-emoji">${v.thumbnail||'🎬'}</span><span class="r-dur">${v.duration}</span></div><div class="reel-info"><div class="r-title">${v.title}</div><div class="r-bottom"><span class="r-views">👁 ${v.views} views</span></div></div></div>`).join('');
+  if(!ME) return;
+  const isCreator=ME.accountType==='creator';
+  // Toggle views
+  document.getElementById('coursesCreatorView').style.display=isCreator?'block':'none';
+  document.getElementById('coursesGuestView').style.display=isCreator?'none':'block';
+
+  if(isCreator){
+    // ── CREATOR: show their own uploaded videos ──
+    const grid=document.getElementById('coursesGrid');
+    const vids=userVideos[ME.userId]||[];
+    if(!vids.length){
+      grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">
+        <div style="font-size:48px;">🎬</div>
+        <div style="color:#fff;font-size:15px;font-weight:600;margin-top:12px;">No courses yet</div>
+        <div style="color:var(--text2);font-size:13px;margin-top:8px;">Upload button తో మొదలు పెట్టు!</div>
+      </div>`;
+      return;
+    }
+    const playlists={};
+    vids.forEach(v=>{const cat=v.category||'Uncategorized';if(!playlists[cat]) playlists[cat]=[];playlists[cat].push(v);});
+    let html='';
+    const EMOJI={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'};
+    Object.entries(playlists).forEach(([cat,cvids])=>{
+      html+=`<div style="grid-column:1/-1;margin-bottom:8px;"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;"><span style="font-size:18px;">${EMOJI[cat]||'📚'}</span><span style="color:#fff;font-size:14px;font-weight:700;">${cat}</span><span style="color:var(--text2);font-size:12px;">${cvids.length} video${cvids.length>1?'s':''}</span></div></div>`;
+      cvids.forEach(v=>{
+        html+=`<div class="reel-card" data-rid="${v.id}" style="cursor:pointer;">
+          <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${ME.color||'#6366f1'}33);">
+            <span class="r-emoji">${v.thumbnail||'🎬'}</span><span class="r-dur">${v.duration}</span>
+          </div>
+          <div class="reel-info"><div class="r-title">${v.title}</div>
+            <div class="r-bottom">
+              <span class="r-views">👁 ${v.views} views</span>
+              <button onclick="event.stopPropagation();deleteCourseVideo('${v.id}')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:11px;padding:2px 4px;">🗑️</button>
+            </div>
+          </div>
+        </div>`;
+      });
+    });
+    grid.innerHTML=html;
+  } else {
+    // ── NON-CREATOR: show all creators' videos to browse ──
+    const grid=document.getElementById('coursesGuestGrid');
+    let allVids=[];
+    Object.keys(userVideos).forEach(uid=>{
+      const u=getMember(uid);
+      if(!u||u.accountType!=='creator') return;
+      (userVideos[uid]||[]).forEach(v=>{
+        allVids.push({...v,authorName:u.name,authorColor:u.color||'#6366f1',authorId:uid});
+      });
+    });
+    if(!allVids.length){
+      grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">
+        <div style="font-size:48px;">📭</div>
+        <div style="color:#fff;font-size:15px;font-weight:600;margin-top:12px;">No courses yet</div>
+        <div style="color:var(--text2);font-size:13px;margin-top:8px;">Content Creators videos upload చేసినప్పుడు ఇక్కడ కనిపిస్తాయి.</div>
+      </div>`;
+      return;
+    }
+    const lc=lv=>lv==='beginner'?'beg':lv==='advanced'?'adv':'int';
+    const le=lv=>lv==='beginner'?'🟢':lv==='advanced'?'🔴':'🟡';
+    grid.innerHTML=allVids.map(v=>`<div class="reel-card" data-rid="${v.id}" style="cursor:pointer;">
+      <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${v.authorColor}33);">
+        <span class="r-emoji">${v.thumbnail||'🎬'}</span>
+        <span class="r-dur">${v.duration}</span>
+        <span class="revel-badge ${lc(v.level)}">${le(v.level)} ${v.level||'int'}</span>
+      </div>
+      <div class="reel-info">
+        <div class="r-title">${v.title}</div>
+        <div class="r-bottom">
+          <div class="r-author"><span>${v.authorName}</span></div>
+          <span class="r-views">👁 ${v.views}</span>
+        </div>
+      </div>
+    </div>`).join('');
+  }
+}
+function deleteCourseVideo(vidId){
+  if(!confirm('Delete this video?')) return;
+  if(!ME||!userVideos[ME.userId]) return;
+  userVideos[ME.userId]=userVideos[ME.userId].filter(v=>v.id!==vidId);
+  save.videos();
+  sb.from('cg_videos').delete().eq('id',vidId).then(()=>{});
+  renderCourses();renderReels();
+  showToast('Video deleted','success');
 }
 
 // =============================================
@@ -2232,7 +2940,7 @@ function renderCourses(){
 // =============================================
 function renderSearch(q){
   const el=document.getElementById('searchResults');
-  const allUsers=[...registeredUsers,RISHI];
+  const allUsers=[...registeredUsers.filter(u=>!getDeletedIds().includes(u.userId)),RISHI];
   if(!q.trim()){
     el.innerHTML=`<div class="sec-title">👥 All Users (${allUsers.length})</div>`+
       allUsers.map(m=>peopleRowHTML(m)).join('')+
@@ -2308,33 +3016,63 @@ function renderChatList(){
   const el=document.getElementById('chatListContainer');
   const tab=document.querySelector('.chat-tabs button.active')?.dataset.ctab||'chats';
 
-  // PIN TAB
+  // PIN TAB — saved messages from real chats
   if(tab==='pin'){
-    el.innerHTML='<div class="sec-title">📌 Pinned Messages</div>'+
-      [{from:'Priya Sharma',text:'Team meetup this Friday 3 PM! 🎉',time:'Yesterday'},
-       {from:'Rahul Mehta',text:'AWS workshop link shared in #tech-news',time:'2 days ago'},
-       {from:'Sneha Patel',text:'New onboarding doc uploaded to Drive 📁',time:'3 days ago'}
-      ].map(p=>`<div class="pin-item"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">📌 <span class="pf">${p.from}</span><span class="pt">• ${p.time}</span></div><div class="ptx">${p.text}</div></div>`).join('');
+    const pinned=JSON.parse(localStorage.getItem('cg_pinned')||'[]');
+    if(!pinned.length){
+      el.innerHTML=`<div style="text-align:center;padding:60px 20px;">
+        <div style="font-size:48px;margin-bottom:12px;">📌</div>
+        <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No pinned messages</div>
+        <div style="color:var(--text2);font-size:13px;">Chat లో message long press చేసి pin చేయండి</div>
+      </div>`;
+    } else {
+      el.innerHTML='<div class="sec-title">📌 Pinned Messages</div>'+
+        pinned.map(p=>`<div class="pin-item"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">📌 <span class="pf">${p.from}</span><span class="pt">• ${p.time}</span></div><div class="ptx">${p.text}</div></div>`).join('');
+    }
     return;
   }
 
-  // GROUPS TAB — FIX BUG 4/9: groups are now clickable and open a group chat
+  // GROUPS TAB — real groups created by users
   if(tab==='groups'){
-    el.innerHTML=GROUPS.map(g=>`<div class="chat-item" data-cid="${g.id}" data-isgroup="true" data-gname="${g.name}" data-gicon="${g.icon}">
+    const userGroups=JSON.parse(localStorage.getItem('cg_groups')||'[]');
+    if(!userGroups.length){
+      el.innerHTML=`<div style="text-align:center;padding:60px 20px;">
+        <div style="font-size:48px;margin-bottom:12px;">👥</div>
+        <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No groups yet</div>
+        <div style="color:var(--text2);font-size:13px;margin-bottom:20px;">Create a group to chat with multiple people</div>
+        <button onclick="openCreateGroupModal()" style="padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:14px;cursor:pointer;">➕ Create Group</button>
+      </div>`;
+    } else {
+      el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="sec-title" style="margin:0;">👥 Groups (${userGroups.length})</div>
+        <button onclick="openCreateGroupModal()" style="padding:6px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:12px;cursor:pointer;">➕ New</button>
+      </div>`+
+      userGroups.map(g=>`<div class="chat-item" data-cid="${g.id}" data-isgroup="true" data-gname="${g.name}" data-gicon="${g.icon}">
 <div class="grp-av">${g.icon}</div>
-<div class="ci-info"><div class="ci-name">${g.name}</div><div class="ci-last">👥 ${g.count} members • ${g.lastMsg}</div></div>
-<div style="text-align:right;"><div class="ci-time">${g.time}</div></div>
+<div class="ci-info"><div class="ci-name">${g.name}</div><div class="ci-last">👥 ${(g.members||[]).length} members${g.lastMsg?' • '+g.lastMsg:''}</div></div>
+<div style="text-align:right;"><div class="ci-time">${g.time||'Now'}</div></div>
 </div>`).join('');
+    }
     return;
   }
 
-  // CHANNELS TAB
+  // CHANNELS TAB — real channels created by recruiters/creators
   if(tab==='channels'){
-    el.innerHTML=CHANNELS.map(c=>`<div class="chat-item" data-cid="${c.id}" data-isgroup="true" data-gname="${c.name}" data-gicon="${c.icon}">
-<div class="grp-av">${c.icon}</div>
-<div class="ci-info"><div class="ci-name">${c.name}</div><div class="ci-last">📢 ${c.sub.toLocaleString()} subscribers • ${c.lastMsg}</div></div>
-<div style="text-align:right;"><div class="ci-time">${c.time}</div></div>
+    const userChannels=registeredUsers.filter(u=>u.accountType==='recruiter'||u.accountType==='creator');
+    if(!userChannels.length){
+      el.innerHTML=`<div style="text-align:center;padding:60px 20px;">
+        <div style="font-size:48px;margin-bottom:12px;">📢</div>
+        <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No channels yet</div>
+        <div style="color:var(--text2);font-size:13px;">Recruiters & Creators join అయినప్పుడు channels appear అవుతాయి</div>
+      </div>`;
+    } else {
+      el.innerHTML='<div class="sec-title">📢 Channels</div>'+
+      userChannels.map(u=>`<div class="chat-item" data-cid="${u.userId}" data-isgroup="true" data-gname="${u.name}" data-gicon="${u.accountType==='recruiter'?'💼':'🎬'}">
+<div class="grp-av" style="background:linear-gradient(135deg,${u.color},${u.color}cc);">${u.avatar}</div>
+<div class="ci-info"><div class="ci-name">${u.name}</div><div class="ci-last">${u.accountType==='recruiter'?'💼 Recruiter':'🎬 Creator'} • ${u.role||''}</div></div>
+<div style="text-align:right;"><div class="ci-time">channel</div></div>
 </div>`).join('');
+    }
     return;
   }
 
@@ -2352,7 +3090,7 @@ function renderChatList(){
   // Show registered users — only those with existing chat history first, rest below
   const withHistory=[];
   const withoutHistory=[];
-  registeredUsers.filter(m=>m.userId!==ME?.userId).forEach((m,i)=>{
+  registeredUsers.filter(m=>m.userId!==ME?.userId&&!getDeletedIds().includes(m.userId)).forEach((m,i)=>{
     const key=`cg_chat_${ME?.userId}_${m.userId}`;
     const msgs=JSON.parse(localStorage.getItem(key)||'[]');
     const obj={id:m.userId,name:m.name,avatar:m.avatar,color:m.color,online:m.online,
@@ -2538,7 +3276,60 @@ function sendMsg(){
       renderChatMsgs(capturedMsgs);
     },1200+Math.random()*800);
   }
-  // No auto-reply for real users — Supabase real-time handles actual messages
+// No auto-reply for real users — Supabase real-time handles actual messages
+}
+
+// Create Group
+function openCreateGroupModal(){
+  const modal=document.createElement('div');
+  modal.className='modal-ov open';
+  modal.id='createGroupModal';
+  const icons=['💼','⚛️','🐍','☁️','🐳','🤖','🎯','📐','💡','🚀','🌐','🔥'];
+  let selIcon=icons[0];
+  modal.innerHTML=`<div style="background:#1e1b4b;border-radius:20px;width:360px;max-width:93vw;padding:24px;border:1px solid rgba(99,102,241,.25);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3 style="color:#fff;font-size:17px;font-weight:700;">👥 Create Group</h3>
+      <span style="color:var(--text2);cursor:pointer;font-size:22px;" onclick="document.getElementById('createGroupModal').remove()">✕</span>
+    </div>
+    <div style="margin-bottom:14px;">
+      <label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Group Name *</label>
+      <input id="grpName" placeholder="e.g. React Developers" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:8px;">Icon</label>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;" id="grpIconRow">
+        ${icons.map(ic=>`<span onclick="document.querySelectorAll('.grp-ic-opt').forEach(x=>x.style.background='transparent');this.style.background='rgba(99,102,241,.3)';window._selGrpIcon='${ic}';" class="grp-ic-opt" style="font-size:22px;cursor:pointer;padding:6px;border-radius:8px;background:${ic===selIcon?'rgba(99,102,241,.3)':'transparent'}">${ic}</span>`).join('')}
+      </div>
+    </div>
+    <div style="margin-bottom:16px;">
+      <label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:8px;">Add Members</label>
+      <div style="max-height:150px;overflow-y:auto;" id="grpMemberList">
+        ${registeredUsers.filter(u=>u.userId!==ME?.userId).map(u=>`<div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:8px;margin-bottom:4px;background:rgba(30,27,75,.5);">
+          <input type="checkbox" class="grp-member-chk" data-uid="${u.userId}" style="width:16px;height:16px;cursor:pointer;accent-color:#6366f1;"/>
+          <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,${u.color},${u.color}cc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;">${u.avatar}</div>
+          <div><div style="color:#fff;font-size:13px;font-weight:600;">${u.name}</div><div style="color:var(--text2);font-size:11px;">${u.role||u.accountType}</div></div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <button onclick="createGroup()" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:14px;cursor:pointer;">Create Group ✅</button>
+  </div>`;
+  window._selGrpIcon=selIcon;
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{if(e.target===modal) modal.remove();});
+}
+
+function createGroup(){
+  const name=document.getElementById('grpName')?.value.trim();
+  if(!name){showToast('Group name enter చేయండి','error');return;}
+  const members=[ME.userId];
+  document.querySelectorAll('.grp-member-chk:checked').forEach(chk=>members.push(chk.dataset.uid));
+  const groups=JSON.parse(localStorage.getItem('cg_groups')||'[]');
+  const newGroup={id:'grp_'+Date.now(),name,icon:window._selGrpIcon||'👥',members,createdBy:ME.userId,time:'Now',lastMsg:''};
+  groups.unshift(newGroup);
+  localStorage.setItem('cg_groups',JSON.stringify(groups));
+  document.getElementById('createGroupModal')?.remove();
+  showToast('✅ Group created!','success');
+  renderChatList();
 }
 
 document.getElementById('sendBtn').addEventListener('click',sendMsg);
@@ -2572,6 +3363,8 @@ function openFullProfile(userId){
   state.currentProfileId=userId;
   const m=getMember(userId);if(!m) return;
   const isMe=ME&&userId===ME.userId;
+  // Track profile view
+  trackProfileView(userId);
   const at=ACCOUNT_TYPES[m.accountType]||ACCOUNT_TYPES.jobseeker;
   showScreen('profile');
   document.getElementById('profBanner').style.background=m.isAI?'linear-gradient(135deg,rgba(236,72,153,.3),rgba(168,85,247,.2))':`linear-gradient(135deg,${at.color}55,${at.color}22,rgba(99,102,241,.2))`;
@@ -2606,6 +3399,8 @@ function openFullProfile(userId){
   }
   renderConnections(userId);
   if(isMe){renderWorkExp2();renderEdu2();renderCerts2();}
+  renderHighlights();
+  renderProfileViews(userId);
   document.getElementById('logoutSection').style.display=isMe?'block':'none';
 }
 
@@ -2614,7 +3409,16 @@ function renderCreatorVideos(userId){
   const vids=userVideos[userId]||[];
   if(!vids.length){grid.innerHTML='<div style="color:var(--text2);font-size:13px;text-align:center;padding:20px;">No videos uploaded yet</div>';return;}
   const u=getMember(userId);
-  grid.innerHTML=vids.map(v=>`<div class="vid-thumb" data-vid="${v.id}" data-user="${userId}"><div style="width:100%;height:100%;background:linear-gradient(135deg,${u?.color||'#6366f1'}33,${u?.color||'#6366f1'}11);display:flex;align-items:center;justify-content:center;font-size:48px;">${v.thumbnail||'🎬'}</div><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0"><div style="color:#fff;font-size:24px;background:rgba(0,0,0,.5);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">▶</div></div><div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;">${v.duration}</div></div>`).join('');
+  // Delete button only for: logged-in user viewing their OWN profile AND they are a creator
+  const canDelete=ME&&ME.userId===userId&&ME.accountType==='creator';
+  grid.innerHTML=vids.map(v=>`<div class="vid-thumb" data-vid="${v.id}" data-user="${userId}" style="position:relative;">
+    <div style="width:100%;height:100%;background:linear-gradient(135deg,${u?.color||'#6366f1'}33,${u?.color||'#6366f1'}11);display:flex;align-items:center;justify-content:center;font-size:48px;">${v.thumbnail||'🎬'}</div>
+    <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);opacity:0;transition:.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0">
+      <div style="color:#fff;font-size:24px;background:rgba(0,0,0,.5);border-radius:50%;width:40px;height:40px;display:flex;align-items:center;justify-content:center;">▶</div>
+    </div>
+    <div style="position:absolute;bottom:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;">${v.duration}</div>
+    ${canDelete?`<button onclick="event.stopPropagation();deleteCourseVideo('${v.id}')" style="position:absolute;top:6px;right:6px;background:rgba(239,68,68,.85);border:none;color:#fff;border-radius:50%;width:26px;height:26px;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;" title="Delete">🗑️</button>`:''}
+  </div>`).join('');
 }
 document.addEventListener('click',e=>{
   const vt=e.target.closest('.vid-thumb[data-vid]');
@@ -2653,12 +3457,20 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Enter'&&e.target.id==='newSkillInput'){e.preventDefault();document.getElementById('addSkillBtn')?.click();}
 });
 
-// FIX BUG 7: Resume upload via event delegation
+// FIX: Resume upload via event delegation
 document.addEventListener('change',e=>{
   if(e.target.id==='resumeUpload'){
     const f=e.target.files[0];if(!f||!ME) return;
+    if(f.size>5*1024*1024){showToast('Resume too large! Max 5MB','error');return;}
     const r=new FileReader();
-    r.onload=ev=>{localStorage.setItem(`cg_resume_${ME.userId}`,ev.target.result);showToast(`✅ Resume "${f.name}" uploaded!`,'success');openFullProfile(ME.userId);};
+    r.onload=ev=>{
+      localStorage.setItem(`cg_resume_${ME.userId}`,ev.target.result);
+      // Also update ME so profile shows it
+      ME.hasResume=true;
+      save.me();
+      showToast(`✅ Resume "${f.name}" uploaded!`,'success');
+      openFullProfile(ME.userId);
+    };
     r.readAsDataURL(f);
   }
 });
@@ -2675,6 +3487,7 @@ function openEditModal(){
   const pp=document.getElementById('ppPreview');
   pp.innerHTML=pic?`<img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`:`<span id="ppPreviewTxt">${ME.avatar||'PO'}</span>`;
   document.getElementById('editModal').classList.add('open');
+  updatePrivateToggleUI();
 }
 document.getElementById('emClose').addEventListener('click',()=>document.getElementById('editModal').classList.remove('open'));
 document.getElementById('emCancel').addEventListener('click',()=>document.getElementById('editModal').classList.remove('open'));
@@ -2685,7 +3498,8 @@ document.getElementById('emSave').addEventListener('click',()=>{
   ME.company=document.getElementById('editCompany').value.trim()||ME.company;
   ME.city=document.getElementById('editCity').value.trim()||ME.city;
   save.me();
-  sbSaveUser(ME); // Sync profile update to SupabaseupdateTopAvatar();
+  sbSaveUser(ME); // Sync profile update to Supabase
+  updateTopAvatar();
   document.getElementById('editModal').classList.remove('open');
   if(document.getElementById('profile-screen').classList.contains('active')) openFullProfile(ME.userId);
   showToast('✅ Profile updated!','success');
@@ -2750,7 +3564,11 @@ function openMiniProfile(userId){
   document.getElementById('mpBio').textContent=m.bio||'';
   document.getElementById('mpSkills').innerHTML=(m.skills||[]).slice(0,5).map(s=>`<span class="skill-tag" style="font-size:11px;padding:3px 10px;">${s}</span>`).join('');
   document.getElementById('mpStats').innerHTML=[{l:'Connections',v:m.connections||0},{l:'Followers',v:userConnections[m.userId]?.followers?.length||0},{l:'Posts',v:posts.filter(p=>p.userId===userId).length}].map(s=>`<div class="ms"><div class="ms-val">${s.v}</div><div class="ms-label">${s.l}</div></div>`).join('');
-  document.getElementById('mpAbns').innerHTML=(m.isAI?`<button class="btn-msg" data-uid="${userId}">💬 Chat with AI</button>`:(!isMe?`<button class="btn-msg" data-uid="${userId}">💬 Message</button>`:''))+`<button class="btn-view" data-uid="${userId}">View Full</button>`;
+  const canMsg=!m.isAI?canMessage(userId):true;
+  let mpMsgBtn='';
+  if(m.isAI) mpMsgBtn=`<button class="btn-msg" data-uid="${userId}">💬 Chat with AI</button>`;
+  else if(!isMe) mpMsgBtn=canMsg?`<button class="btn-msg" data-uid="${userId}">💬 Message</button>`:`<button class="btn-outline" onclick="sendMessageRequest('${userId}')">📨 Request</button>`;
+  document.getElementById('mpAbns').innerHTML=mpMsgBtn+`<button class="btn-view" data-uid="${userId}">View Full</button>`;
   if(!isMe&&!m.isAI){const isF=userConnections[ME?.userId]?.following?.includes(userId)||false;document.getElementById('mpBtns').innerHTML=`<button class="btn-connect${isF?' connected':''}" data-uid="${userId}">${isF?'Connected ✓':'Connect'}</button><button class="btn-follow${isF?' followed':''}" data-uid="${userId}">${isF?'Following ✓':'Follow'}</button>`;}
   else document.getElementById('mpBtns').innerHTML='';
   document.getElementById('miniModal').classList.add('open');
@@ -2763,6 +3581,135 @@ document.addEventListener('click',e=>{
   const bfol=e.target.closest('.mp-btns .btn-follow[data-uid]');if(bfol){toggleFollow(bfol.dataset.uid);return;}
   const prAv=e.target.closest('.post-head .av[data-uid],#chatAv[data-uid]');if(prAv&&prAv.dataset.uid) openMiniProfile(prAv.dataset.uid);
 });
+
+
+// Private account toggle
+function togglePrivateAccount(){
+  if(!ME) return;
+  ME.isPrivate=!ME.isPrivate;
+  save.me();
+  sbSaveUser(ME);
+  updatePrivateToggleUI();
+  showToast(ME.isPrivate?'🔒 Account is now Private':'🔓 Account is now Public','success');
+}
+function updatePrivateToggleUI(){
+  const tog=document.getElementById('privateToggle');
+  const thumb=document.getElementById('privateThumb');
+  if(!tog||!thumb) return;
+  if(ME?.isPrivate){
+    tog.style.background='var(--accent)';
+    thumb.style.left='25px';
+    thumb.style.background='#fff';
+  } else {
+    tog.style.background='var(--card)';
+    thumb.style.left='3px';
+    thumb.style.background='var(--text2)';
+  }
+}
+
+
+// =============================================
+// SETTINGS
+// =============================================
+function updateSettingsUI(){
+  if(!ME) return;
+  // Private toggle
+  const pt=document.getElementById('settingsPrivateToggle');
+  const pth=document.getElementById('settingsPrivateThumb');
+  if(pt&&pth){
+    pt.style.background=ME.isPrivate?'var(--accent)':'var(--card)';
+    pth.style.left=ME.isPrivate?'25px':'3px';
+    pth.style.background=ME.isPrivate?'#fff':'var(--text2)';
+  }
+  // Theme toggle
+  const tt=document.getElementById('settingsThemeToggle');
+  const tth=document.getElementById('settingsThemeThumb');
+  if(tt&&tth){
+    tt.style.background=isLight?'#f59e0b':'var(--card)';
+    tth.style.left=isLight?'25px':'3px';
+    tth.textContent=isLight?'☀️':'🌙';
+  }
+  // Supabase key status
+  const sbWarn=document.getElementById('sbKeyWarning');
+  const sbStatus=document.getElementById('sbStatusText');
+  if(sbWarn) sbWarn.style.display=window._sbKeyValid?'none':'block';
+  if(sbStatus){sbStatus.textContent=window._sbKeyValid?'✅ Connected':'⚠️ Key invalid — local only';sbStatus.style.color=window._sbKeyValid?'var(--green)':'var(--warn)';}
+  if(document.getElementById('settingsUserId')) document.getElementById('settingsUserId').textContent=ME.userId;
+  if(document.getElementById('settingsAccType')) document.getElementById('settingsAccType').textContent=ME.accountType;
+  if(document.getElementById('settingsJoined')) document.getElementById('settingsJoined').textContent=ME.createdAt?new Date(ME.createdAt).toLocaleDateString():'Unknown';
+  // Load saved settings
+  const saved=JSON.parse(localStorage.getItem('cg_settings')||'{}');
+  document.querySelectorAll('.settings-toggle[data-key]').forEach(tog=>{
+    const key=tog.dataset.key;
+    const isOn=saved[key]!==false;
+    tog.classList.toggle('active',isOn);
+  });
+}
+function toggleSettingKey(el){
+  const key=el.dataset.key;
+  const saved=JSON.parse(localStorage.getItem('cg_settings')||'{}');
+  saved[key]=!el.classList.contains('active');
+  localStorage.setItem('cg_settings',JSON.stringify(saved));
+  el.classList.toggle('active');
+}
+
+// =============================================
+// ACCOUNT DELETE & CLEAR DATA
+// =============================================
+function deleteAccount(){
+  if(!ME) return;
+  if(!confirm('Are you sure? This will permanently delete your account and ALL data. This cannot be undone!')) return;
+  if(!confirm('Last warning: Delete account "'+ME.userId+'" forever?')) return;
+  // Remove from Supabase
+  sb.from('cg_users').delete().eq('user_id',ME.userId).then(()=>{});
+  sb.from('cg_posts').delete().eq('user_id',ME.userId).then(()=>{});
+  sb.from('cg_stories').delete().eq('user_id',ME.userId).then(()=>{});
+  sb.from('cg_messages').delete().eq('from_user',ME.userId).then(()=>{});
+  // Track deleted user IDs so they don't show up
+  const deletedIds=JSON.parse(localStorage.getItem('cg_deleted_users')||'[]');
+  deletedIds.push(ME.userId);
+  localStorage.setItem('cg_deleted_users',JSON.stringify(deletedIds));
+  // Remove from local
+  registeredUsers=registeredUsers.filter(u=>u.userId!==ME.userId);
+  posts=posts.filter(p=>p.userId!==ME.userId);
+  stories=stories.filter(s=>s.userId!==ME.userId);
+  save.users();save.posts();save.stories();
+  // Clear all local keys for this user
+  ['cg_session','cg_work','cg_edu','cg_certs','cg_savedjobs','cg_appliedjobs'].forEach(k=>localStorage.removeItem(k));
+  localStorage.removeItem('cg_pic_'+ME.userId);
+  localStorage.removeItem('cg_resume_'+ME.userId);
+  localStorage.removeItem('cg_highlights_'+ME.userId);
+  localStorage.removeItem('cg_pinned_posts_'+ME.userId);
+  localStorage.removeItem('cg_pviews_'+ME.userId);
+  showToast('Account deleted permanently','success');
+  setTimeout(logout,1500);
+}
+
+function clearAllData(){
+  if(!ME) return;
+  if(!confirm('Delete all your posts, stories and uploaded data?')) return;
+  posts=posts.filter(p=>p.userId!==ME.userId);
+  stories=stories.filter(s=>s.userId!==ME.userId);
+  userVideos[ME.userId]=[];
+  save.posts();save.stories();save.videos();
+  sb.from('cg_posts').delete().eq('user_id',ME.userId).then(()=>{});
+  sb.from('cg_stories').delete().eq('user_id',ME.userId).then(()=>{});
+  showToast('✅ All your data cleared!','success');
+  renderFeed();renderStories();
+}
+
+// =============================================
+// STORY DELETE
+// =============================================
+function deleteStory(storyId){
+  if(!confirm('Delete this story?')) return;
+  stories=stories.filter(s=>s.id!==storyId);
+  save.stories();
+  sb.from('cg_stories').delete().eq('id',storyId).then(()=>{});
+  document.getElementById('story-viewer').classList.remove('open');
+  renderStories();
+  showToast('Story deleted','success');
+}
 
 // Logout
 document.getElementById('logoutBtn').addEventListener('click',logout);
@@ -2777,32 +3724,28 @@ function applyTheme(){
 applyTheme();
 document.getElementById('themeToggle').addEventListener('click',()=>{isLight=!isLight;localStorage.setItem('cg_theme',isLight?'light':'dark');applyTheme();showToast(isLight?'☀️ Light mode':'🌙 Dark mode','success');});
 
-// Video upload button in profile
+// Video upload button in profile — creators only
 document.addEventListener('click',e=>{
   const vu=e.target.closest('#openVideoUploadBtn');
-  if(vu) document.getElementById('videoUploadModal').classList.add('open');
+  if(vu){
+    if(ME?.accountType!=='creator'){showToast('⚠️ Content Creators only!','error');return;}
+    document.getElementById('videoUploadModal').classList.add('open');
+  }
 });
 
 // =============================================
 // INIT
 // =============================================
 document.addEventListener('DOMContentLoaded',()=>{
+  rebuildUserMap();
   checkSession();
-  if(posts.length===0) initDemoPosts();
+  // Only init demo posts if truly empty after session check
+  setTimeout(()=>{if(posts.length===0) initDemoPosts();},100);
 });
 </script>
 
 <script>
-// PWA Service Worker Registration
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js')
-      .then(reg=>console.log('✅ SW registered'))
-      .catch(err=>console.log('SW error:',err));
-  });
-}
-
-// Install prompt (Android)
+// PWA Install prompt (Android) — SW registration skipped (blob URL not supported in most browsers)
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();
