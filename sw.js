@@ -1,9 +1,11 @@
-const CACHE_NAME = 'careergram-v1';
-const URLS_TO_CACHE = ['/CareerGram/', '/CareerGram/index.html'];
+const CACHE_NAME = 'careergram-v2';
+const BASE = '/CareerGram/';
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(URLS_TO_CACHE)).catch(()=>{})
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.addAll([BASE, BASE + 'index.html']).catch(()=>{});
+    })
   );
   self.skipWaiting();
 });
@@ -18,16 +20,16 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET') return;
+  if(event.request.method !== 'GET') return;
   event.respondWith(
     caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        if (!response || response.status !== 200) return response;
-        const clone = response.clone();
-        caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        return response;
-      }).catch(() => caches.match('/CareerGram/'));
+      if(cached) return cached;
+      return fetch(event.request).then(res => {
+        if(!res || res.status !== 200) return res;
+        const clone = res.clone();
+        caches.open(CACHE_NAME).then(c => c.put(event.request, clone));
+        return res;
+      }).catch(() => caches.match(BASE));
     })
   );
 });
