@@ -8,17 +8,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <meta name="apple-mobile-web-app-title" content="CareerGram"/>
 <link rel="manifest" href="manifest.json"/>
-<script>
-// Inline manifest so external manifest.json is not required
-(function(){
-  const m={name:'CareerGram',short_name:'CareerGram',start_url:'.',display:'standalone',
-    background_color:'#0f172a',theme_color:'#6366f1',
-    icons:[{src:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%22 text-anchor=%22middle%22>📈</text></svg>',sizes:'192x192',type:'image/svg+xml'}]};
-  const blob=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});
-  document.querySelector('link[rel="manifest"]').href=URL.createObjectURL(blob);
-})();
-</script>
-<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='70' x='50' text-anchor='middle'>📈</text></svg>"/>
+<link rel="apple-touch-icon" href="icon192.png"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>CareerGram</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -723,20 +713,32 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
     </div>
   </div>
   <div class="wrap">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0;" id="reelsGridTitle">🎥 Trending Reels</h3>
+    <!-- Playlist view (shown when category selected) -->
+    <div id="reelsPlaylistView" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+        <button onclick="closePlaylistView()" style="background:none;border:none;color:var(--accent2);font-size:22px;cursor:pointer;">←</button>
+        <h3 id="playlistViewTitle" style="color:#fff;font-size:16px;font-weight:700;margin:0;flex:1;"></h3>
+      </div>
+      <!-- Creator filter row -->
+      <div id="playlistCreatorFilter" style="display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px;scrollbar-width:none;"></div>
+      <!-- Level filter -->
+      <div style="display:flex;gap:8px;margin-bottom:14px;">
+        <button class="pl-level-btn active" data-lv="All" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;">All</button>
+        <button class="pl-level-btn" data-lv="beginner" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;">🟢 Beginner</button>
+        <button class="pl-level-btn" data-lv="intermediate" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;">🟡 Intermediate</button>
+        <button class="pl-level-btn" data-lv="advanced" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;">🔴 Advanced</button>
+      </div>
+      <div class="reels-grid" id="playlistVideosGrid"></div>
     </div>
-    <div class="playlists" id="playlists"></div>
-    <div id="creatorChannelsSection" style="display:none;margin-bottom:16px;">
-      <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0 0 10px;">🎬 Creators</h3>
-      <div id="creatorChannelsList" style="display:flex;gap:10px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none;"></div>
+
+    <!-- Default grid view -->
+    <div id="reelsDefaultView">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <h3 style="color:#fff;font-size:15px;font-weight:700;margin:0;" id="reelsGridTitle">🎥 All Playlists</h3>
+      </div>
+      <!-- Category playlists grid -->
+      <div id="reelsPlaylistsGrid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;"></div>
     </div>
-    <div id="creatorVideosView" style="display:none;">
-      <button class="back-btn" id="backToChannels">← Back</button>
-      <h3 id="currentCreatorName" style="color:#fff;font-size:15px;font-weight:700;margin:0 0 10px;"></h3>
-      <div class="reels-grid" id="creatorVideosList"></div>
-    </div>
-    <div class="reels-grid" id="reelsGrid"></div>
   </div>
 </div>
 
@@ -753,11 +755,12 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
   <div class="wrap">
     <div class="chat-tabs" id="chatTabs">
       <button class="active" data-ctab="chats">💬 Chats</button>
+      <button data-ctab="requests" style="position:relative;">📨 Requests<span id="msgReqBadge" style="display:none;position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#ef4444;border-radius:50%;font-size:10px;font-weight:700;color:#fff;align-items:center;justify-content:center;pointer-events:none;">0</span></button>
       <button data-ctab="groups">👥 Groups</button>
       <button data-ctab="channels">📢 Channels</button>
       <button data-ctab="pin">📌 Pin</button>
     </div>
-    <div id="chatListContainer"></div>
+    <div id="chatTabContent"></div>
   </div>
 </div>
 
@@ -927,38 +930,50 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
 <!-- VIDEO UPLOAD MODAL -->
 <div class="cm-modal" id="videoUploadModal">
   <div class="cm-card" style="max-height:90vh;overflow-y:auto;">
-    <div class="cm-head"><h3>🎬 Upload Video</h3><span class="cm-close" id="videoModalClose">✕</span></div>
+    <div class="cm-head"><h3>🎬 Upload Playlist / Video</h3><span class="cm-close" id="videoModalClose">✕</span></div>
     <div class="cm-author">
       <div class="av" id="videoUploadAv" style="width:38px;height:38px;font-size:15px;">PO</div>
-      <div><div class="cma-name" id="videoUploadName">Poli</div><div class="cma-sub">Video • Public</div></div>
+      <div><div class="cma-name" id="videoUploadName">Poli</div><div class="cma-sub">Upload one or multiple videos</div></div>
     </div>
-    <div style="margin:16px 0;">
-      <input type="file" id="videoFileInp" accept="video/*"/>
-      <div id="videoUploadArea" style="border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;" onclick="document.getElementById('videoFileInp').click()">
-        <div style="font-size:48px;margin-bottom:12px;">🎬</div>
-        <div style="color:var(--text);font-size:15px;font-weight:600;">Upload Video Tutorial</div>
-        <div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Max 100MB</div>
+
+    <!-- Category & Level (shared for playlist) -->
+    <div style="display:flex;gap:10px;margin-bottom:10px;">
+      <select id="vidCat" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;">
+        <option value="">📂 Select category</option>
+        <option value="Python">🐍 Python</option><option value="React">⚛️ React</option>
+        <option value="AWS">☁️ AWS</option><option value="DevOps">🐳 DevOps</option>
+        <option value="ML/AI">🤖 ML/AI</option><option value="JavaScript">💛 JavaScript</option>
+        <option value="Interview Prep">🎯 Interview Prep</option><option value="System Design">📐 System Design</option>
+      </select>
+      <select id="vidLevel" style="flex:1;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;">
+        <option value="beginner">🟢 Beginner</option>
+        <option value="intermediate" selected>🟡 Intermediate</option>
+        <option value="advanced">🔴 Advanced</option>
+      </select>
+    </div>
+
+    <!-- Playlist name -->
+    <input type="text" id="playlistName" placeholder="Playlist name (e.g. Python for Beginners)..." style="width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/>
+
+    <!-- Multi-file drop zone -->
+    <div style="margin-bottom:12px;">
+      <input type="file" id="videoFileInp" accept="video/*" multiple style="display:none;"/>
+      <div id="videoUploadArea" style="border:2px dashed var(--border);border-radius:12px;padding:30px 20px;text-align:center;cursor:pointer;" onclick="document.getElementById('videoFileInp').click()">
+        <div style="font-size:48px;margin-bottom:8px;">🎬</div>
+        <div style="color:var(--text);font-size:15px;font-weight:600;">Click or drag videos here</div>
+        <div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Multiple files OK • Max 500MB each</div>
       </div>
-      <video id="videoPreview" style="display:none;width:100%;max-height:300px;border-radius:12px;background:#000;margin-top:10px;" controls></video>
-      <div class="upload-progress-wrap" id="uploadProgressWrap"><div class="upload-progress-bar" id="uploadProgressBar"></div></div>
     </div>
-    <input type="text" id="vidTitle" placeholder="Video title..." style="width:100%;padding:12px;margin-bottom:10px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/>
-    <textarea id="vidDesc" placeholder="Description..." style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;resize:none;height:80px;font-family:inherit;outline:none;margin-bottom:10px;"></textarea>
-    <select id="vidCat" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:10px;font-family:inherit;">
-      <option value="">Select category</option>
-      <option value="Python">Python</option><option value="React">React</option><option value="AWS">AWS</option>
-      <option value="DevOps">DevOps</option><option value="ML/AI">ML/AI</option>
-      <option value="JavaScript">JavaScript</option><option value="Interview Prep">Interview Prep</option>
-      <option value="System Design">System Design</option>
-    </select>
-    <select id="vidLevel" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;margin-bottom:12px;font-family:inherit;">
-      <option value="beginner">🟢 Beginner</option>
-      <option value="intermediate" selected>🟡 Intermediate</option>
-      <option value="advanced">🔴 Advanced</option>
-    </select>
+
+    <!-- Per-video list with title/desc fields -->
+    <div id="videoFilesList" style="display:none;margin-bottom:12px;"></div>
+
+    <div class="upload-progress-wrap" id="uploadProgressWrap"><div class="upload-progress-bar" id="uploadProgressBar"></div></div>
+    <div id="uploadStatusText" style="color:var(--text2);font-size:12px;text-align:center;margin-bottom:8px;"></div>
+
     <div class="cm-footer">
-      <div style="color:var(--text2);font-size:12px;">Appears on your profile & in Reels</div>
-      <button class="cm-post-btn" id="uploadVideoBtn" disabled style="opacity:.5;">Upload</button>
+      <div style="color:var(--text2);font-size:12px;">Appears in Reels & Courses</div>
+      <button class="cm-post-btn" id="uploadVideoBtn" disabled style="opacity:.5;">Upload All</button>
     </div>
   </div>
 </div>
@@ -970,28 +985,12 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
     <span style="color:#fff;font-size:14px;font-weight:600;" id="rvCat">Reels</span>
     <span></span>
   </div>
-  <div class="rv-video-area">
-    <!-- FIX BUG 1: Real video player -->
-    <video id="rvVideoPlayer" style="display:none;width:100%;height:100%;object-fit:contain;" controls playsinline></video>
-    <div class="rv-placeholder" id="rvPlaceholder" style="background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.1));">
-      <div class="rv-emoji" id="rvEmoji">🎬</div>
-      <div class="rv-play" id="rvPlay">▶</div>
-    </div>
-  </div>
+  <div id="rvScrollContainer" style="flex:1;overflow-y:scroll;scroll-snap-type:y mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;"></div>
   <div class="rv-sidebar">
     <button id="rvLike"><span id="rvLikeIc">🤍</span><span id="rvLikeCount">0</span></button>
     <button id="rvComment">💬<span>0</span></button>
     <button id="rvBookmark">🔖<span>Save</span></button>
     <button id="rvShare">↗️<span>Share</span></button>
-  </div>
-  <div class="rv-info">
-    <div class="rv-author-row">
-      <div class="av" id="rvAuthorAv" style="width:36px;height:36px;font-size:14px;background:#6366f1;cursor:pointer;"></div>
-      <span class="rv-fn" id="rvAuthorName">Author</span>
-      <button class="rv-follow-btn" id="rvFollowBtn">Follow</button>
-    </div>
-    <div class="rv-desc" id="rvDesc"></div>
-    <div class="rv-tags" id="rvTags"></div>
   </div>
 </div>
 
@@ -1356,24 +1355,110 @@ function canMessage(targetId){
   const target=getMember(targetId);
   if(!target||target.isAI) return true;
   if(targetId===ME?.userId) return false;
-  // Private account: must be mutual connection
   if(target.isPrivate){
-    const isMutual=isFollowing(targetId)&&isFollowedBy(targetId);
-    return isMutual;
+    // Private account: request accepted అయి ఉండాలి (mutual follow)
+    const accepted=getAcceptedRequests();
+    const isMutual=(userConnections[ME?.userId]?.following||[]).includes(targetId)&&
+                   (userConnections[targetId]?.following||[]).includes(ME?.userId);
+    return isMutual||accepted.includes(targetId);
   }
-  // Default: anyone can message (like Instagram public)
+  // Public account: anyone can message directly
   return true;
 }
+
+function getAcceptedRequests(){
+  return JSON.parse(localStorage.getItem('cg_accepted_reqs_'+ME?.userId)||'[]');
+}
+
+function hasPendingRequest(targetId){
+  const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
+  return (reqs[targetId]||[]).some(r=>r.from===ME?.userId&&!r.rejected);
+}
+
 function sendMessageRequest(targetId){
+  if(hasPendingRequest(targetId)){
+    showToast('⏳ Request already sent — waiting for accept','error');
+    return;
+  }
   const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
   if(!reqs[targetId]) reqs[targetId]=[];
-  reqs[targetId].push({from:ME.userId,time:new Date().toISOString()});
+  reqs[targetId].push({from:ME.userId,fromName:ME.name,fromAvatar:ME.avatar,fromColor:ME.color,time:new Date().toISOString(),id:'req_'+Date.now()});
   localStorage.setItem('cg_msgreqs',JSON.stringify(reqs));
+  // Notify target user
+  const notifs=JSON.parse(localStorage.getItem('cg_notifs_'+targetId)||'[]');
+  notifs.unshift({id:'n_'+Date.now(),type:'msg_request',from:ME.userId,fromName:ME.name,fromAvatar:ME.avatar,fromColor:ME.color,time:new Date().toISOString(),read:false});
+  localStorage.setItem('cg_notifs_'+targetId,JSON.stringify(notifs));
   showToast('📨 Message request sent!','success');
+  document.getElementById('miniModal').classList.remove('open');
 }
+
+function getMessageRequests(){
+  // Get pending requests for current user (they need to accept/reject)
+  const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
+  return (reqs[ME?.userId]||[]).filter(r=>!r.accepted&&!r.rejected);
+}
+
+function acceptRequest(fromUserId,reqId){
+  const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
+  if(reqs[ME.userId]){
+    const req=reqs[ME.userId].find(r=>r.id===reqId||r.from===fromUserId);
+    if(req) req.accepted=true;
+    localStorage.setItem('cg_msgreqs',JSON.stringify(reqs));
+  }
+  // Add to accepted list so canMessage returns true
+  const accepted=JSON.parse(localStorage.getItem('cg_accepted_reqs_'+ME.userId)||'[]');
+  if(!accepted.includes(fromUserId)) accepted.push(fromUserId);
+  localStorage.setItem('cg_accepted_reqs_'+ME.userId,JSON.stringify(accepted));
+  // Also add reverse so sender can message me
+  const myAccepted=JSON.parse(localStorage.getItem('cg_accepted_reqs_'+fromUserId)||'[]');
+  if(!myAccepted.includes(ME.userId)) myAccepted.push(ME.userId);
+  localStorage.setItem('cg_accepted_reqs_'+fromUserId,JSON.stringify(myAccepted));
+  showToast('✅ Request accepted! Now you can chat','success');
+  renderChatList();
+  
+}
+
+function rejectRequest(fromUserId,reqId){
+  const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
+  if(reqs[ME.userId]){
+    const req=reqs[ME.userId].find(r=>r.id===reqId||r.from===fromUserId);
+    if(req) req.rejected=true;
+    localStorage.setItem('cg_msgreqs',JSON.stringify(reqs));
+  }
+  showToast('❌ Request declined','success');
+  
+}
+
+function renderMsgRequestsPanel(){
+  const pending=getMessageRequests();
+  const badge=document.getElementById('msgReqBadge');
+  if(badge) badge.style.display=pending.length?'flex':'none';
+  if(badge) badge.textContent=pending.length;
+  const panel=document.getElementById('msgRequestsPanel');
+  if(!panel) return;
+  if(!pending.length){
+    panel.innerHTML=`<div style="text-align:center;padding:30px;color:var(--text2);font-size:13px;">No pending message requests</div>`;
+    return;
+  }
+  panel.innerHTML=pending.map(r=>{
+    const u=getMember(r.from)||{name:r.fromName||'User',avatar:r.fromAvatar||'?',color:r.fromColor||'#6366f1'};
+    return `<div style="display:flex;align-items:center;gap:10px;padding:12px;border-bottom:1px solid var(--border);">
+      <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,${u.color},${u.color}cc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0;">${u.avatar}</div>
+      <div style="flex:1;">
+        <div style="color:#fff;font-weight:700;font-size:14px;">${u.name}</div>
+        <div style="color:var(--text2);font-size:12px;">Message request పంపారు</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="acceptRequest('${r.from}','${r.id}')" style="padding:6px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:700;cursor:pointer;">✅ Accept</button>
+        <button onclick="rejectRequest('${r.from}','${r.id}')" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(239,68,68,.3);background:transparent;color:var(--red);font-size:12px;font-weight:700;cursor:pointer;">❌ Decline</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function getMessageRequests(){
   const reqs=JSON.parse(localStorage.getItem('cg_msgreqs')||'{}');
-  return reqs[ME?.userId]||[];
+  return (reqs[ME?.userId]||[]).filter(r=>!r.accepted&&!r.rejected);
 }
 
 // ── STORY HIGHLIGHTS ──
@@ -1904,6 +1989,7 @@ function showApp(){
   updateTopAvatar();
   showScreen('home');
   renderNotifications();
+  
   if(!userConnections[ME.userId]) userConnections[ME.userId]={followers:[],following:[]};
   // Update Courses tab label based on account type
   const isCreator=ME.accountType==='creator';
@@ -2096,7 +2182,7 @@ function showScreen(name){
   }
   if(name==='jobs') renderJobs();
   if(name==='search') renderSearch('');
-  if(name==='chat') renderChatList();
+  if(name==='chat'){renderChatList();}
   if(name==='settings'){updateSettingsUI();}
   if(ME) updateTopAvatar();
 }
@@ -2118,28 +2204,35 @@ function renderStories(){
   const now=Date.now();
   stories=stories.filter(s=>s.expiresAt>now);
   save.stories();
+
+  // Get my following list + my own userId
+  const myFollowing=userConnections[ME?.userId]?.following||[];
+  const myConnections=new Set([...myFollowing, ME?.userId]);
+
   const cRow=document.getElementById('creatorStoriesRow');
   const rRow=document.getElementById('recruiterStoriesRow');
   cRow.innerHTML='';rRow.innerHTML='';
-  // Add story buttons for creator/recruiter users
+
   if(ME?.accountType==='creator'){
     cRow.innerHTML=`<div class="story-item" id="addCreatorStoryBtn" style="cursor:pointer;"><div class="story-ring" style="background:rgba(99,102,241,.3);border:2px dashed rgba(99,102,241,.5);padding:2px;"><div class="story-av" style="background:rgba(99,102,241,.15);font-size:24px;">➕</div></div><div class="story-name" style="color:var(--accent2);">Add Story</div></div>`;
   }
   if(ME?.accountType==='recruiter'){
     rRow.innerHTML=`<div class="story-item" id="addRecruiterStoryBtn" style="cursor:pointer;"><div class="story-ring recruiter" style="background:rgba(16,185,129,.3);border:2px dashed rgba(16,185,129,.5);padding:2px;"><div class="story-av" style="background:rgba(16,185,129,.15);font-size:24px;">➕</div></div><div class="story-name" style="color:#10b981;">Add Story</div></div>`;
   }
-  // Only real user-uploaded stories (no demo)
-  const allStories=[...stories];
+
+  // Filter stories: only show own stories + people I follow
+  const visibleStories=stories.filter(s=>myConnections.has(s.userId));
+
   const byUser={};
-  allStories.forEach(s=>{
+  visibleStories.forEach(s=>{
     if(!byUser[s.userId]) byUser[s.userId]=[];
     byUser[s.userId].push(s);
   });
-  const getStoryUser=(s)=>getMember(s.userId);
+
   Object.keys(byUser).forEach(uid=>{
     const storyList=byUser[uid];
     const latest=storyList[storyList.length-1];
-    const u=getStoryUser(latest);
+    const u=getMember(uid);
     if(!u) return;
     const isRecruiter=u.accountType==='recruiter';
     const div=document.createElement('div');
@@ -2149,6 +2242,12 @@ function renderStories(){
     if(isRecruiter) rRow.appendChild(div);
     else cRow.appendChild(div);
   });
+
+  // If no stories from connections, show hint
+  if(!Object.keys(byUser).length){
+    const hint=`<div style="padding:8px 12px;color:var(--text2);font-size:12px;font-style:italic;">Follow people to see their stories here</div>`;
+    cRow.innerHTML+=hint;
+  }
 }
 
 // FIX BUG 11: Story item clicks via event delegation
@@ -2620,116 +2719,317 @@ document.getElementById('jobFilters').addEventListener('click',e=>{
 // =============================================
 // REELS (FIX: sample reels shown by default)
 // =============================================
-function renderReels(){
-  const cs=document.getElementById('catScroll');
-  cs.innerHTML=REELS_CATS.map(c=>`<button class="cat-btn${state.currentReelCat===c?' active':''}" data-cat="${c}">${c}</button>`).join('');
-  document.getElementById('playlists').innerHTML=['All','Beginner','Intermediate','Advanced'].map((lv,i)=>{
-    const em=['📚','🟢','🟡','🔴'][i];const val=['All','beginner','intermediate','advanced'][i];
-    return `<div class="playlist-card" data-level="${val}"><span style="font-size:18px;">${em}</span><span style="color:#fff;font-size:12px;font-weight:700;">${lv}</span></div>`;
-  }).join('');
-  // Gather reels: sample + user uploaded
-  let allReels=[];
+// =============================================
+// REELS — Playlist based system
+// =============================================
+const REELS_CATS=['All','Python','React','AWS','DevOps','ML/AI','JavaScript','Rust','Go','Interview Prep','System Design'];
+const CAT_EMOJI={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛',Rust:'🦀',Go:'🐹','Interview Prep':'🎯','System Design':'📐'};
+
+function getAllReels(){
+  let all=[];
   Object.keys(userVideos).forEach(uid=>{
+    const u=getMember(uid);
     (userVideos[uid]||[]).forEach(v=>{
-      allReels.push({id:v.id,title:v.title,cat:v.category||'Other',level:v.level||'intermediate',
-        duration:v.duration||'0:00',views:v.views||'0',likes:0,emoji:v.thumbnail||'🎬',
-        authorName:getMember(uid)?.name||'Creator',authorColor:getMember(uid)?.color||'#6366f1',
-        videoData:v.videoData,isUserVideo:true,userId:uid});
+      all.push({id:v.id,title:v.title,cat:v.category||'Other',
+        level:v.level||'intermediate',duration:v.duration||'0:00',
+        views:v.views||'0',emoji:v.thumbnail||'🎬',
+        authorName:u?.name||'Creator',authorColor:u?.color||'#6366f1',
+        videoData:v.videoData,userId:uid,description:v.description||'',
+        playlistName:v.playlistName||''});
     });
   });
+  return all;
+}
+
+function renderReels(){
+  // Category scroll
+  const cs=document.getElementById('catScroll');
+  if(cs) cs.innerHTML=REELS_CATS.map(c=>`<button class="cat-btn${state.currentReelCat===c?' active':''}" data-cat="${c}">${CAT_EMOJI[c]||''} ${c}</button>`).join('');
+
   const q=(document.getElementById('reelsSearch')?.value||'').toLowerCase();
-  let filtered=allReels;
-  if(state.currentReelCat!=='All') filtered=filtered.filter(r=>r.cat===state.currentReelCat);
-  if(state.currentReelLevel!=='All') filtered=filtered.filter(r=>r.level===state.currentReelLevel);
-  if(q) filtered=filtered.filter(r=>r.title.toLowerCase().includes(q)||r.cat.toLowerCase().includes(q)||(r.authorName||'').toLowerCase().includes(q));
-  document.getElementById('reelsGridTitle').textContent=`🎥 ${state.currentReelCat==='All'?'Trending':state.currentReelCat} Reels${q?` — "${q}"`:''} (${filtered.length})`;
-  // CREATOR CHANNELS: show when a specific category is selected
-  const ccSection=document.getElementById('creatorChannelsSection');
-  const ccList=document.getElementById('creatorChannelsList');
-  if(ccSection&&ccList&&state.currentReelCat!=='All'){
-    const creators=[];
-    Object.keys(userVideos).forEach(uid=>{
-      if((userVideos[uid]||[]).some(v=>v.category===state.currentReelCat)){
-        const u=getMember(uid);
-        if(u&&u.accountType==='creator'&&!creators.find(c=>c.userId===uid)) creators.push(u);
-      }
-    });
-    if(creators.length){
-      ccSection.style.display='block';
-      ccList.innerHTML=creators.map(u=>`<div class="creator-channel-card" data-creator-id="${u.userId}" data-cat="${state.currentReelCat}">
-<div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,${u.color},${u.color}cc);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;color:#fff;margin:0 auto 6px;">${u.avatar}</div>
-<div style="color:#fff;font-size:12px;font-weight:700;">${u.name}</div>
-<div style="color:var(--text2);font-size:10px;margin-top:2px;">${(userVideos[u.userId]||[]).filter(v=>v.category===state.currentReelCat).length} videos</div>
-</div>`).join('');
-    } else {
-      ccSection.style.display='none';
-    }
-  } else if(ccSection){
-    ccSection.style.display='none';
+  const allReels=getAllReels();
+
+  // Search mode
+  if(q){
+    const filtered=allReels.filter(r=>
+      r.title.toLowerCase().includes(q)||
+      r.cat.toLowerCase().includes(q)||
+      r.authorName.toLowerCase().includes(q)||
+      r.description.toLowerCase().includes(q));
+    showReelsGrid(filtered,`🔍 "${q}" (${filtered.length})`);
+    return;
   }
-  document.getElementById('reelsGrid').innerHTML=filtered.length===0?`
-    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--text2);">
+
+  // Category selected → show playlist view
+  if(state.currentReelCat!=='All'){
+    openCategoryPlaylist(state.currentReelCat);
+    return;
+  }
+
+  // Default: show category cards (playlist grid)
+  closePlaylistView();
+  const grid=document.getElementById('reelsPlaylistsGrid');
+  if(!grid) return;
+
+  // Build category → videos map
+  const catMap={};
+  allReels.forEach(r=>{
+    if(!catMap[r.cat]) catMap[r.cat]=[];
+    catMap[r.cat].push(r);
+  });
+
+  if(!allReels.length){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:60px 20px;">
       <div style="font-size:64px;margin-bottom:16px;">🎬</div>
-      <div style="color:#fff;font-size:16px;font-weight:700;margin-bottom:8px;">No videos yet</div>
-      <div style="color:var(--text2);font-size:13px;line-height:1.6;">Content creators upload చేసిన తర్వాత<br/>ఇక్కడ videos appear అవుతాయి</div>
-    </div>
-  `:filtered.map(r=>{
-    const lc=r.level==='beginner'?'beg':r.level==='advanced'?'adv':'int';
-    const le=r.level==='beginner'?'🟢':r.level==='advanced'?'🔴':'🟡';
-    return `<div class="reel-card" data-rid="${r.id}">
-<div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${r.authorColor||'#6366f1'}33);">
-<span class="r-emoji">${r.emoji||'🎬'}</span>
-<span class="r-dur">${r.duration}</span>
-<span class="revel-badge ${lc}">${le} ${r.level||'int'}</span>
-</div>
-<div class="reel-info">
-<div class="r-title">${r.title}</div>
-<div class="r-bottom">
-<div class="r-author"><span>${r.authorName||'Creator'}</span></div>
-<span class="r-views">👁 ${r.views}</span>
-</div></div></div>`;
+      <div style="color:#fff;font-size:16px;font-weight:700;margin-bottom:8px;">No playlists yet</div>
+      <div style="color:var(--text2);font-size:13px;">Content creators videos upload చేసినప్పుడు playlists ఇక్కడ కనిపిస్తాయి</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML=Object.entries(catMap).map(([cat,vids])=>{
+    const em=CAT_EMOJI[cat]||'🎬';
+    const creators=[...new Set(vids.map(v=>v.userId))];
+    const creatorNames=creators.slice(0,2).map(uid=>getMember(uid)?.name||'Creator').join(', ');
+    return `<div class="playlist-grid-card" data-cat="${cat}" style="background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;cursor:pointer;transition:all .2s;" onmouseenter="this.style.borderColor='var(--borderh)';this.style.transform='translateY(-2px)'" onmouseleave="this.style.borderColor='var(--border)';this.style.transform=''">
+      <div style="height:100px;background:linear-gradient(135deg,rgba(30,27,75,.9),${vids[0]?.authorColor||'#6366f1'}33);display:flex;align-items:center;justify-content:center;font-size:52px;position:relative;">
+        ${em}
+        <div style="position:absolute;bottom:6px;right:8px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600;">${vids.length} videos</div>
+      </div>
+      <div style="padding:10px 12px;">
+        <div style="color:#fff;font-size:13px;font-weight:700;margin-bottom:3px;">${cat}</div>
+        <div style="color:var(--text2);font-size:11px;">By ${creatorNames}${creators.length>2?` +${creators.length-2} more`:''}</div>
+      </div>
+    </div>`;
   }).join('');
 }
+
+function openCategoryPlaylist(cat){
+  document.getElementById('reelsDefaultView').style.display='none';
+  document.getElementById('reelsPlaylistView').style.display='block';
+  document.getElementById('playlistViewTitle').textContent=`${CAT_EMOJI[cat]||'🎬'} ${cat}`;
+
+  const allReels=getAllReels().filter(r=>r.cat===cat);
+
+  // Creator filter
+  const creators=[...new Set(allReels.map(r=>r.userId))];
+  const creatorFilter=document.getElementById('playlistCreatorFilter');
+  creatorFilter.innerHTML=`<button class="pl-creator-btn active" data-uid="All" style="padding:6px 14px;border-radius:20px;border:1px solid var(--accent);background:var(--accent);color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;">All Creators</button>`+
+    creators.map(uid=>{
+      const u=getMember(uid);if(!u) return '';
+      return `<button class="pl-creator-btn" data-uid="${uid}" style="padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text2);font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;">
+        <span style="width:20px;height:20px;border-radius:50%;background:linear-gradient(135deg,${u.color},${u.color}cc);display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:9px;font-weight:700;">${u.avatar}</span>${u.name}</button>`;
+    }).join('');
+
+  state._playlistCat=cat;
+  state._playlistCreator='All';
+  state._playlistLevel='All';
+  renderPlaylistGrid();
+}
+
+function renderPlaylistGrid(){
+  const allReels=getAllReels().filter(r=>r.cat===state._playlistCat);
+  let filtered=allReels;
+  if(state._playlistCreator&&state._playlistCreator!=='All') filtered=filtered.filter(r=>r.userId===state._playlistCreator);
+  if(state._playlistLevel&&state._playlistLevel!=='All') filtered=filtered.filter(r=>r.level===state._playlistLevel);
+
+  const grid=document.getElementById('playlistVideosGrid');
+  if(!filtered.length){
+    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">No videos found</div>`;
+    return;
+  }
+  const lc=lv=>lv==='beginner'?'beg':lv==='advanced'?'adv':'int';
+  const le=lv=>lv==='beginner'?'🟢':lv==='advanced'?'🔴':'🟡';
+  grid.innerHTML=filtered.map(r=>`<div class="reel-card" data-rid="${r.id}" style="cursor:pointer;">
+    <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${r.authorColor}33);">
+      <span class="r-emoji">${r.emoji}</span>
+      <span class="r-dur">${r.duration}</span>
+      <span class="revel-badge ${lc(r.level)}">${le(r.level)} ${r.level}</span>
+    </div>
+    <div class="reel-info">
+      <div class="r-title">${r.title}</div>
+      ${r.description?`<div style="color:var(--text2);font-size:10px;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${r.description}</div>`:''}
+      <div class="r-bottom">
+        <div class="r-author"><span>${r.authorName}</span></div>
+        <span class="r-views">👁 ${r.views}</span>
+      </div>
+    </div>
+  </div>`).join('');
+}
+
+function showReelsGrid(reels, title){
+  closePlaylistView();
+  const grid=document.getElementById('reelsPlaylistsGrid');
+  const titleEl=document.getElementById('reelsGridTitle');
+  if(titleEl) titleEl.textContent=title;
+  const lc=lv=>lv==='beginner'?'beg':lv==='advanced'?'adv':'int';
+  const le=lv=>lv==='beginner'?'🟢':lv==='advanced'?'🔴':'🟡';
+  grid.innerHTML=reels.length?reels.map(r=>`<div class="reel-card" data-rid="${r.id}">
+    <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${r.authorColor}33);">
+      <span class="r-emoji">${r.emoji}</span><span class="r-dur">${r.duration}</span>
+      <span class="revel-badge ${lc(r.level)}">${le(r.level)}</span>
+    </div>
+    <div class="reel-info"><div class="r-title">${r.title}</div>
+      <div class="r-bottom"><div class="r-author"><span>${r.authorName}</span></div><span class="r-views">👁 ${r.views}</span></div>
+    </div></div>`).join(''):
+    `<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">No results found</div>`;
+}
+
+function closePlaylistView(){
+  const pv=document.getElementById('reelsPlaylistView');
+  const dv=document.getElementById('reelsDefaultView');
+  if(pv) pv.style.display='none';
+  if(dv) dv.style.display='block';
+  state.currentReelCat='All';
+  // Reset catScroll active
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.toggle('active',b.dataset.cat==='All'));
+}
+
+// Event listeners for playlist/reels
 let _reelSearchTimer=null;
 document.getElementById('reelsSearch').addEventListener('input',()=>{clearTimeout(_reelSearchTimer);_reelSearchTimer=setTimeout(renderReels,300);});
-document.getElementById('catScroll').addEventListener('click',e=>{const b=e.target.closest('.cat-btn');if(b){state.currentReelCat=b.dataset.cat;renderReels();}});
-document.getElementById('playlists').addEventListener('click',e=>{const p=e.target.closest('.playlist-card');if(p){state.currentReelLevel=p.dataset.level;renderReels();}});
+document.getElementById('catScroll').addEventListener('click',e=>{
+  const b=e.target.closest('.cat-btn');
+  if(!b) return;
+  state.currentReelCat=b.dataset.cat;
+  if(state.currentReelCat==='All'){closePlaylistView();renderReels();}
+  else{renderReels();}
+});
+
+// Playlist grid card click
 document.addEventListener('click',e=>{
+  const pgc=e.target.closest('.playlist-grid-card[data-cat]');
+  if(pgc){state.currentReelCat=pgc.dataset.cat;openCategoryPlaylist(pgc.dataset.cat);return;}
+
+  // Creator filter
+  const pcb=e.target.closest('.pl-creator-btn');
+  if(pcb){
+    document.querySelectorAll('.pl-creator-btn').forEach(b=>{b.style.background='transparent';b.style.borderColor='var(--border)';b.style.color='var(--text2)';});
+    pcb.style.background='var(--accent)';pcb.style.borderColor='var(--accent)';pcb.style.color='#fff';
+    state._playlistCreator=pcb.dataset.uid;renderPlaylistGrid();return;
+  }
+
+  // Level filter
+  const plb=e.target.closest('.pl-level-btn');
+  if(plb){
+    document.querySelectorAll('.pl-level-btn').forEach(b=>{b.style.background='transparent';b.style.color='var(--text2)';});
+    plb.style.background='var(--accent)';plb.style.color='#fff';
+    state._playlistLevel=plb.dataset.lv;renderPlaylistGrid();return;
+  }
+
+  // Reel card click — anywhere in reels or courses
   const rc=e.target.closest('.reel-card[data-rid]');
-  if(rc&&document.getElementById('reels-screen').classList.contains('active')){openReelViewer(rc.dataset.rid);return;}
-  // Courses grid — both creator and guest grids
-  const cv=e.target.closest('#coursesGrid .reel-card[data-rid],#coursesGuestGrid .reel-card[data-rid]');
-  if(cv){openReelViewer(cv.dataset.rid);return;}
+  if(rc){openReelViewer(rc.dataset.rid);return;}
 });
 
 function openReelViewer(reelId){
-  // Find only in user videos
-  let r=null;
-  let vd=null;
-  for(const uid in userVideos){
-    const v=userVideos[uid]?.find(x=>x.id===reelId);
-    if(v){vd=v;const u=getMember(uid);r={id:v.id,title:v.title,cat:v.category,level:v.level||'intermediate',duration:v.duration,views:v.views||'0',likes:0,emoji:v.thumbnail||'🎬',authorName:u?.name||'Creator',authorColor:u?.color||'#6366f1',videoData:v.videoData,userId:uid};break;}
-  }
-  if(!r) return;
-  document.getElementById('rvCat').textContent=r.cat||'Reels';
-  document.getElementById('rvEmoji').textContent=r.emoji||'🎬';
-  document.getElementById('rvLikeCount').textContent=((r.likes||0)/1000).toFixed(1)+'K';
-  document.getElementById('rvAuthorAv').textContent=r.authorName?.[0]||'?';
-  document.getElementById('rvAuthorAv').style.background=`linear-gradient(135deg,${r.authorColor||'#6366f1'},${r.authorColor||'#6366f1'}cc)`;
-  document.getElementById('rvAuthorName').textContent=r.authorName||'Creator';
-  document.getElementById('rvDesc').textContent=r.title+(vd?.description?'\n\n'+vd.description:'');
-  document.getElementById('rvTags').innerHTML=`<span>#${(r.cat||'tech').replace(/\s+/g,'')}</span><span>#${r.level||'all'}</span><span>#tutorial</span>`;
-  // FIX BUG 1: Wire video player
-  const vp=document.getElementById('rvVideoPlayer');
-  const ph=document.getElementById('rvPlaceholder');
-  if(r.videoData){vp.src=r.videoData;vp.style.display='block';ph.style.display='none';vp.play().catch(()=>{});}
-  else{vp.src='';vp.style.display='none';ph.style.display='flex';}
+  // Gather all reels
+  let allReels=[];
+  Object.keys(userVideos).forEach(uid=>{
+    (userVideos[uid]||[]).forEach(v=>{
+      const u=getMember(uid);
+      allReels.push({id:v.id,title:v.title,cat:v.category,level:v.level||'intermediate',
+        duration:v.duration,views:v.views||'0',likes:0,emoji:v.thumbnail||'🎬',
+        authorName:u?.name||'Creator',authorColor:u?.color||'#6366f1',
+        videoData:v.videoData,userId:uid,description:v.description||''});
+    });
+  });
+  if(!allReels.length) return;
+
+  // Find starting index
+  let startIdx=allReels.findIndex(r=>r.id===reelId);
+  if(startIdx<0) startIdx=0;
+
+  const container=document.getElementById('rvScrollContainer');
+  container.innerHTML='';
+
+  // Build one full-screen page per reel
+  allReels.forEach((r,i)=>{
+    const page=document.createElement('div');
+    page.style.cssText='width:100%;height:100vh;scroll-snap-align:start;flex-shrink:0;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden;';
+    page.dataset.reelId=r.id;
+    page.dataset.reelIdx=i;
+
+    if(r.videoData){
+      page.innerHTML=`
+        <video src="${r.videoData}" style="width:100%;height:100%;object-fit:contain;" playsinline loop></video>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0);" class="rv-tap-area" data-idx="${i}"></div>`;
+    } else {
+      page.innerHTML=`
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;width:100%;height:100%;background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(139,92,246,.1));">
+          <div style="font-size:100px;">${r.emoji}</div>
+          <div style="color:#fff;font-size:16px;font-weight:600;text-align:center;padding:0 20px;">${r.title}</div>
+        </div>`;
+    }
+
+    // Bottom info overlay
+    page.innerHTML+=`
+      <div style="position:absolute;bottom:0;left:0;right:60px;padding:20px 18px 90px;background:linear-gradient(0deg,rgba(0,0,0,.75) 0,transparent 100%);color:#fff;pointer-events:none;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+          <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,${r.authorColor},${r.authorColor}cc);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;">${r.authorName[0]}</div>
+          <span style="font-weight:700;font-size:14px;flex:1;">${r.authorName}</span>
+        </div>
+        <div style="font-size:14px;line-height:1.5;margin-bottom:6px;">${r.title}${r.description?'\n'+r.description:''}</div>
+        <div style="font-size:13px;color:#6ee7b7;">#${(r.cat||'tech').replace(/\s+/g,'')} #${r.level}</div>
+      </div>`;
+    container.appendChild(page);
+  });
+
   document.getElementById('reel-viewer').classList.add('open');
   state.currentReelId=reelId;
+  state._allReels=allReels;
+
+  // Scroll to starting reel
+  setTimeout(()=>{
+    const pages=container.querySelectorAll('[data-reel-idx]');
+    if(pages[startIdx]) pages[startIdx].scrollIntoView({behavior:'instant'});
+    playVisibleReel();
+  },50);
+
+  // Auto-play/pause on scroll
+  container.onscroll=()=>{
+    clearTimeout(window._reelScrollTimer);
+    window._reelScrollTimer=setTimeout(playVisibleReel,150);
+  };
 }
+
+function playVisibleReel(){
+  const container=document.getElementById('rvScrollContainer');
+  if(!container) return;
+  const pages=container.querySelectorAll('[data-reel-idx]');
+  const ch=container.clientHeight;
+  pages.forEach(page=>{
+    const rect=page.getBoundingClientRect();
+    const vid=page.querySelector('video');
+    if(!vid) return;
+    const isVisible=rect.top>=-ch/2&&rect.top<=ch/2;
+    if(isVisible){
+      vid.play().catch(()=>{});
+      const idx=parseInt(page.dataset.reelIdx);
+      if(state._allReels&&state._allReels[idx]){
+        const r=state._allReels[idx];
+        document.getElementById('rvCat').textContent=r.cat||'Reels';
+        state.currentReelId=r.id;
+      }
+    } else {
+      vid.pause();
+    }
+  });
+}
+
+// Tap to play/pause
+document.addEventListener('click',e=>{
+  const ta=e.target.closest('.rv-tap-area');
+  if(ta){
+    const vid=ta.closest('[data-reel-idx]')?.querySelector('video');
+    if(vid){if(vid.paused)vid.play().catch(()=>{});else vid.pause();}
+  }
+});
 document.getElementById('rvBack').addEventListener('click',()=>{
   document.getElementById('reel-viewer').classList.remove('open');
-  const vp=document.getElementById('rvVideoPlayer');vp.pause();vp.src='';
+  // Pause all reel videos
+  document.querySelectorAll('#rvScrollContainer video').forEach(v=>{v.pause();v.src='';});
+  document.getElementById('rvScrollContainer').innerHTML='';
 });
 document.getElementById('rvLike').addEventListener('click',function(){const ic=this.querySelector('#rvLikeIc');ic.textContent=ic.textContent==='🤍'?'❤️':'🤍';});
 document.getElementById('rvFollowBtn').addEventListener('click',function(){this.textContent=this.textContent==='Follow'?'Following':'Follow';});
@@ -2780,116 +3080,139 @@ async function uploadFileToStorage(file, bucket, filePath){
 // =============================================
 // VIDEO UPLOAD (FIXED: Supabase Storage + objectURL fallback)
 // =============================================
-let _selVidFile=null;
+// =============================================
+// VIDEO UPLOAD — Multi-file playlist support
+// =============================================
+let _selVidFiles=[]; // Array of {file, title, desc}
+
 document.getElementById('videoFileInp').addEventListener('change',e=>{
-  const f=e.target.files[0];if(!f||!f.type.startsWith('video/')) return;
-  if(f.size>500*1024*1024){showToast('File too large! Max 500MB','error');return;}
-  _selVidFile=f;
-  // Use objectURL for instant preview — no FileReader needed
-  const previewUrl=URL.createObjectURL(f);
-  document.getElementById('videoPreview').src=previewUrl;
-  document.getElementById('videoPreview').style.display='block';
+  const files=Array.from(e.target.files).filter(f=>f.type.startsWith('video/'));
+  if(!files.length) return;
+  const tooBig=files.filter(f=>f.size>500*1024*1024);
+  if(tooBig.length){showToast(`${tooBig.length} file(s) too large (max 500MB each)! Skipped.`,'error');}
+  const valid=files.filter(f=>f.size<=500*1024*1024);
+  if(!valid.length) return;
+
+  _selVidFiles=valid.map(f=>({file:f,title:f.name.replace(/\.[^.]+$/,'').replace(/[_-]/g,' '),desc:''}));
+  renderVideoFilesList();
   document.getElementById('uploadVideoBtn').disabled=false;
   document.getElementById('uploadVideoBtn').style.opacity='1';
-  document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;">✅</div><div style="color:var(--green);font-weight:600;margin-top:8px;">Video selected!</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">${f.name} (${(f.size/1048576).toFixed(1)} MB)</div>`;
+  document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:36px;">✅</div><div style="color:var(--green);font-weight:600;margin-top:6px;">${valid.length} video${valid.length>1?'s':''} selected</div><div style="color:var(--text2);font-size:11px;margin-top:3px;">Click to change</div>`;
 });
-document.getElementById('uploadVideoBtn').addEventListener('click',async()=>{
-  const title=document.getElementById('vidTitle').value.trim();
-  const cat=document.getElementById('vidCat').value;
-  if(!title||!cat){showToast('Please fill title and category','error');return;}
-  if(!_selVidFile){showToast('Please select a video','error');return;}
 
+function renderVideoFilesList(){
+  const el=document.getElementById('videoFilesList');
+  if(!el) return;
+  el.style.display='block';
+  el.innerHTML=_selVidFiles.map((v,i)=>`
+    <div style="background:rgba(99,102,241,.07);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="font-size:18px;">🎬</span>
+        <span style="color:var(--text2);font-size:11px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${v.file.name} (${(v.file.size/1048576).toFixed(1)}MB)</span>
+        <button onclick="removeVidFile(${i})" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:16px;flex-shrink:0;">×</button>
+      </div>
+      <input type="text" value="${v.title}" oninput="_selVidFiles[${i}].title=this.value"
+        placeholder="Video title..." style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;margin-bottom:6px;"/>
+      <textarea oninput="_selVidFiles[${i}].desc=this.value" placeholder="Description (optional)..."
+        style="width:100%;padding:8px 12px;border-radius:8px;border:1px solid var(--border);background:rgba(15,23,42,.6);color:#fff;font-size:12px;outline:none;font-family:inherit;resize:none;height:54px;">${v.desc}</textarea>
+    </div>`).join('');
+}
+
+function removeVidFile(idx){
+  _selVidFiles.splice(idx,1);
+  if(!_selVidFiles.length){
+    document.getElementById('videoFilesList').style.display='none';
+    document.getElementById('uploadVideoBtn').disabled=true;
+    document.getElementById('uploadVideoBtn').style.opacity='.5';
+    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;margin-bottom:8px;">🎬</div><div style="color:var(--text);font-size:15px;font-weight:600;">Click or drag videos here</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Multiple files OK • Max 500MB each</div>`;
+    document.getElementById('videoFileInp').value='';
+  } else {
+    renderVideoFilesList();
+  }
+}
+
+document.getElementById('uploadVideoBtn').addEventListener('click',async()=>{
+  const cat=document.getElementById('vidCat').value;
+  const level=document.getElementById('vidLevel')?.value||'intermediate';
+  const playlistName=document.getElementById('playlistName')?.value.trim()||'';
+  if(!cat){showToast('Category select చేయండి','error');return;}
+  if(!_selVidFiles.length){showToast('Videos select చేయండి','error');return;}
+
+  const uid=ME?.userId||'me';
+  const THUMB={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'};
   const pw=document.getElementById('uploadProgressWrap');pw.style.display='block';
   const pb=document.getElementById('uploadProgressBar');
-  const uid=ME?.userId||'me';
-  const vidId='v_'+Date.now();
-  const THUMB={Python:'🐍',React:'⚛️',AWS:'☁️',DevOps:'🐳','ML/AI':'🤖',JavaScript:'💛','Interview Prep':'🎯','System Design':'📐'};
-
-  // Show uploading state
+  const statusEl=document.getElementById('uploadStatusText');
   document.getElementById('uploadVideoBtn').disabled=true;
   document.getElementById('uploadVideoBtn').textContent='Uploading...';
 
-  // Animate progress bar while uploading
-  let fakeP=0;
-  const fakeIv=setInterval(()=>{fakeP=Math.min(fakeP+3,85);pb.style.width=fakeP+'%';},200);
+  if(!userVideos[uid]) userVideos[uid]=[];
+  let uploaded=0;
 
-  showToast('⬆️ Uploading to cloud...','success');
+  for(let i=0;i<_selVidFiles.length;i++){
+    const {file,title,desc}=_selVidFiles[i];
+    if(statusEl) statusEl.textContent=`Uploading ${i+1} of ${_selVidFiles.length}: ${file.name}`;
+    pb.style.width=((i/_selVidFiles.length)*100)+'%';
 
-  // Upload to Supabase Storage
-  const ext=_selVidFile.name.split('.').pop()||'mp4';
-  const storagePath=`${uid}/${vidId}.${ext}`;
-  let videoUrl=await uploadFileToStorage(_selVidFile,'videos',storagePath);
+    const vidId='v_'+Date.now()+'_'+i;
+    const ext=file.name.split('.').pop()||'mp4';
+    const storagePath=`${uid}/${vidId}.${ext}`;
+    let videoUrl=await uploadFileToStorage(file,'videos',storagePath);
+    const isCloud=!!videoUrl;
+    if(!isCloud) videoUrl=URL.createObjectURL(file);
 
-  clearInterval(fakeIv);
-  pb.style.width='95%';
+    const sizeMB=file.size/1048576;
+    const estSec=Math.round(sizeMB*8);
+    const durStr=Math.floor(estSec/60)+':'+String(estSec%60).padStart(2,'0');
 
-  const isCloud=!!videoUrl;
-
-  // If cloud upload failed, use objectURL as session fallback
-  if(!isCloud){
-    videoUrl=URL.createObjectURL(_selVidFile);
-    showToast('⚠️ Cloud upload failed — video only visible this session. Check Supabase Storage bucket.','error');
-  } else {
-    showToast('✅ Video uploaded to cloud!','success');
+    const newVid={
+      id:vidId,
+      title:title||file.name.replace(/\.[^.]+$/,''),
+      duration:durStr,views:'0',
+      category:cat,level,
+      thumbnail:THUMB[cat]||'🎬',
+      description:desc||'',
+      videoData:videoUrl,isCloud,
+      storagePath:isCloud?storagePath:'',
+      playlistName
+    };
+    userVideos[uid].unshift(newVid);
+    sbSaveVideo(uid,newVid);
+    uploaded++;
   }
 
-  // Calculate duration estimate from file size
-  const sizeMB=_selVidFile.size/1048576;
-  const estSec=Math.round(sizeMB*8); // rough estimate
-  const durStr=Math.floor(estSec/60)+':'+String(estSec%60).padStart(2,'0');
-
-  const newVid={
-    id:vidId, title,
-    duration:durStr,
-    views:'0',
-    category:cat,
-    level:document.getElementById('vidLevel')?.value||'intermediate',
-    thumbnail:THUMB[cat]||'🎬',
-    description:document.getElementById('vidDesc').value.trim(),
-    videoData:videoUrl,
-    isCloud,
-    storagePath:isCloud?storagePath:''
-  };
-
-  if(!userVideos[uid]) userVideos[uid]=[];
-  userVideos[uid].unshift(newVid);
-
-  // Save to localStorage — store cloud URL (not blob)
-  const saveVids=userVideos[uid].map(v=>({...v, videoData:v.isCloud?v.videoData:''}));
-  localStorage.setItem('cg_vids_'+uid, JSON.stringify(saveVids));
-
-  // Sync metadata to Supabase DB
-  sbSaveVideo(uid, newVid);
+  // Save all
+  const saveVids=userVideos[uid].map(v=>({...v,videoData:v.isCloud?v.videoData:''}));
+  localStorage.setItem('cg_vids_'+uid,JSON.stringify(saveVids));
 
   pb.style.width='100%';
+  if(statusEl) statusEl.textContent=`✅ ${uploaded} video${uploaded>1?'s':''} uploaded!`;
 
   setTimeout(()=>{
-    ['vidTitle','vidDesc'].forEach(id=>document.getElementById(id).value='');
+    _selVidFiles=[];
     document.getElementById('vidCat').value='';
-    const vidLvl=document.getElementById('vidLevel');
-    if(vidLvl) vidLvl.value='intermediate';
-    document.getElementById('videoPreview').style.display='none';
-    document.getElementById('videoPreview').src='';
-    document.getElementById('uploadVideoBtn').disabled=false;
-    document.getElementById('uploadVideoBtn').textContent='Upload';
-    document.getElementById('uploadVideoBtn').style.opacity='.5';
+    if(document.getElementById('vidLevel')) document.getElementById('vidLevel').value='intermediate';
+    if(document.getElementById('playlistName')) document.getElementById('playlistName').value='';
+    document.getElementById('videoFilesList').style.display='none';
+    document.getElementById('videoFileInp').value='';
     document.getElementById('uploadVideoBtn').disabled=true;
-    pb.style.width='0%'; pw.style.display='none';
-    _selVidFile=null; document.getElementById('videoFileInp').value='';
-    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;margin-bottom:12px;">🎬</div><div style="color:var(--text);font-size:15px;font-weight:600;">Upload Video Tutorial</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Max 500MB</div>`;
+    document.getElementById('uploadVideoBtn').style.opacity='.5';
+    document.getElementById('uploadVideoBtn').textContent='Upload All';
+    pb.style.width='0%';pw.style.display='none';
+    if(statusEl) statusEl.textContent='';
+    document.getElementById('videoUploadArea').innerHTML=`<div style="font-size:48px;margin-bottom:8px;">🎬</div><div style="color:var(--text);font-size:15px;font-weight:600;">Click or drag videos here</div><div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Multiple files OK • Max 500MB each</div>`;
     document.getElementById('videoUploadModal').classList.remove('open');
-    renderCourses(); renderReels();
+    showToast(`✅ ${uploaded} video${uploaded>1?'s':''} uploaded!`,'success');
+    renderCourses();renderReels();
     if(state.currentProfileId===uid) renderCreatorVideos(uid);
-  },600);
+  },800);
 });
+
 document.getElementById('videoModalClose').addEventListener('click',()=>document.getElementById('videoUploadModal').classList.remove('open'));
 document.getElementById('videoUploadModal').addEventListener('click',e=>{if(e.target===document.getElementById('videoUploadModal')) document.getElementById('videoUploadModal').classList.remove('open');});
 document.getElementById('uploadCourseBtn').addEventListener('click',()=>{
   if(!ME){showToast('Login చేయండి','error');return;}
-  if(ME.accountType!=='creator'){
-    showToast('⚠️ Video upload only Content Creators కి మాత్రమే available!','error');
-    return;
-  }
+  if(ME.accountType!=='creator'){showToast('⚠️ Video upload only Content Creators కి మాత్రమే!','error');return;}
   document.getElementById('videoUploadModal').classList.add('open');
 });
 
@@ -3026,17 +3349,55 @@ function toggleFollow(userId){
   if(isF){
     userConnections[ME.userId].following=userConnections[ME.userId].following.filter(x=>x!==userId);
     userConnections[userId].followers=userConnections[userId].followers.filter(x=>x!==ME.userId);
+    showToast('Unfollowed','success');
   } else {
     userConnections[ME.userId].following.push(userId);
     userConnections[userId].followers.push(ME.userId);
+    showToast('✅ Following!','success');
+    // 🔔 Notification send to target user
+    pushNotification(userId,{
+      id:'n_'+Date.now(),
+      type:'follow',
+      icon:'👥',
+      text:`${ME.name} నిన్ను follow చేశాడు`,
+      fromUserId:ME.userId,
+      time:'Just now',
+      unread:true
+    });
   }
   save.connections();
-  // Update all follow buttons for this user
+  sbToggleFollow(ME.userId,userId);
   document.querySelectorAll(`.conn-btn[data-uid="${userId}"]`).forEach(btn=>{
     btn.classList.toggle('connected',!isF);btn.textContent=isF?'+ Follow':'Following';
   });
-  showToast(isF?'Unfollowed':'✅ Following!','success');
   if(document.getElementById('profile-screen').classList.contains('active')) renderConnections(state.currentProfileId||ME.userId);
+}
+
+// Push notification to a user's local storage (works same device; cross-device needs Supabase)
+function pushNotification(targetUserId, notif){
+  // Own notifications array (for current user's screen)
+  if(targetUserId===ME?.userId){
+    notifications.unshift(notif);
+    save.notifs();
+    renderNotifications();
+    return;
+  }
+  // For other users — store in their key
+  const key='cg_notifs_'+targetUserId;
+  const existing=JSON.parse(localStorage.getItem(key)||'[]');
+  existing.unshift(notif);
+  localStorage.setItem(key,JSON.stringify(existing));
+}
+
+// Load notifications for current user (merge own + targeted)
+function loadMyNotifications(){
+  const myKey='cg_notifs_'+ME?.userId;
+  const targeted=JSON.parse(localStorage.getItem(myKey)||'[]');
+  // Merge with global notifications, deduplicate
+  const all=[...targeted,...notifications].filter((n,i,arr)=>arr.findIndex(x=>x.id===n.id)===i);
+  all.sort((a,b)=>b.id.localeCompare(a.id));
+  notifications=all;
+  save.notifs();
 }
 
 // =============================================
@@ -3044,10 +3405,31 @@ function toggleFollow(userId){
 // =============================================
 function renderNotifications(){
   const list=document.getElementById('notifList');if(!list) return;
+  loadMyNotifications();
   const unread=notifications.filter(n=>n.unread).length;
   document.getElementById('notifDot').style.display=unread?'block':'none';
+  document.getElementById('notifDot').textContent=unread>9?'9+':unread||'';
   if(!notifications.length){list.innerHTML='<div style="text-align:center;padding:20px;color:var(--text2);font-size:13px;">No notifications</div>';return;}
-  list.innerHTML=notifications.slice(0,20).map(n=>`<div class="ni${n.unread?' unread':''}" data-nid="${n.id}"><div class="ni-icon" style="background:rgba(99,102,241,.15);">${n.icon||'🔔'}</div><div><div class="ni-text">${n.text}</div><div class="ni-time">${n.time}</div></div></div>`).join('');
+  list.innerHTML=notifications.slice(0,30).map(n=>`
+    <div class="ni${n.unread?' unread':''}" data-nid="${n.id}" onclick="markNotifRead('${n.id}')">
+      <div class="ni-icon" style="background:rgba(99,102,241,.15);">${n.icon||'🔔'}</div>
+      <div style="flex:1;">
+        <div class="ni-text">${n.text}</div>
+        <div class="ni-time">${n.time||''}</div>
+        ${n.type==='follow'&&n.fromUserId?`<button onclick="event.stopPropagation();openMiniProfile('${n.fromUserId}')" style="margin-top:6px;padding:4px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:11px;font-weight:700;cursor:pointer;">View Profile</button>`:''}
+        ${n.type==='msg_request'&&n.fromUserId?`<div style="display:flex;gap:6px;margin-top:6px;">
+          <button onclick="event.stopPropagation();acceptRequest('${n.fromUserId}','${n.reqId||''}')" style="padding:4px 12px;border-radius:6px;border:none;background:var(--accent);color:#fff;font-size:11px;font-weight:700;cursor:pointer;">✅ Accept</button>
+          <button onclick="event.stopPropagation();rejectRequest('${n.fromUserId}','${n.reqId||''}')" style="padding:4px 12px;border-radius:6px;border:1px solid rgba(239,68,68,.3);background:transparent;color:var(--red);font-size:11px;font-weight:700;cursor:pointer;">❌ Decline</button>
+        </div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+function markNotifRead(nid){
+  notifications=notifications.map(n=>n.id===nid?{...n,unread:false}:n);
+  save.notifs();
+  localStorage.setItem('cg_notifs_'+ME?.userId,JSON.stringify(notifications));
+  renderNotifications();
 }
 document.getElementById('notifBell').addEventListener('click',e=>{e.stopPropagation();document.getElementById('notifPanel').classList.toggle('open');});
 document.addEventListener('click',e=>{if(!document.getElementById('notifPanel').contains(e.target)&&e.target!==document.getElementById('notifBell')) document.getElementById('notifPanel').classList.remove('open');});
@@ -3061,101 +3443,79 @@ document.getElementById('markAllRead').addEventListener('click',()=>{notificatio
 const chatUnread = {};
 
 function renderChatList(){
-  const el=document.getElementById('chatListContainer');
-  const tab=document.querySelector('.chat-tabs button.active')?.dataset.ctab||'chats';
+  const el=document.getElementById('chatTabContent');
+  if(!el) return;
+  const tab=document.querySelector('#chatTabs button.active')?.dataset.ctab||'chats';
 
-  // PIN TAB — saved messages from real chats
-  if(tab==='pin'){
-    const pinned=JSON.parse(localStorage.getItem('cg_pinned')||'[]');
-    if(!pinned.length){
-      el.innerHTML=`<div style="text-align:center;padding:60px 20px;">
-        <div style="font-size:48px;margin-bottom:12px;">📌</div>
-        <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No pinned messages</div>
-        <div style="color:var(--text2);font-size:13px;">Chat లో message long press చేసి pin చేయండి</div>
-      </div>`;
+  if(tab==='requests'){
+    const pending=getMessageRequests();
+    const badge=document.getElementById('msgReqBadge');
+    if(badge){badge.style.display=pending.length?'flex':'none';badge.textContent=pending.length;}
+    if(!pending.length){
+      el.innerHTML=`<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:12px;">📨</div><div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No pending requests</div><div style="color:var(--text2);font-size:13px;">Private account users కి message request పంపినప్పుడు ఇక్కడ కనిపిస్తుంది</div></div>`;
     } else {
-      el.innerHTML='<div class="sec-title">📌 Pinned Messages</div>'+
-        pinned.map(p=>`<div class="pin-item"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">📌 <span class="pf">${p.from}</span><span class="pt">• ${p.time}</span></div><div class="ptx">${p.text}</div></div>`).join('');
+      el.innerHTML=pending.map(r=>{
+        const u=getMember(r.from)||{name:r.fromName||'User',avatar:r.fromAvatar||'?',color:r.fromColor||'#6366f1'};
+        return `<div style="display:flex;align-items:center;gap:10px;padding:14px;border-radius:12px;background:var(--card);border:1px solid var(--border);margin-bottom:8px;">
+          <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,${u.color},${u.color}cc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:16px;flex-shrink:0;">${u.avatar}</div>
+          <div style="flex:1;"><div style="color:#fff;font-weight:700;font-size:14px;">${u.name}</div><div style="color:var(--text2);font-size:12px;margin-top:2px;">Message request పంపారు</div></div>
+          <div style="display:flex;flex-direction:column;gap:6px;">
+            <button onclick="acceptRequest('${r.from}','${r.id||''}')" style="padding:6px 14px;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:12px;font-weight:700;cursor:pointer;">✅ Accept</button>
+            <button onclick="rejectRequest('${r.from}','${r.id||''}')" style="padding:6px 14px;border-radius:8px;border:1px solid rgba(239,68,68,.3);background:transparent;color:var(--red);font-size:12px;font-weight:700;cursor:pointer;">❌ Decline</button>
+          </div>
+        </div>`;
+      }).join('');
     }
     return;
   }
-
-  // GROUPS TAB — real groups created by users
+  if(tab==='pin'){
+    const pinned=JSON.parse(localStorage.getItem('cg_pinned')||'[]');
+    el.innerHTML=!pinned.length?`<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:12px;">📌</div><div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No pinned messages</div></div>`:
+      '<div class="sec-title">📌 Pinned Messages</div>'+pinned.map(p=>`<div class="pin-item"><div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">📌 <span class="pf">${p.from}</span><span class="pt">• ${p.time}</span></div><div class="ptx">${p.text}</div></div>`).join('');
+    return;
+  }
   if(tab==='groups'){
     const userGroups=JSON.parse(localStorage.getItem('cg_groups')||'[]');
     if(!userGroups.length){
-      el.innerHTML=`<div style="text-align:center;padding:60px 20px;">
-        <div style="font-size:48px;margin-bottom:12px;">👥</div>
-        <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No groups yet</div>
-        <div style="color:var(--text2);font-size:13px;margin-bottom:20px;">Create a group to chat with multiple people</div>
-        <button onclick="openCreateGroupModal()" style="padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:14px;cursor:pointer;">➕ Create Group</button>
-      </div>`;
+      el.innerHTML=`<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:12px;">👥</div><div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No groups yet</div><div style="color:var(--text2);font-size:13px;margin-bottom:20px;">Create a group to chat</div><button onclick="openCreateGroupModal()" style="padding:10px 24px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:14px;cursor:pointer;">➕ Create Group</button></div>`;
     } else {
-      el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div class="sec-title" style="margin:0;">👥 Groups (${userGroups.length})</div>
-        <button onclick="openCreateGroupModal()" style="padding:6px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:12px;cursor:pointer;">➕ New</button>
-      </div>`+
-      userGroups.map(g=>`<div class="chat-item" data-cid="${g.id}" data-isgroup="true" data-gname="${g.name}" data-gicon="${g.icon}">
-<div class="grp-av">${g.icon}</div>
-<div class="ci-info"><div class="ci-name">${g.name}</div><div class="ci-last">👥 ${(g.members||[]).length} members${g.lastMsg?' • '+g.lastMsg:''}</div></div>
-<div style="text-align:right;"><div class="ci-time">${g.time||'Now'}</div></div>
-</div>`).join('');
+      el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;"><div class="sec-title" style="margin:0;">👥 Groups (${userGroups.length})</div><button onclick="openCreateGroupModal()" style="padding:6px 14px;border-radius:8px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:12px;cursor:pointer;">➕ New</button></div>`+
+        userGroups.map(g=>`<div class="chat-item" data-cid="${g.id}" data-isgroup="true" data-gname="${g.name}" data-gicon="${g.icon}"><div class="grp-av">${g.icon}</div><div class="ci-info"><div class="ci-name">${g.name}</div><div class="ci-last">👥 ${(g.members||[]).length} members</div></div><div style="text-align:right;"><div class="ci-time">${g.time||'Now'}</div></div></div>`).join('');
     }
     return;
   }
-
-  // CHANNELS TAB — real channels created by recruiters/creators
   if(tab==='channels'){
     const userChannels=registeredUsers.filter(u=>u.accountType==='recruiter'||u.accountType==='creator');
     if(!userChannels.length){
-      el.innerHTML=`<div style="text-align:center;padding:60px 20px;">
-        <div style="font-size:48px;margin-bottom:12px;">📢</div>
-        <div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No channels yet</div>
-        <div style="color:var(--text2);font-size:13px;">Recruiters & Creators join అయినప్పుడు channels appear అవుతాయి</div>
-      </div>`;
+      el.innerHTML=`<div style="text-align:center;padding:60px 20px;"><div style="font-size:48px;margin-bottom:12px;">📢</div><div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px;">No channels yet</div></div>`;
     } else {
-      el.innerHTML='<div class="sec-title">📢 Channels</div>'+
-      userChannels.map(u=>`<div class="chat-item" data-cid="${u.userId}" data-isgroup="true" data-gname="${u.name}" data-gicon="${u.accountType==='recruiter'?'💼':'🎬'}">
-<div class="grp-av" style="background:linear-gradient(135deg,${u.color},${u.color}cc);">${u.avatar}</div>
-<div class="ci-info"><div class="ci-name">${u.name}</div><div class="ci-last">${u.accountType==='recruiter'?'💼 Recruiter':'🎬 Creator'} • ${u.role||''}</div></div>
-<div style="text-align:right;"><div class="ci-time">channel</div></div>
-</div>`).join('');
+      el.innerHTML='<div class="sec-title">📢 Channels</div>'+userChannels.map(u=>`<div class="chat-item" data-cid="${u.userId}" data-isgroup="true" data-gname="${u.name}" data-gicon="${u.accountType==='recruiter'?'💼':'🎬'}"><div class="grp-av" style="background:linear-gradient(135deg,${u.color},${u.color}cc);">${u.avatar}</div><div class="ci-info"><div class="ci-name">${u.name}</div><div class="ci-last">${u.accountType==='recruiter'?'💼 Recruiter':'🎬 Creator'}</div></div><div style="text-align:right;"><div class="ci-time">channel</div></div></div>`).join('');
     }
     return;
   }
-
-  // CHATS TAB — FIX BUG 10: show Rishi first, then only users with real conversation history
+  // CHATS tab
   const items=[];
-  // Always show Rishi at top
   const rishiKey=`cg_chat_${ME?.userId}_rishi`;
   const rishiMsgs=JSON.parse(localStorage.getItem(rishiKey)||'[]');
-  const rishiLast=rishiMsgs.length?rishiMsgs[rishiMsgs.length-1].text.slice(0,50)+'…':'I can help with job searches, skill recs & more!';
   items.push({id:'rishi',name:'Rishi AI',avatar:'🤖',color:'#ec4899',online:true,
-    lastMsg:rishiLast,time:rishiMsgs.length?rishiMsgs[rishiMsgs.length-1].time:'Now',
-    // FIX BUG 7: unread count cleared when chat opened
-    unread:chatUnread['rishi']??1,isAI:true,accountType:'creator'});
-
-  // Show registered users — only those with existing chat history first, rest below
-  const withHistory=[];
-  const withoutHistory=[];
+    lastMsg:rishiMsgs.length?rishiMsgs[rishiMsgs.length-1].text.slice(0,50)+'…':'Ask me anything about your career!',
+    time:rishiMsgs.length?rishiMsgs[rishiMsgs.length-1].time:'Now',unread:chatUnread['rishi']??1,isAI:true,accountType:'creator'});
+  const withHistory=[];const withoutHistory=[];
   registeredUsers.filter(m=>m.userId!==ME?.userId&&!getDeletedIds().includes(m.userId)).forEach((m,i)=>{
     const key=`cg_chat_${ME?.userId}_${m.userId}`;
     const msgs=JSON.parse(localStorage.getItem(key)||'[]');
     const obj={id:m.userId,name:m.name,avatar:m.avatar,color:m.color,online:m.online,
       lastMsg:msgs.length?msgs[msgs.length-1].text?.slice(0,50)||'📷 Image':CHAT_REPLIES[i%CHAT_REPLIES.length],
       time:msgs.length?msgs[msgs.length-1].time:(i<3?'2m':i<6?'15m':'1h'),
-      unread:chatUnread[m.userId]??(msgs.length?0:0),
-      isAI:false,accountType:m.accountType};
-    if(msgs.length) withHistory.push(obj);
-    else withoutHistory.push(obj);
+      unread:chatUnread[m.userId]??0,isAI:false,accountType:m.accountType};
+    if(msgs.length) withHistory.push(obj);else withoutHistory.push(obj);
   });
   items.push(...withHistory,...withoutHistory.slice(0,8));
-
   el.innerHTML=items.map(it=>`<div class="chat-item${it.isAI?' ai-item':''}" data-cid="${it.id}" data-isuser="true">
-${avHTML(it.color,it.avatar,44,it.online,it.isAI,it.accountType)}
-<div class="ci-info"><div class="ci-name${it.isAI?' ai-name':''}">${it.name}</div><div class="ci-last">${it.lastMsg}</div></div>
-<div style="text-align:right;"><div class="ci-time">${it.time}</div>${(it.unread&&chatUnread[it.id]!==0)?`<div class="ci-badge" style="margin-top:4px;margin-left:auto;">${it.unread}</div>`:''}</div>
-</div>`).join('');
+    ${avHTML(it.color,it.avatar,44,it.online,it.isAI,it.accountType)}
+    <div class="ci-info"><div class="ci-name${it.isAI?' ai-name':''}">${it.name}</div><div class="ci-last">${it.lastMsg}</div></div>
+    <div style="text-align:right;"><div class="ci-time">${it.time}</div>${it.unread?`<div class="ci-badge" style="margin-top:4px;margin-left:auto;">${it.unread}</div>`:''}</div>
+  </div>`).join('');
 }
 
 document.getElementById('chatTabs').addEventListener('click',e=>{
@@ -3286,6 +3646,54 @@ document.addEventListener('click',e=>{
   }
 });
 
+// =============================================
+// RISHI AI — Real Anthropic API
+// =============================================
+async function getRishiAIResponse(chatHistory){
+  // Build context from user profile
+  const userCtx=ME?`User: ${ME.name}, Role: ${ME.role||'unknown'}, City: ${ME.city||'unknown'}, Skills: ${(ME.skills||[]).join(', ')||'none'}, Account: ${ME.accountType}`:'Unknown user';
+
+  // Last few messages as context
+  const recentMsgs=chatHistory.slice(-8).filter(m=>m.text).map(m=>({
+    role: (m.from==='me'||m.from===ME?.userId)?'user':'assistant',
+    content: m.text
+  }));
+
+  // Make sure last message is user
+  const lastUserMsg=recentMsgs.filter(m=>m.role==='user').pop();
+  if(!lastUserMsg) return RISHI_RESPONSES[0];
+
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`You are Rishi, an AI career assistant on CareerGram — a professional social network like LinkedIn for Indian tech professionals.
+
+${userCtx}
+
+Your personality:
+- Friendly, helpful, encouraging
+- Telugu/Indian context aware
+- Give practical career advice
+- Short focused responses (2-4 paragraphs max)
+- Use emojis naturally
+- Help with: job search, skill recommendations, resume tips, interview prep, salary negotiation, career roadmaps
+
+Always respond in the same language the user writes (Telugu/English/Hinglish).`,
+        messages:recentMsgs
+      })
+    });
+    const data=await res.json();
+    return data?.content?.[0]?.text||RISHI_RESPONSES[Math.floor(Math.random()*RISHI_RESPONSES.length)];
+  }catch(e){
+    // Fallback to static responses if API fails
+    return RISHI_RESPONSES[Math.floor(Math.random()*RISHI_RESPONSES.length)];
+  }
+}
+
 function sendMsg(){
   // FIX BUG 3: guard against sending without an open chat
   if(!window._chatMsgs||!window._chatKey){showToast('Open a chat first','error');return;}
@@ -3313,16 +3721,15 @@ function sendMsg(){
   const capturedMsgs=window._chatMsgs;
   const capturedUserId=window._chatUserId;
   if(window._chatIsAI){
-    // FIX BUG 8: show typing indicator
     showTypingIndicator();
-    setTimeout(()=>{
+    // Real AI response using Anthropic API
+    getRishiAIResponse(capturedMsgs).then(aiText=>{
       removeTypingIndicator();
-      // FIX BUG 6: only append if still same conversation
       if(window._chatKey!==capturedKey) return;
-      capturedMsgs.push({from:capturedUserId,text:RISHI_RESPONSES[Math.floor(Math.random()*RISHI_RESPONSES.length)],time:tsNow()});
+      capturedMsgs.push({from:capturedUserId,text:aiText,time:tsNow()});
       localStorage.setItem(capturedKey,JSON.stringify(capturedMsgs));
       renderChatMsgs(capturedMsgs);
-    },1200+Math.random()*800);
+    });
   }
 // No auto-reply for real users — Supabase real-time handles actual messages
 }
@@ -3613,9 +4020,14 @@ function openMiniProfile(userId){
   document.getElementById('mpSkills').innerHTML=(m.skills||[]).slice(0,5).map(s=>`<span class="skill-tag" style="font-size:11px;padding:3px 10px;">${s}</span>`).join('');
   document.getElementById('mpStats').innerHTML=[{l:'Connections',v:m.connections||0},{l:'Followers',v:userConnections[m.userId]?.followers?.length||0},{l:'Posts',v:posts.filter(p=>p.userId===userId).length}].map(s=>`<div class="ms"><div class="ms-val">${s.v}</div><div class="ms-label">${s.l}</div></div>`).join('');
   const canMsg=!m.isAI?canMessage(userId):true;
+  const isPending=!canMsg&&hasPendingRequest(userId);
   let mpMsgBtn='';
   if(m.isAI) mpMsgBtn=`<button class="btn-msg" data-uid="${userId}">💬 Chat with AI</button>`;
-  else if(!isMe) mpMsgBtn=canMsg?`<button class="btn-msg" data-uid="${userId}">💬 Message</button>`:`<button class="btn-outline" onclick="sendMessageRequest('${userId}')">📨 Request</button>`;
+  else if(!isMe){
+    if(canMsg) mpMsgBtn=`<button class="btn-msg" data-uid="${userId}">💬 Message</button>`;
+    else if(isPending) mpMsgBtn=`<button class="btn-outline" style="opacity:.6;cursor:default;">⏳ Request Sent</button>`;
+    else mpMsgBtn=`<button class="btn-outline" onclick="sendMessageRequest('${userId}')">📨 Message Request</button>`;
+  }
   document.getElementById('mpAbns').innerHTML=mpMsgBtn+`<button class="btn-view" data-uid="${userId}">View Full</button>`;
   if(!isMe&&!m.isAI){const isF=userConnections[ME?.userId]?.following?.includes(userId)||false;document.getElementById('mpBtns').innerHTML=`<button class="btn-connect${isF?' connected':''}" data-uid="${userId}">${isF?'Connected ✓':'Connect'}</button><button class="btn-follow${isF?' followed':''}" data-uid="${userId}">${isF?'Following ✓':'Follow'}</button>`;}
   else document.getElementById('mpBtns').innerHTML='';
@@ -3793,7 +4205,15 @@ document.addEventListener('DOMContentLoaded',()=>{
 </script>
 
 <script>
-// PWA Install prompt (Android) — SW registration skipped (blob URL not supported in most browsers)
+// PWA Service Worker Registration
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('sw.js')
+      .then(reg=>console.log('SW registered'))
+      .catch(err=>console.log('SW error:',err));
+  });
+}
+// PWA Install prompt
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();

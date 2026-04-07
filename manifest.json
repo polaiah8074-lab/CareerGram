@@ -2,26 +2,26 @@
   "name": "CareerGram",
   "short_name": "CareerGram",
   "description": "Your professional growth, amplified.",
-  "start_url": "/index.html",
+  "start_url": "/CareerGram/",
+  "scope": "/CareerGram/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#0f172a",
   "theme_color": "#6366f1",
-  "orientation": "portrait",
+  "lang": "en",
+  "categories": ["social", "education", "productivity"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='40' fill='%236366f1'/><text y='130' x='30' font-size='120'>📈</text></svg>",
+      "src": "icon192.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='100' fill='%236366f1'/><text y='360' x='60' font-size='320'>📈</text></svg>",
+      "src": "icon512.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
-  ],
-  "categories": ["business", "productivity", "social"],
-  "screenshots": [],
-  "lang": "en"
+  ]
 }
