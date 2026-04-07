@@ -10,13 +10,8 @@
 <link rel="manifest" href="manifest.json"/>
 <script>
 // Inline manifest so external manifest.json is not required
-(function(){
-  const m={name:'CareerGram',short_name:'CareerGram',start_url:'.',display:'standalone',
-    background_color:'#0f172a',theme_color:'#6366f1',
-    icons:[{src:'data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%236366f1%22/><text y=%22.9em%22 font-size=%2270%22 x=%2250%22 text-anchor=%22middle%22>📈</text></svg>',sizes:'192x192',type:'image/svg+xml'}]};
-  const blob=new Blob([JSON.stringify(m)],{type:'application/manifest+json'});
-  document.querySelector('link[rel="manifest"]').href=URL.createObjectURL(blob);
-})();
+// Use the external manifest.json (has real icon192.png and icon512.png)
+// manifest.json is linked in <head> already; blob override removed for PWA compatibility
 </script>
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='70' x='50' text-anchor='middle'>📈</text></svg>"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
@@ -534,8 +529,17 @@ const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
   realtime: { timeout: 10000 }
 });
 
-// Validate key — accepts both new sb_publishable_ format and legacy eyJ format
+// Validate key format first (sync), then verify with network (async)
 window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('sb_publishable_') || SUPABASE_KEY.startsWith('sb_');
+// Async verify — update after network check
+(async () => {
+  try {
+    const res = await fetch(SUPABASE_URL + '/rest/v1/cg_users?select=user_id&limit=1', {
+      headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
+    });
+    window._sbKeyValid = res.status !== 401 && res.status !== 403;
+  } catch(e) { /* keep format-based value */ }
+})();
 </script>
 </head>
 <body>
@@ -590,7 +594,7 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
       <label>Password</label><input id="loginPw" type="password" placeholder="Password"/>
       <div class="err" id="loginErr">⚠️ Invalid credentials</div>
       <button class="sign-btn" id="signInBtn">Sign In</button>
-      <!-- Admin hint removed for production -->
+      <div style="margin-top:10px;padding:10px 12px;border-radius:10px;background:rgba(99,102,241,.08);border:1px solid rgba(99,102,241,.2);font-size:12px;color:#94a3b8;">💡 Demo: User ID <code style="color:#c7d2fe;background:rgba(99,102,241,.15);padding:1px 5px;border-radius:4px;">poli</code>       <!-- Admin hint removed for production -->#124; Password <code style="color:#c7d2fe;background:rgba(99,102,241,.15);padding:1px 5px;border-radius:4px;">poli123</code></div>
       <div style="text-align:center;margin-top:16px;"><span style="color:var(--text2);font-size:13px;">No account? </span><span style="color:var(--accent2);font-weight:600;cursor:pointer;font-size:13px;" id="showSignupBtn">Create Account</span></div>
     </div>
     <!-- Signup Step 1 -->
@@ -1926,12 +1930,41 @@ function logout(){
 }
 
 // Sign In
-document.getElementById('signInBtn').addEventListener('click',()=>{
+document.getElementById('signInBtn').addEventListener('click',async ()=>{
   const id=document.getElementById('loginId').value.trim();
   const pw=document.getElementById('loginPw').value.trim();
   const err=document.getElementById('loginErr');
+  const btn=document.getElementById('signInBtn');
   if(!id||!pw){err.classList.add('show');err.textContent='⚠️ Please enter User ID and Password.';return;}
+  btn.textContent='Signing in...';btn.disabled=true;
+  // Try Supabase first if key valid
+  if(window._sbKeyValid){
+    try{
+      const {data}=await sb.from('cg_users').select('*').eq('user_id',id).maybeSingle();
+      if(data&&data.password===pw){
+        const u={id:data.id,userId:data.user_id,password:data.password,name:data.name,
+          email:data.email||'',accountType:data.account_type||'jobseeker',
+          role:data.role||'',city:data.city||'',
+          avatar:data.avatar||data.name?.slice(0,2).toUpperCase()||'??',
+          color:data.color||'#6366f1',bio:data.bio||'',
+          skills:Array.isArray(data.skills)?data.skills:[],
+          company:data.company||'',experience:data.experience||'Fresher',
+          online:true,profilePic:data.profile_pic||''};
+        // Merge into local
+        const li=registeredUsers.findIndex(x=>x.userId===u.userId);
+        if(li>=0) registeredUsers[li]=u; else registeredUsers.unshift(u);
+        save.users();rebuildUserMap();
+        ME=u;localStorage.setItem('cg_session',JSON.stringify(ME));
+        btn.textContent='Sign In';btn.disabled=false;
+        err.classList.remove('show');showApp();
+        showToast('Welcome back, '+ME.name+'! 👋','success');
+        if(posts.length===0) initDemoPosts();return;
+      }
+    }catch(e){}
+  }
+  // Fallback: local check
   const user=registeredUsers.find(u=>u.userId===id&&u.password===pw);
+  btn.textContent='Sign In';btn.disabled=false;
   if(user){
     ME=user;
     localStorage.setItem('cg_session',JSON.stringify(ME));
@@ -3736,16 +3769,29 @@ document.addEventListener('click',e=>{
 // =============================================
 // INIT
 // =============================================
-document.addEventListener('DOMContentLoaded',()=>{
+document.addEventListener('DOMContentLoaded',async ()=>{
   rebuildUserMap();
+  // Wait for Supabase key validation (max 2s)
+  for(let i=0;i<10;i++){
+    if(typeof window._sbKeyValid !== 'undefined') break;
+    await new Promise(r=>setTimeout(r,200));
+  }
   checkSession();
-  // Only init demo posts if truly empty after session check
   setTimeout(()=>{if(posts.length===0) initDemoPosts();},100);
 });
 </script>
 
 <script>
-// PWA Install prompt (Android) — SW registration skipped (blob URL not supported in most browsers)
+// PWA: Register Service Worker with dynamic base path
+if('serviceWorker' in navigator){
+  const swPath = location.pathname.endsWith('/') ? location.pathname + 'sw.js'
+    : location.pathname.substring(0, location.pathname.lastIndexOf('/') + 1) + 'sw.js';
+  navigator.serviceWorker.register(swPath).then(reg=>{
+    console.log('✅ SW registered:', reg.scope);
+  }).catch(err=>console.log('SW registration failed:', err));
+}
+
+// PWA Install prompt (Android)
 let deferredPrompt;
 window.addEventListener('beforeinstallprompt',(e)=>{
   e.preventDefault();
