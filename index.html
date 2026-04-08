@@ -1231,7 +1231,7 @@ let state={
 
 // Save helpers
 const save={
-  posts:()=>localStorage.setItem('cg_posts',JSON.stringify(posts)),
+  posts:()=>{try{const lean=posts.map(p=>{if(p.image&&p.image.startsWith('data:')){try{localStorage.setItem('cg_post_img_'+p.id,p.image);}catch(e){}return {...p,image:'__local__'+p.id};}return p;});localStorage.setItem('cg_posts',JSON.stringify(lean));posts.forEach((p,i)=>{if(p.image&&p.image.startsWith('data:')){posts[i]={...p,image:'__local__'+p.id};}});}catch(e){try{const noImg=posts.map(p=>({...p,image:p.image?.startsWith('http')?p.image:''}));localStorage.setItem('cg_posts',JSON.stringify(noImg));}catch(e2){}}},
   stories:()=>localStorage.setItem('cg_stories',JSON.stringify(stories)),
   notifs:()=>localStorage.setItem('cg_notifications',JSON.stringify(notifications)),
   connections:()=>localStorage.setItem('cg_connections',JSON.stringify(userConnections)),
@@ -1575,12 +1575,16 @@ async function sbLoadPosts(){
     const {data,error}=await sb.from('cg_posts').select('*').order('created_at',{ascending:false});
     if(error) return;
     if(data){
-      posts=data.map(p=>({
+      const sbPosts=data.map(p=>({
         id:p.id,userId:p.user_id,content:p.content,
         isJob:p.is_job||false,likes:p.likes||0,shares:p.shares||0,
         accountType:p.account_type||'jobseeker',image:p.image||'',
         time:_timeAgoCompat(p.created_at)
       }));
+      // FIX: merge instead of overwrite — local posts (not yet synced) preserve చేయి
+      const sbIds=new Set(sbPosts.map(p=>p.id));
+      const localOnly=posts.filter(p=>!sbIds.has(p.id));
+      posts=[...localOnly,...sbPosts];
       save.posts();
     }
   }catch(e){}
@@ -1589,12 +1593,15 @@ async function sbLoadPosts(){
 async function sbSavePost(post){
   if(!window._sbKeyValid) return;
   try{
+    // FIX: base64 images Supabase కి పంపొద్దు (too large → silent fail)
+    // Image localStorage లో already save అయింది; Supabase లో cloud URL మాత్రమే store చేయి
+    const imageVal=(post.image&&!post.image.startsWith('data:'))?post.image:'';
     await sb.from('cg_posts').upsert({
       id:post.id,user_id:post.userId,content:post.content,
       is_job:post.isJob||false,likes:post.likes||0,shares:post.shares||0,
-      account_type:post.accountType||'jobseeker',image:post.image||''
+      account_type:post.accountType||'jobseeker',image:imageVal
     },{onConflict:'id'});
-  }catch(e){}
+  }catch(e){console.error('sbSavePost error:',e);}
 }
 
 async function sbDeletePost(postId){
@@ -2459,7 +2466,8 @@ function renderFeed(){
       const rows=coms.map(cm=>{const cu=getMember(cm.userId);if(!cu) return '';const cp=localStorage.getItem(`cg_pic_${cu.userId}`);const cav=cp?`<div class="av" style="width:28px;height:28px;overflow:hidden;"><img src="${cp}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>`:avHTML(cu.color,cu.avatar,28,false,cu.isAI,cu.accountType);return `<div class="comment-row">${cav}<div class="cbubble"><span class="cname" data-uid="${cm.userId}">${cu.name}</span><span class="ctime"> • ${cm.time}</span><div class="ctext">${cm.text}</div></div></div>`;}).join('');
       commsHTML=`<div class="comments-panel open"><div id="cmts-${post.id}">${rows}</div><div class="comment-input-row">${avHTML(ME.color,ME.avatar,28,true)}<input class="cmt-inp" data-pid="${post.id}" placeholder="Write a comment..."/><button class="cmt-send" data-pid="${post.id}">Send</button></div></div>`;
     }
-    const postImgHTML=post.image?`<div style="margin:8px 16px;border-radius:12px;overflow:hidden;max-height:400px;cursor:pointer;" class="post-img-wrap" data-pid="${post.id}"><img src="${post.image}" style="width:100%;max-height:400px;object-fit:cover;display:block;" class="post-img" data-pid="${post.id}"/></div>`:'';
+    const _resolvedImg=post.image&&post.image.startsWith("__local__")?localStorage.getItem("cg_post_img_"+post.image.slice(9)):post.image;
+    const postImgHTML=_resolvedImg?`<div style="margin:8px 16px;border-radius:12px;overflow:hidden;max-height:400px;cursor:pointer;" class="post-img-wrap" data-pid="${post.id}"><img src="${_resolvedImg}" style="width:100%;max-height:400px;object-fit:cover;display:block;" class="post-img" data-pid="${post.id}"/></div>`:'';
     c.innerHTML+=`<div class="card post fade-in">${post.isJob?'<div class="job-tag">💼 JOB POST</div>':''}<div class="post-head">${avEl}<div class="info"><span class="name" data-uid="${post.userId}">${a.name}<span class="badge ${at.badge}">${at.name}</span></span><div class="meta">${a.role||''}${a.company?' at '+a.company:''} • ${post.time}</div></div>${isMe?`<div style="display:flex;gap:4px;"><button class="post-pin-btn" data-pid="${post.id}" style="background:none;border:none;color:${isPinned(post.id)?'var(--accent2)':' var(--text2)'};cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Pin">📌</button><button class="post-edit-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Edit">✏️</button><button class="post-del-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Delete">🗑️</button></div>`:''}</div>${post.content?`<div class="post-body">${post.content}</div>`:''}${postImgHTML}<div class="post-stats" data-pid="${post.id}"><span>👍 ${post.likes+(isLiked?0:0)} likes</span><span>${coms.length} comments • ${post.shares} shares</span></div><div class="post-actions"><button class="pab${isLiked?' active':''}" data-act="like" data-pid="${post.id}">${isLiked?'❤️':'🤍'} Like</button><button class="pab" data-act="comment" data-pid="${post.id}">💬 Comment</button><button class="pab" data-act="share" data-pid="${post.id}">🔗 Share</button><button class="pab${isSaved?' active':''}" data-act="save" data-pid="${post.id}">${isSaved?'🔖':'🏷️'} Save</button>${a.accountType==='recruiter'||post.isJob?'<button class="pab apply-btn" data-act="apply" data-pid="'+post.id+'">📋 Apply</button>':''}</div>${commsHTML}</div>`;
   });
 }
@@ -2562,17 +2570,18 @@ document.querySelector('#createModal .cm-icons span:first-child')?.addEventListe
 });
 document.getElementById('cmPostBtn').addEventListener('click',()=>{
   const txt=document.getElementById('createPostTA').value.trim();
-  if((txt||_postImg)&&ME){
+if(txt.trim()){ // Fix: post even without image; ME always checked
     const post={id:'p_'+Date.now(),userId:ME.userId,content:txt,isJob:ME.accountType==='recruiter'||ME.accountType==='creator'&&(txt.toLowerCase().includes('hiring')||txt.toLowerCase().includes('job'))||txt.toLowerCase().includes('hiring')||txt.toLowerCase().includes('job'),time:'Just now',likes:0,shares:0,accountType:ME.accountType};
     if(_postImg) post.image=_postImg;
-    posts.unshift(post);
+posts.unshift(post);
     save.posts();
-    sbSavePost(post); // Sync to Supabase
+    sbSavePost(post);
     document.getElementById('createPostTA').value='';
     const prev=document.getElementById('cmImgPreview');if(prev) prev.remove();
     _postImg=null;
     document.getElementById('createModal').classList.remove('open');
-    renderFeed();showToast('✅ Post published!','success');
+    renderFeed(); // Ensure feed updates
+    showToast('✅ Post published! (' + posts.length + ' total)','success');
   } else {
     showToast('Write something or add a photo','error');
   }
