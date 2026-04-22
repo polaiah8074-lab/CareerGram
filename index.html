@@ -15,12 +15,13 @@
 </script>
 <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%236366f1'/><text y='.9em' font-size='70' x='50' text-anchor='middle'>📈</text></svg>"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>CareerGram</title>
+<title>CareerGram v2.5</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
+@supports(padding:env(safe-area-inset-bottom)){#bottombar{padding-bottom:env(safe-area-inset-bottom);}body{padding-top:env(safe-area-inset-top,0);}}
 :root{
   --bg:#0f172a;--card:rgba(30,27,75,0.55);--card2:rgba(30,27,75,0.75);
   --border:rgba(99,102,241,0.15);--borderh:rgba(99,102,241,0.38);
@@ -115,6 +116,10 @@ body.light .story-name{color:#334155;}
 /* Reels catbar sticky */
 body.light #reels-screen [style*="rgba(15,23,42"]{background:rgba(241,245,249,0.97)!important;color:#1e293b!important;}
 body.light .playlist-card{background:rgba(99,102,241,0.07);border-color:rgba(99,102,241,0.2);}
+body.light .story-ring.active{box-shadow:none;}
+body.light #home-screen .card{background:#fff;}
+body.light .cpb-input{color:#1e293b;}
+body.light #feedContainer .card{background:#fff;}
 /* Bottom nav active indicator */
 body.light .bb-btn.active::before{background:linear-gradient(90deg,var(--accent),var(--accent2));}
 /* Chat input */
@@ -247,6 +252,7 @@ body.light p{color:#475569;}
 /* STORY VIEWER */
 #story-viewer{display:none;position:fixed;inset:0;z-index:350;background:#000;flex-direction:column;}
 #story-viewer.open{display:flex;}
+#svDeleteBtn{display:none;} /* hidden by default, shown via JS for own stories */
 .sv-progress{position:absolute;top:0;left:0;right:0;height:3px;background:rgba(255,255,255,.2);z-index:10;}
 .sv-bar{height:100%;background:#fff;width:0%;transition:width 5s linear;border-radius:2px;}
 .sv-head{position:absolute;top:3px;left:0;right:0;z-index:10;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(180deg,rgba(0,0,0,.6) 0,transparent 100%);}
@@ -408,7 +414,8 @@ body.light p{color:#475569;}
 /* MODALS */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:300;display:none;align-items:center;justify-content:center;backdrop-filter:blur(3px);}
 .modal-ov.open{display:flex;}
-.mini-prof{background:#1e1b4b;border-radius:22px;width:360px;max-width:93vw;border:1px solid rgba(99,102,241,.25);box-shadow:0 30px 60px rgba(0,0,0,.5);overflow:hidden;}
+body.modal-open{overflow:hidden;}
+.mini-prof{background:#1e1b4b;border-radius:22px;width:360px;max-width:93vw;max-height:90vh;overflow-y:auto;border:1px solid rgba(99,102,241,.25);box-shadow:0 30px 60px rgba(0,0,0,.5);overflow:hidden;}
 .mini-prof .mp-banner{height:80px;}
 .mini-prof .mp-body{padding:0 22px 22px;margin-top:-40px;}
 .mini-prof .mp-top{display:flex;justify-content:space-between;align-items:flex-end;}
@@ -469,6 +476,10 @@ body.light p{color:#475569;}
 .btn-save{border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;}
 .btn-cancel{border:1px solid rgba(99,102,241,.3);background:transparent;color:var(--text);}
 /* NOTIFICATIONS */
+/* FIX: notif panel light mode */
+body.light .notif-hdr{background:#fff;}
+body.light .ni{background:#fff;}
+body.light .ni.unread{background:rgba(99,102,241,.08);}
 .notif-panel{position:fixed;top:60px;right:10px;width:320px;max-height:400px;background:var(--card);border:1px solid var(--border);border-radius:16px;z-index:200;display:none;overflow:hidden;box-shadow:0 10px 40px rgba(0,0,0,.3);}
 .notif-panel.open{display:block;}
 .notif-hdr{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
@@ -481,6 +492,9 @@ body.light p{color:#475569;}
 .ni-text{color:var(--text);font-size:12px;line-height:1.4;}
 .ni-time{color:var(--text2);font-size:10px;margin-top:4px;}
 .notif-dot{position:absolute;top:-2px;right:-2px;width:10px;height:10px;background:#ef4444;border-radius:50%;border:2px solid var(--bg);display:none;}
+/* PINNED POST indicator */
+.post[data-pinned='true']::before{content:'📌 Pinned';position:absolute;top:8px;right:12px;font-size:10px;color:var(--accent2);font-weight:700;background:rgba(99,102,241,.12);padding:2px 8px;border-radius:6px;}
+.post{position:relative;}
 /* TOAST */
 .toast-wrap{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:1000;display:flex;flex-direction:column;gap:8px;pointer-events:none;}
 .toast{padding:12px 20px;border-radius:12px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,.3);animation:tIn .3s ease;}
@@ -504,7 +518,7 @@ body.light p{color:#475569;}
 .fade-in{animation:fadeIn .25s ease;}
 .profile-pic-wrapper{position:relative;display:inline-block;}
 .pp-edit{position:absolute;bottom:0;right:0;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;cursor:pointer;border:2px solid var(--bg);display:none;}
-.profile-pic-wrapper:hover .pp-edit{display:flex;}
+.profile-pic-wrapper:hover .pp-edit{display:flex!important;}
 /* Settings toggles */
 .settings-toggle{width:48px;height:26px;border-radius:13px;background:var(--card);border:1px solid var(--border);cursor:pointer;position:relative;transition:background .3s;}
 .settings-toggle.active{background:var(--accent);}
@@ -549,7 +563,7 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
   <div class="toplogo"><div class="li">📈</div><span>Career<em>Gram</em></span></div>
   <div class="toptabs" id="topTabs">
     <button class="active" data-tab="home">Home</button>
-    <button data-tab="courses">Courses</button>
+    <button data-tab="courses" id="coursesTopBtn">Courses</button>
     <button data-tab="jobs">💼 Jobs</button>
     <button data-tab="reels">Reels</button>
     <button data-tab="search">Search</button>
@@ -626,6 +640,7 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
         <input class="otp-input" maxlength="1" inputmode="numeric"/>
       </div>
 <!-- OTP DisplayBox HIDDEN - Fix #1 -->
+      <div id="otpDisplayBox" style="background:rgba(99,102,241,.12);border:1px solid rgba(99,102,241,.25);border-radius:10px;padding:12px;text-align:center;margin:8px 0;color:#c7d2fe;font-size:16px;font-weight:700;letter-spacing:3px;display:none;"></div>
       <div class="otp-timer" id="otpTimerEl">Resend in <span id="otpTimerCount">60</span>s</div>
       <div class="otp-resend" id="resendOtpBtn">Resend OTP</div>
       <div class="err" id="otpErr"></div>
@@ -699,7 +714,12 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
 <!-- JOBS -->
 <div id="jobs-screen" class="screen">
   <div class="wrap">
-    <h2 style="color:#fff;font-size:20px;font-weight:700;margin-bottom:16px;">💼 Jobs</h2>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h2 style="color:#fff;font-size:20px;font-weight:700;">💼 Jobs</h2>
+      <div id="postJobBtnWrap" style="display:none;">
+        <button onclick="openJobPostModal()" style="padding:8px 16px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:13px;cursor:pointer;">➕ Post Job</button>
+      </div>
+    </div>
     <div class="si-wrap" style="margin-bottom:16px;"><span class="si-ic">🔍</span><input id="jobSearch" placeholder="Search jobs by title, skill, company..."/></div>
     <div class="job-filters" id="jobFilters">
       <span class="filter-chip active" data-filter="all">All Jobs</span>
@@ -792,6 +812,11 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
     </div>
     <div id="profileHighlights" style="display:none;padding:18px 0 0;"></div>
     <div id="profileViewsSection" style="display:none;"></div>
+    <!-- Saved Posts section - show only on own profile -->
+    <div class="card prof-section" id="savedPostsSection" style="display:none;">
+      <h4>🔖 Saved Posts</h4>
+      <div id="savedPostsList"></div>
+    </div>
     <div class="card prof-section">
       <h4>🏷️ Skills</h4>
       <div class="skill-tags" id="profSkills"></div>
@@ -879,7 +904,7 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
       <div class="av" id="createPostAv" style="width:38px;height:38px;font-size:15px;">PO<div class="dot" style="width:12px;height:12px;"></div></div>
       <div><div class="cma-name" id="createPostName">Poli</div><div class="cma-sub">Visible to everyone</div></div>
     </div>
-    <textarea id="createPostTA" placeholder="Share thoughts, achievements or opportunities..."></textarea>
+    <textarea id="createPostTA" placeholder="Share thoughts, achievements or opportunities..." style="min-height:80px;resize:none;" oninput="this.style.height='auto';this.style.height=(this.scrollHeight)+'px';"></textarea>
     <div class="cm-footer"><div class="cm-icons"><span>📸 Photo</span><span>📎 Link</span><span>💼 Job</span></div><button class="cm-post-btn" id="cmPostBtn">Post</button></div>
   </div>
 </div>
@@ -938,7 +963,7 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
     </div>
     <div style="margin:16px 0;">
       <input type="file" id="videoFileInp" accept="video/*"/>
-      <div id="videoUploadArea" style="border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;" onclick="document.getElementById('videoFileInp').click()">
+      <div id="videoUploadArea" style="border:2px dashed var(--border);border-radius:12px;padding:40px 20px;text-align:center;cursor:pointer;" onclick="if(event.target===this||!event.target.closest('button')){document.getElementById('videoFileInp').click();}">
         <div style="font-size:48px;margin-bottom:12px;">🎬</div>
         <div style="color:var(--text);font-size:15px;font-weight:600;">Upload Video Tutorial</div>
         <div style="color:var(--text2);font-size:12px;margin-top:4px;">MP4, MOV, AVI • Max 100MB</div>
@@ -1152,11 +1177,19 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
       </div>
     </div>
 
+    <!-- Keyboard Shortcuts -->
+    <div class="card prof-section" style="margin-bottom:14px;">
+      <h4>⌨️ Keyboard Shortcuts</h4>
+      <div style="color:var(--text2);font-size:12px;line-height:2;">
+        <div><kbd style="background:rgba(99,102,241,.15);padding:2px 8px;border-radius:4px;color:var(--accent2);">ESC</kbd> — Close any modal</div>
+        <div><kbd style="background:rgba(99,102,241,.15);padding:2px 8px;border-radius:4px;color:var(--accent2);">Enter</kbd> — Send message / Post comment</div>
+      </div>
+    </div>
     <!-- App Info -->
     <div class="card prof-section" style="margin-bottom:14px;">
       <h4>ℹ️ App Info</h4>
       <div style="color:var(--text2);font-size:13px;line-height:1.8;">
-        <div>App: <span style="color:#fff;">CareerGram v2.1</span></div>
+        <div>App: <span style="color:#fff;">CareerGram v2.5 ✅ Fixed</span></div>
         <div>User ID: <span style="color:var(--accent2);" id="settingsUserId"></span></div>
         <div>Account Type: <span style="color:var(--accent2);" id="settingsAccType"></span></div>
         <div>Member since: <span style="color:#fff;" id="settingsJoined"></span></div>
@@ -1181,6 +1214,9 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
 <!-- IMAGE MODAL -->
 <div class="img-modal" id="imgModal"><button class="img-modal-close" id="closeImgModal">×</button><img id="modalImg" src="" alt=""/></div>
 
+<!-- OFFLINE BANNER -->
+<div id="offlineBanner" style="display:none;position:fixed;top:60px;left:0;right:0;z-index:999;background:#f59e0b;color:#000;text-align:center;padding:8px;font-size:13px;font-weight:700;">📡 You are offline — some features may not work</div>
+
 <!-- TOAST -->
 <div class="toast-wrap" id="toastContainer"></div>
 
@@ -1189,20 +1225,33 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
 // DATA INIT
 // =============================================
 if(!localStorage.getItem('cg_users')){
-  localStorage.setItem('cg_users',JSON.stringify([{
-    id:'user_poli',userId:'poli',password:'poli123',name:'Poli',email:'poli@example.com',
+  localStorage.setItem('cg_users',JSON.stringify([
+    {id:'user_poli',userId:'poli',password:'poli123',name:'Poli',email:'poli@example.com',
     accountType:'jobseeker',role:'Full Stack Developer',city:'Hyderabad',avatar:'PO',
     color:'#6366f1',bio:'Full Stack Developer | Passionate about building scalable apps.',
     skills:['React','Node.js','AWS','TypeScript','MongoDB'],company:'TechCorp',
     experience:'3 years',connections:47,followers:312,posts:23,online:true,
-    createdAt:new Date().toISOString()
-  }]));
+    createdAt:new Date().toISOString()},
+    {id:'user_teja',userId:'teja',password:'teja123',name:'Teja',email:'teja@example.com',
+    accountType:'recruiter',role:'Senior HR Manager',city:'Hyderabad',avatar:'TE',
+    color:'#10b981',bio:'Recruiting top tech talent at TechCorp | 8+ years experience.',
+    skills:['HR Analytics','LinkedIn Sourcing','Technical Screening','ATS Systems'],company:'TechCorp',
+    experience:'8 years',connections:142,followers:890,posts:45,online:true,
+    createdAt:new Date().toISOString()}
+  ]));
 }
 ['cg_videos','cg_connections','cg_posts','cg_stories','cg_notifications',
  'cg_work','cg_edu','cg_certs','cg_savedjobs','cg_appliedjobs',
  'cg_postint','cg_chats'].forEach(k=>{
   if(!localStorage.getItem(k)) localStorage.setItem(k,k==='cg_videos'||k==='cg_connections'||k==='cg_postint'||k==='cg_chats'?'{}':'[]');
 });
+// Ensure both test users have connection objects
+(()=>{
+  const conns=JSON.parse(localStorage.getItem('cg_connections')||'{}');
+  let changed=false;
+  ['poli','teja'].forEach(uid=>{if(!conns[uid]){conns[uid]={followers:[],following:[]};changed=true;}});
+  if(changed) localStorage.setItem('cg_connections',JSON.stringify(conns));
+})();
 
 // =============================================
 // GLOBAL STATE
@@ -1231,7 +1280,33 @@ let state={
 
 // Save helpers
 const save={
-  posts:()=>{try{const lean=posts.map(p=>{if(p.image&&p.image.startsWith('data:')){try{localStorage.setItem('cg_post_img_'+p.id,p.image);}catch(e){}return {...p,image:'__local__'+p.id};}return p;});localStorage.setItem('cg_posts',JSON.stringify(lean));posts.forEach((p,i)=>{if(p.image&&p.image.startsWith('data:')){posts[i]={...p,image:'__local__'+p.id};}});}catch(e){try{const noImg=posts.map(p=>({...p,image:p.image?.startsWith('http')?p.image:''}));localStorage.setItem('cg_posts',JSON.stringify(noImg));}catch(e2){}}},
+  posts:()=>{
+    try{
+      const lean=posts.map(p=>{
+        if(p.image&&p.image.startsWith('data:')){
+          try{localStorage.setItem('cg_post_img_'+p.id,p.image);}catch(imgE){
+            // Image too large for localStorage — skip storing image separately
+          }
+          return {...p,image:'__local__'+p.id};
+        }
+        return p;
+      });
+      // Save posts without large base64 data
+      const leanStr=JSON.stringify(lean);
+      if(leanStr.length<4*1024*1024){ // < 4MB safe limit
+        localStorage.setItem('cg_posts',leanStr);
+      } else {
+        // Emergency: save without images at all
+        const noImg=lean.map(p=>({...p,image:p.image?.startsWith('http')?p.image:''}));
+        localStorage.setItem('cg_posts',JSON.stringify(noImg));
+      }
+    }catch(e){
+      try{
+        const noImg=posts.map(p=>({...p,image:p.image?.startsWith('http')?p.image:''}));
+        localStorage.setItem('cg_posts',JSON.stringify(noImg));
+      }catch(e2){console.error('Posts save failed completely:',e2);}
+    }
+  },
   stories:()=>localStorage.setItem('cg_stories',JSON.stringify(stories)),
   notifs:()=>localStorage.setItem('cg_notifications',JSON.stringify(notifications)),
   connections:()=>localStorage.setItem('cg_connections',JSON.stringify(userConnections)),
@@ -1313,18 +1388,18 @@ const SAMPLE_REELS=[
 // Demo stories — always visible, all account types can see them
 const DEMO_STORIES=[
   // Creator stories
-  {id:'ds1',userId:'demo_creator1',type:'emoji',emoji:'🐍',caption:'Just published Python Async tutorial! 🔥',postedAt:Date.now()-3600000,expiresAt:Date.now()+82800000,
+  {id:'ds1',_isDemo:true,userId:'demo_creator1',type:'emoji',emoji:'🐍',caption:'Just published Python Async tutorial! 🔥',postedAt:Date.now()-3600000,expiresAt:Date.now()+82800000,
    _user:{userId:'demo_creator1',name:'Arjun Dev',avatar:'AD',color:'#10b981',accountType:'creator'}},
-  {id:'ds2',userId:'demo_creator2',type:'emoji',emoji:'⚛️',caption:'React 19 is mind-blowing! Check my new video',postedAt:Date.now()-7200000,expiresAt:Date.now()+79200000,
+  {id:'ds2',_isDemo:true,userId:'demo_creator2',type:'emoji',emoji:'⚛️',caption:'React 19 is mind-blowing! Check my new video',postedAt:Date.now()-7200000,expiresAt:Date.now()+79200000,
    _user:{userId:'demo_creator2',name:'Priya Sharma',avatar:'PS',color:'#6366f1',accountType:'creator'}},
-  {id:'ds3',userId:'demo_creator3',type:'emoji',emoji:'🤖',caption:'ML model hit 98% accuracy today 🎉',postedAt:Date.now()-1800000,expiresAt:Date.now()+86000000,
+  {id:'ds3',_isDemo:true,userId:'demo_creator3',type:'emoji',emoji:'🤖',caption:'ML model hit 98% accuracy today 🎉',postedAt:Date.now()-1800000,expiresAt:Date.now()+86000000,
    _user:{userId:'demo_creator3',name:'AI Guru',avatar:'AG',color:'#a855f7',accountType:'creator'}},
   // Recruiter stories
-  {id:'ds4',userId:'demo_recruiter1',type:'emoji',emoji:'💼',caption:'Hiring 5 React Developers! 25-35 LPA. Apply now!',postedAt:Date.now()-5400000,expiresAt:Date.now()+81000000,
+  {id:'ds4',_isDemo:true,userId:'demo_recruiter1',type:'emoji',emoji:'💼',caption:'Hiring 5 React Developers! 25-35 LPA. Apply now!',postedAt:Date.now()-5400000,expiresAt:Date.now()+81000000,
    _user:{userId:'demo_recruiter1',name:'TechCorp HR',avatar:'TC',color:'#10b981',accountType:'recruiter'}},
-  {id:'ds5',userId:'demo_recruiter2',type:'emoji',emoji:'🚀',caption:'Urgent: AWS Architects needed. Remote OK. 40+ LPA!',postedAt:Date.now()-900000,expiresAt:Date.now()+85500000,
+  {id:'ds5',_isDemo:true,userId:'demo_recruiter2',type:'emoji',emoji:'🚀',caption:'Urgent: AWS Architects needed. Remote OK. 40+ LPA!',postedAt:Date.now()-900000,expiresAt:Date.now()+85500000,
    _user:{userId:'demo_recruiter2',name:'CloudNine Hire',avatar:'CN',color:'#f59e0b',accountType:'recruiter'}},
-  {id:'ds6',userId:'demo_recruiter3',type:'emoji',emoji:'🎯',caption:'Walk-in interviews this Saturday — Python roles!',postedAt:Date.now()-3000000,expiresAt:Date.now()+83400000,
+  {id:'ds6',_isDemo:true,userId:'demo_recruiter3',type:'emoji',emoji:'🎯',caption:'Walk-in interviews this Saturday — Python roles!',postedAt:Date.now()-3000000,expiresAt:Date.now()+83400000,
    _user:{userId:'demo_recruiter3',name:'DataFlow HR',avatar:'DF',color:'#ec4899',accountType:'recruiter'}},
 ];
 
@@ -1574,10 +1649,11 @@ async function sbLoadPosts(){
   try{
     const {data,error}=await sb.from('cg_posts').select('*').order('created_at',{ascending:false});
     if(error) return;
-    if(data){
+    if(data&&data.length>0){
       const sbPosts=data.map(p=>({
         id:p.id,userId:p.user_id,content:p.content,
         isJob:p.is_job||false,likes:p.likes||0,shares:p.shares||0,
+        views:p.views||0,
         accountType:p.account_type||'jobseeker',image:p.image||'',
         time:_timeAgoCompat(p.created_at)
       }));
@@ -1598,7 +1674,7 @@ async function sbSavePost(post){
     const imageVal=(post.image&&!post.image.startsWith('data:'))?post.image:'';
     await sb.from('cg_posts').upsert({
       id:post.id,user_id:post.userId,content:post.content,
-      is_job:post.isJob||false,likes:post.likes||0,shares:post.shares||0,
+      is_job:post.isJob||false,likes:post.likes||0,shares:post.shares||0,views:post.views||0,
       account_type:post.accountType||'jobseeker',image:imageVal
     },{onConflict:'id'});
   }catch(e){console.error('sbSavePost error:',e);}
@@ -1780,6 +1856,17 @@ function startRealtimeSync(){
     }
   ).subscribe();
 
+  // Connections realtime - update follow counts
+  sb.channel('cg_conns_rt').on('postgres_changes',
+    {event:'*',schema:'public',table:'cg_connections'},
+    async()=>{
+      await sbLoadConnections();
+      if(document.getElementById('profile-screen')?.classList.contains('active')){
+        renderConnections(state.currentProfileId||ME?.userId);
+      }
+    }
+  ).subscribe();
+
   // New users
   sb.channel('cg_users_rt').on('postgres_changes',
     {event:'INSERT',schema:'public',table:'cg_users'},
@@ -1821,6 +1908,16 @@ function subscribeToRoom(roomId){
         window._chatMsgs.push(msgObj);
         localStorage.setItem(window._chatKey,JSON.stringify(window._chatMsgs));
         renderChatMsgs(window._chatMsgs,window._chatIsAI);
+        // Show unread badge if chat is not currently open
+        if(state.currentTab!=='chat'||!document.getElementById('chat-window').classList.contains('open')){
+          const sender=getMember(m.from_user);
+          if(sender){
+            chatUnread[m.from_user]=(chatUnread[m.from_user]||0)+1;
+            // Add to notifications
+            notifications.unshift({id:'n_'+Date.now(),icon:'💬',text:sender.name+': '+m.text?.slice(0,40)||'Sent a message',time:'Just now',unread:true});
+            save.notifs();renderNotifications();
+          }
+        }
       }
     ).subscribe();
 }
@@ -1907,6 +2004,14 @@ function showApp(){
   document.getElementById('bottombar').style.display='flex';
   updateTopAvatar();
   showScreen('home');
+  // Load this user's stored notifications
+  const _myNotifs=JSON.parse(localStorage.getItem('cg_notifs_'+ME.userId)||'[]');
+  if(_myNotifs.length){
+    const existIds=new Set(notifications.map(n=>n.id));
+    _myNotifs.forEach(n=>{if(!existIds.has(n.id)) notifications.unshift(n);});
+    notifications=notifications.slice(0,100);
+    save.notifs();
+  }
   renderNotifications();
   if(!userConnections[ME.userId]) userConnections[ME.userId]={followers:[],following:[]};
   // Update Courses tab label based on account type
@@ -1920,11 +2025,13 @@ function showApp(){
     renderStories();
     if(document.getElementById('reels-screen')?.classList.contains('active')) renderReels();
     if(document.getElementById('jobs-screen')?.classList.contains('active')) renderJobs();
+    startAutoRefresh(); // cross-device sync
   });
 }
 
 function logout(){
   if(!confirm('Are you sure you want to logout?')) return;
+  clearInterval(_autoRefreshTimer);
   localStorage.removeItem('cg_session');
   ME=null;
   document.getElementById('topbar').style.display='none';
@@ -2100,6 +2207,9 @@ document.getElementById('completeSignupBtn').addEventListener('click',()=>{
   document.getElementById('loginCard').style.display='block';
   document.getElementById('loginId').value=userId;
   document.getElementById('loginPw').value=pwd;
+  // Add welcome notification
+  const _wn=[{id:'n_welcome',icon:'🎉',text:'Welcome to CareerGram! Complete your profile to get started.',time:'Just now',unread:true}];
+  localStorage.setItem('cg_notifs_'+userId,JSON.stringify(_wn));
   showToast('🎉 Account created! Please sign in.','success');
 });
 
@@ -2107,6 +2217,10 @@ document.getElementById('completeSignupBtn').addEventListener('click',()=>{
 // SCREEN NAVIGATION
 // =============================================
 function showScreen(name){
+  // Guard: require login for all screens except login itself
+  if(!ME&&name!=='login'){
+    return; // silently ignore until user logs in
+  }
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   const scr=document.getElementById(name+'-screen');
   if(scr) scr.classList.add('active');
@@ -2127,7 +2241,10 @@ function showScreen(name){
     document.querySelectorAll('[data-tab="courses"] .bbl').forEach(el=>el.textContent=isCreator?'My Courses':'Courses');
     document.querySelectorAll('[data-tab="courses"] .bbi').forEach(el=>el.textContent=isCreator?'🎬':'📚');
   }
-  if(name==='jobs') renderJobs();
+  if(name==='jobs'){renderJobs();
+    const pjw=document.getElementById('postJobBtnWrap');
+    if(pjw) pjw.style.display=(ME?.accountType==='recruiter')?'block':'none';
+  }
   if(name==='search') renderSearch('');
   if(name==='chat') renderChatList();
   if(name==='settings'){updateSettingsUI();}
@@ -2142,7 +2259,7 @@ document.querySelectorAll('#bottombar .bb-btn[data-tab]').forEach(b=>b.addEventL
 }));
 document.getElementById('meBtnTop').addEventListener('click',()=>ME&&openFullProfile(ME.userId));
 document.getElementById('profileBtn').addEventListener('click',()=>ME&&openFullProfile(ME.userId));
-document.getElementById('profBack').addEventListener('click',()=>showScreen('home'));
+document.getElementById('profBack').addEventListener('click',()=>showScreen(state._prevTab||'home'));
 
 // =============================================
 // STORIES (FIX: click listeners via delegation)
@@ -2161,14 +2278,15 @@ function renderStories(){
   if(ME?.accountType==='recruiter'){
     rRow.innerHTML=`<div class="story-item" id="addRecruiterStoryBtn" style="cursor:pointer;"><div class="story-ring recruiter" style="background:rgba(16,185,129,.3);border:2px dashed rgba(16,185,129,.5);padding:2px;"><div class="story-av" style="background:rgba(16,185,129,.15);font-size:24px;">➕</div></div><div class="story-name" style="color:#10b981;">Add Story</div></div>`;
   }
-  // Only real user-uploaded stories (no demo)
-  const allStories=[...stories];
+  // Include demo stories + real uploaded stories
+  const _storyNow=Date.now();
+  const allStories=[...DEMO_STORIES.filter(s=>s.expiresAt>_storyNow),...stories];
   const byUser={};
   allStories.forEach(s=>{
     if(!byUser[s.userId]) byUser[s.userId]=[];
     byUser[s.userId].push(s);
   });
-  const getStoryUser=(s)=>getMember(s.userId);
+  const getStoryUser=(s)=>s._user||getMember(s.userId);
   Object.keys(byUser).forEach(uid=>{
     const storyList=byUser[uid];
     const latest=storyList[storyList.length-1];
@@ -2307,9 +2425,8 @@ function resetStoryModal(){
 
 // FIX BUG 3: Story viewer uses display:flex via .open class
 function openStoryViewer(storyId){
-  // Check user-uploaded stories first, then demo stories
-  // Only real user-uploaded stories
-  const s=stories.find(x=>x.id===storyId);
+  // Check real stories first, then demo stories
+  const s=stories.find(x=>x.id===storyId&&(x.expiresAt>Date.now()||x.id.startsWith('ds')))||DEMO_STORIES.find(x=>x.id===storyId);
   if(!s) return;
   const u=s._user||getMember(s.userId);if(!u) return;
   document.getElementById('svAv').style.background=`linear-gradient(135deg,${u.color},${u.color}cc)`;
@@ -2320,7 +2437,7 @@ function openStoryViewer(storyId){
   document.getElementById('svDesc').textContent=s.caption?'':'';
   // Show poll if exists
   let pollEl=document.getElementById('storyPollArea');
-  if(!pollEl){pollEl=document.createElement('div');pollEl.id='storyPollArea';document.querySelector('#story-viewer .sv-body').appendChild(pollEl);}
+  if(!pollEl){pollEl=document.createElement('div');pollEl.id='storyPollArea';pollEl.style.cssText='width:100%;max-width:360px;';const svBody=document.querySelector('#story-viewer .sv-body');if(svBody) svBody.appendChild(pollEl);}
   if(s.hasPoll&&s.pollOptions){
     const myVote=s.pollVotes?.[ME?.userId];
     const total=s.pollOptions.reduce((t,o)=>t+o.votes,0)||1;
@@ -2346,8 +2463,15 @@ function openStoryViewer(storyId){
   else{svEm.style.display='block';svEm.textContent=s.emoji||'💼';svImg.style.display='none';svVid.style.display='none';}
   // Show apply button for recruiters
   const hasApplyLink=s.caption&&(s.caption.includes('http')||s.caption.toLowerCase().includes('apply')||s.caption.toLowerCase().includes('hiring')||s.caption.toLowerCase().includes('job'));
-  document.getElementById('svApply').style.display=(u.accountType==='recruiter'&&hasApplyLink)?'block':'none';
+  // Show apply for all recruiter stories (hiring intent always)  
+  document.getElementById('svApply').style.display=(u.accountType==='recruiter'||s.caption?.toLowerCase().includes('hir'))?'block':'none';
   window._currentStoryId=s.id;
+  // Show delete button only for own stories (not demo)
+  const _svDelBtn=document.getElementById('svDeleteBtn');
+  if(_svDelBtn){
+    const _isOwnStory=ME&&s.userId===ME.userId&&!s.id.startsWith('ds');
+    _svDelBtn.style.display=_isOwnStory?'inline-block':'none';
+  }
   // Add highlight button for own stories
   let hlBtn=document.getElementById('addHighlightBtn');
   if(!hlBtn){hlBtn=document.createElement('button');hlBtn.id='addHighlightBtn';hlBtn.style.cssText='position:absolute;top:60px;right:16px;padding:6px 14px;border-radius:20px;border:none;background:rgba(245,158,11,.9);color:#fff;font-weight:700;font-size:12px;cursor:pointer;z-index:20;';document.getElementById('story-viewer').appendChild(hlBtn);}
@@ -2377,13 +2501,24 @@ document.getElementById('svClose').addEventListener('click',()=>{
   document.getElementById('svProgressBar').style.width='0%';
   document.getElementById('svVideo').pause();
 });
+// Delete own story from story viewer
+document.getElementById('svDeleteBtn').addEventListener('click',()=>{
+  if(window._currentStoryId&&ME){
+    const realStory=stories.find(s=>s.id===window._currentStoryId);
+    if(realStory&&realStory.userId===ME.userId){
+      deleteStory(window._currentStoryId);
+    } else {
+      showToast('Demo stories cannot be deleted','error');
+    }
+  }
+});
 
 // =============================================
 // FEED / POSTS
 // =============================================
 function initDemoPosts(){
   posts=[
-    {id:'post_demo1',userId:'poli',content:'Hey everyone! 👋 Excited to be on CareerGram. Looking to connect with fellow professionals. What are you all working on? 🚀',isJob:false,time:'2h ago',likes:12,shares:3,accountType:'jobseeker'},
+    {id:'post_demo1',views:42,userId:'poli',content:'Hey everyone! 👋 Excited to be on CareerGram. Looking to connect with fellow professionals. What are you all working on? 🚀',isJob:false,time:'2h ago',likes:12,shares:3,views:45,accountType:'jobseeker',createdAt:new Date(Date.now()-7200000).toISOString()},
     {id:'post_job1',userId:'poli',content:'🚀 WE ARE HIRING — React Developer\n\n📍 Hyderabad (Hybrid)\n💰 18–28 LPA\n\nRequirements:\n• 2+ years React experience\n• Node.js knowledge\n• Good communication\n\nFreshers with strong projects also welcome!\n\nDM me or comment below to apply. 📩',isJob:true,time:'3h ago',likes:24,shares:8,accountType:'recruiter'},
     {id:'post_job2',userId:'poli',content:'💼 URGENT HIRING — Python Backend Engineer\n\n🌐 Remote | Full-time\n💰 25–40 LPA\n\nSkills needed:\n• Python (Django/FastAPI)\n• PostgreSQL or MongoDB\n• AWS basics\n• 3+ years experience\n\nSend your resume to careers@techcorp.com\n#hiring #python #remote',isJob:true,time:'5h ago',likes:41,shares:15,accountType:'recruiter'},
     {id:'post_job3',userId:'poli',content:'🎯 Fresher Opportunity — Full Stack Developer\n\n📍 Bangalore / Remote\n💰 6–10 LPA\n\nLooking for:\n• React + Node.js basics\n• Good DSA knowledge\n• 2024/2025 passout\n\n✅ Training provided\n✅ Work from home option\n\nApply now — limited seats! 🔥',isJob:true,time:'1d ago',likes:67,shares:29,accountType:'recruiter'},
@@ -2447,12 +2582,15 @@ function renderFeed(){
     });
   });
   if(posts.length===0){
-    c.innerHTML+=`<div style="text-align:center;padding:40px;color:var(--text2);"><div style="font-size:48px;margin-bottom:16px;">📝</div><div style="font-size:16px;font-weight:600;">No posts yet</div><div style="font-size:13px;margin-top:8px;">Create your first post!</div></div>`;
+    c.innerHTML+=`<div style="text-align:center;padding:40px;color:var(--text2);"><div style="font-size:48px;margin-bottom:16px;">📝</div><div style="font-size:16px;font-weight:600;">No posts yet</div><div style="font-size:13px;margin-top:8px;">Create your first post using the ✍️ box above!</div></div>`;
     return;
   }
   const ui=postInteractions[ME?.userId]||{liked:{},saved:{},comments:{}};
-  posts.forEach(post=>{
-    const a=getMember(post.userId);if(!a) return;
+  // Sort pinned posts to top
+  const _pinnedIds=JSON.parse(localStorage.getItem('cg_pinned_posts_'+ME?.userId)||'[]');
+  const _sortedPosts=[...posts.filter(p=>_pinnedIds.includes(p.id)),...posts.filter(p=>!_pinnedIds.includes(p.id))];
+  _sortedPosts.forEach(post=>{
+    const a=getMember(post.userId)||(post.userId==='poli'?{userId:'poli',name:'Poli',avatar:'PO',color:'#6366f1',role:'Full Stack Developer',company:'TechCorp',online:true,accountType:'jobseeker'}:null);if(!a) return;
     const isLiked=!!(ui.liked&&ui.liked[post.id]);
     const isSaved=!!(ui.saved&&ui.saved[post.id]);
     const coms=(ui.comments&&ui.comments[post.id])||[];
@@ -2468,7 +2606,7 @@ function renderFeed(){
     }
     const _resolvedImg=post.image&&post.image.startsWith("__local__")?localStorage.getItem("cg_post_img_"+post.image.slice(9)):post.image;
     const postImgHTML=_resolvedImg?`<div style="margin:8px 16px;border-radius:12px;overflow:hidden;max-height:400px;cursor:pointer;" class="post-img-wrap" data-pid="${post.id}"><img src="${_resolvedImg}" style="width:100%;max-height:400px;object-fit:cover;display:block;" class="post-img" data-pid="${post.id}"/></div>`:'';
-    c.innerHTML+=`<div class="card post fade-in">${post.isJob?'<div class="job-tag">💼 JOB POST</div>':''}<div class="post-head">${avEl}<div class="info"><span class="name" data-uid="${post.userId}">${a.name}<span class="badge ${at.badge}">${at.name}</span></span><div class="meta">${a.role||''}${a.company?' at '+a.company:''} • ${post.time}</div></div>${isMe?`<div style="display:flex;gap:4px;"><button class="post-pin-btn" data-pid="${post.id}" style="background:none;border:none;color:${isPinned(post.id)?'var(--accent2)':' var(--text2)'};cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Pin">📌</button><button class="post-edit-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Edit">✏️</button><button class="post-del-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Delete">🗑️</button></div>`:''}</div>${post.content?`<div class="post-body">${post.content}</div>`:''}${postImgHTML}<div class="post-stats" data-pid="${post.id}"><span>👍 ${post.likes+(isLiked?0:0)} likes</span><span>${coms.length} comments • ${post.shares} shares</span></div><div class="post-actions"><button class="pab${isLiked?' active':''}" data-act="like" data-pid="${post.id}">${isLiked?'❤️':'🤍'} Like</button><button class="pab" data-act="comment" data-pid="${post.id}">💬 Comment</button><button class="pab" data-act="share" data-pid="${post.id}">🔗 Share</button><button class="pab${isSaved?' active':''}" data-act="save" data-pid="${post.id}">${isSaved?'🔖':'🏷️'} Save</button>${a.accountType==='recruiter'||post.isJob?'<button class="pab apply-btn" data-act="apply" data-pid="'+post.id+'">📋 Apply</button>':''}</div>${commsHTML}</div>`;
+    c.innerHTML+=`<div class="card post fade-in" data-pinned="${_pinnedIds.includes(post.id)?'true':'false'}">${post.isJob?'<div class="job-tag">💼 JOB POST</div>':''}<div class="post-head">${avEl}<div class="info"><span class="name" data-uid="${post.userId}">${a.name}<span class="badge ${at.badge}">${at.name}</span></span><div class="meta">${a.role||''}${a.company?' at '+a.company:''} • ${post.time}</div></div>${isMe?`<div style="display:flex;gap:4px;"><button class="post-pin-btn" data-pid="${post.id}" style="background:none;border:none;color:${isPinned(post.id)?'var(--accent2)':' var(--text2)'};cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Pin">📌</button><button class="post-edit-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Edit">✏️</button><button class="post-del-btn" data-pid="${post.id}" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:12px;padding:2px 6px;border-radius:6px;" title="Delete">🗑️</button></div>`:''}</div>${post.content?`<div class="post-body">${post.content}</div>`:''}${postImgHTML}<div class="post-stats" data-pid="${post.id}"><span>👍 ${post.likes} likes</span><span>${coms.length} comments • 👁 ${post.views||0} views</span></div><div class="post-actions"><button class="pab${isLiked?' active':''}" data-act="like" data-pid="${post.id}">${isLiked?'❤️':'🤍'} Like</button><button class="pab" data-act="comment" data-pid="${post.id}">💬 Comment</button><button class="pab" data-act="share" data-pid="${post.id}">🔗 Share</button><button class="pab${isSaved?' active':''}" data-act="save" data-pid="${post.id}">${isSaved?'🔖':'🏷️'} Save</button>${a.accountType==='recruiter'||post.isJob?'<button class="pab apply-btn" data-act="apply" data-pid="'+post.id+'">📋 Apply</button>':''}</div>${commsHTML}</div>`;
   });
 }
 
@@ -2476,21 +2614,49 @@ document.addEventListener('click',e=>{
   // Post action buttons
   const pab=e.target.closest('.pab[data-act]');
   if(pab){
+    e.stopPropagation();
     const pid=pab.dataset.pid,act=pab.dataset.act;
     if(!ME){showToast('Please sign in first','error');return;}
     if(!postInteractions[ME.userId]) postInteractions[ME.userId]={liked:{},saved:{},comments:{}};
     const ui=postInteractions[ME.userId];
     const post=posts.find(p=>p.id===pid);if(!post) return;
     if(act==='like'){
-      if(ui.liked[pid]){delete ui.liked[pid];post.likes=Math.max(0,post.likes-1);}
-      else{ui.liked[pid]=true;post.likes=(post.likes||0)+1;}
+      if(ui.liked[pid]){
+        delete ui.liked[pid];
+        post.likes=Math.max(0,post.likes-1);
+        if(window._sbKeyValid) sb.from('cg_posts').update({likes:post.likes}).eq('id',pid).then(()=>{}).catch(()=>{});
+      }
+      else{
+        ui.liked[pid]=true;post.likes=(post.likes||0)+1;
+        if(window._sbKeyValid) sb.from('cg_posts').update({likes:post.likes}).eq('id',pid).then(()=>{}).catch(()=>{});
+        // Notification for post author
+        if(post.userId&&post.userId!==ME.userId){
+          const notifKey='cg_notifs_'+post.userId;
+          const nArr=JSON.parse(localStorage.getItem(notifKey)||'[]');
+          nArr.unshift({id:'n_'+Date.now(),icon:'❤️',text:ME.name+' liked your post',time:'Just now',unread:true});
+          localStorage.setItem(notifKey,JSON.stringify(nArr.slice(0,50)));
+        }
+      }
       save.posts();save.postint();renderFeed();
     } else if(act==='save'){
       if(ui.saved[pid]) delete ui.saved[pid];else ui.saved[pid]=true;
-      save.postint();renderFeed();showToast(ui.saved?.[pid]?'Saved!':'Unsaved','success');
+      const _wasSaved=!!ui.saved[pid];save.postint();renderFeed();showToast(_wasSaved?'🔖 Saved!':'Removed from saved','success');
     } else if(act==='comment'){
+      // Track post view count on expand
+      const _vPost=posts.find(p=>p.id===pid);
+      if(_vPost&&state.expandedPost!==pid){
+        _vPost.views=(_vPost.views||0)+1;
+        save.posts();
+        // Sync view count to Supabase
+        if(window._sbKeyValid) sb.from('cg_posts').update({views:_vPost.views}).eq('id',pid).then(()=>{}).catch(()=>{});
+      }
       state.expandedPost=state.expandedPost===pid?null:pid;renderFeed();
-    } else if(act==='share'){showToast('✅ Copied share link!','success');}
+    } else if(act==='share'){
+  const shareUrl=window.location.href.split('?')[0]+'?post='+pid;
+  try{navigator.clipboard.writeText(shareUrl).then(()=>showToast('✅ Link copied!','success')).catch(()=>showToast('✅ Share link ready!','success'));}
+  catch(e){showToast('✅ Share link ready!','success');}
+  post.shares=(post.shares||0)+1;save.posts();
+}
     else if(act==='apply'){showToast('✅ Application sent!','success');}
     return;
   }
@@ -2503,7 +2669,20 @@ document.addEventListener('click',e=>{
       if(!postInteractions[ME.userId]) postInteractions[ME.userId]={liked:{},saved:{},comments:{}};
       if(!postInteractions[ME.userId].comments[pid]) postInteractions[ME.userId].comments[pid]=[];
       postInteractions[ME.userId].comments[pid].push({userId:ME.userId,text:inp.value.trim(),time:'Just now'});
+      // Notify post author
+      const _cPost=posts.find(p=>p.id===pid);
+      if(_cPost&&_cPost.userId&&_cPost.userId!==ME.userId){
+        const _nk='cg_notifs_'+_cPost.userId;
+        const _na=JSON.parse(localStorage.getItem(_nk)||'[]');
+        _na.unshift({id:'n_'+Date.now(),icon:'💬',text:ME.name+' commented: '+inp.value.trim().slice(0,40),time:'Just now',unread:true});
+        localStorage.setItem(_nk,JSON.stringify(_na.slice(0,50)));
+      }
       save.postint();renderFeed();
+      // Scroll to comment
+      setTimeout(()=>{
+        const cmtArea=document.getElementById('cmts-'+pid);
+        if(cmtArea) cmtArea.scrollIntoView({behavior:'smooth',block:'end'});
+      },150);
     }
     return;
   }
@@ -2553,7 +2732,7 @@ document.getElementById('cmClose').addEventListener('click',()=>document.getElem
 let _postImg=null;
 // Photo button in create post
 document.querySelector('#createModal .cm-icons span:first-child')?.addEventListener('click',()=>{
-  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';
+  const inp=document.createElement('input');inp.type='file';inp.accept='image/*';inp.capture='environment';
   inp.onchange=e=>{
     const f=e.target.files[0];if(!f) return;
     const r=new FileReader();
@@ -2568,10 +2747,97 @@ document.querySelector('#createModal .cm-icons span:first-child')?.addEventListe
   };
   inp.click();
 });
+// =============================================
+// JOB POST MODAL (Recruiter only)
+// =============================================
+function openJobPostModal(){
+  if(ME?.accountType!=='recruiter'){showToast('Only Recruiters can post jobs','error');return;}
+  const modal=document.createElement('div');
+  modal.className='modal-ov open';modal.id='jobPostModal';
+  modal.innerHTML=`<div style="background:#1e1b4b;border-radius:20px;width:500px;max-width:93vw;max-height:90vh;overflow-y:auto;padding:24px;border:1px solid rgba(99,102,241,.25);">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3 style="color:#fff;font-size:17px;font-weight:700;">💼 Post a Job</h3>
+      <span style="color:var(--text2);cursor:pointer;font-size:22px;" onclick="document.getElementById('jobPostModal').remove()">✕</span>
+    </div>
+    <div style="margin-bottom:12px;"><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Job Title *</label>
+    <input id="jpTitle" placeholder="e.g. Senior React Developer" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Work Type *</label>
+      <select id="jpType" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;">
+        <option value="Remote">🌐 Remote</option><option value="Hybrid">🏢 Hybrid</option><option value="On-site">🏬 On-site</option>
+      </select></div>
+      <div><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Experience</label>
+      <select id="jpExp" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;">
+        <option value="Fresher">👶 Fresher</option><option value="1-3 years">1-3 Years</option><option value="3-5 years">3-5 Years</option><option value="5+ years">5+ Years</option>
+      </select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+      <div><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Min Salary (LPA)</label>
+      <input id="jpSalMin" type="number" placeholder="e.g. 15" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;"/></div>
+      <div><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Max Salary (LPA)</label>
+      <input id="jpSalMax" type="number" placeholder="e.g. 30" style="width:100%;padding:10px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;"/></div>
+    </div>
+    <div style="margin-bottom:12px;"><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Location</label>
+    <input id="jpLocation" placeholder="e.g. Hyderabad / Bangalore / Remote" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/></div>
+    <div style="margin-bottom:12px;"><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Skills Required</label>
+    <input id="jpSkills" placeholder="e.g. React, Node.js, AWS (comma separated)" style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:14px;outline:none;font-family:inherit;"/></div>
+    <div style="margin-bottom:16px;"><label style="color:#94a3b8;font-size:12px;font-weight:600;display:block;margin-bottom:6px;">Job Description *</label>
+    <textarea id="jpDesc" rows="4" placeholder="Describe the role, responsibilities, benefits..." style="width:100%;padding:10px 14px;border-radius:10px;border:1px solid rgba(99,102,241,.2);background:rgba(15,23,42,.6);color:#fff;font-size:13px;outline:none;font-family:inherit;resize:vertical;"></textarea></div>
+    <button onclick="submitJobPost()" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:700;font-size:14px;cursor:pointer;">Post Job 🚀</button>
+  </div>`;
+  document.body.appendChild(modal);
+  modal.addEventListener('click',e=>{if(e.target===modal) modal.remove();});
+}
+
+function submitJobPost(){
+  const title=(document.getElementById('jpTitle')?.value||'').trim();
+  const type=document.getElementById('jpType')?.value||'Remote';
+  const exp=document.getElementById('jpExp')?.value||'Fresher';
+  const salMin=document.getElementById('jpSalMin')?.value||'';
+  const salMax=document.getElementById('jpSalMax')?.value||'';
+  const location=(document.getElementById('jpLocation')?.value||'').trim();
+  const skills=(document.getElementById('jpSkills')?.value||'').trim();
+  const desc=(document.getElementById('jpDesc')?.value||'').trim();
+  if(!title||!desc){showToast('Please fill Job Title and Description','error');return;}
+  const salary=salMin&&salMax?`${salMin}–${salMax} LPA`:(salMin?`${salMin}+ LPA`:'Competitive');
+  const content=`💼 WE ARE HIRING — ${title}
+
+📍 ${location||ME.city||'India'} | ${type}
+💰 ${salary}
+👤 Experience: ${exp}
+${skills?`
+🛠️ Skills: ${skills}
+`:''}
+${desc}
+
+📩 DM me or comment below to apply!
+#hiring #${type.toLowerCase().replace('-','')} #jobs`;
+  const post={id:'p_'+Date.now(),userId:ME.userId,content,isJob:true,time:'Just now',likes:0,shares:0,views:0,accountType:ME.accountType};
+  posts.unshift(post);save.posts();sbSavePost(post);
+  document.getElementById('jobPostModal')?.remove();
+  showToast('✅ Job posted successfully!','success');
+  renderJobs();renderFeed();
+}
+
+// Job post button in create modal
+document.querySelector('#createModal .cm-icons span:last-child')?.addEventListener('click',()=>{
+  const ta=document.getElementById('createPostTA');
+  if(!ta.value.trim()){
+    ta.value='💼 WE ARE HIRING — \n\n📍 Location: \n💰 Salary: \n\nRequirements:\n• \n\nDM to apply!';
+    ta.focus();
+    showToast('Job post template added! Fill in details.','success');
+  }
+});
+
 document.getElementById('cmPostBtn').addEventListener('click',()=>{
+  const _btn=document.getElementById('cmPostBtn');
+  if(_btn.disabled) return;
+  _btn.disabled=true; setTimeout(()=>_btn.disabled=false, 2000);
   const txt=document.getElementById('createPostTA').value.trim();
-if(txt.trim()){ // Fix: post even without image; ME always checked
-    const post={id:'p_'+Date.now(),userId:ME.userId,content:txt,isJob:ME.accountType==='recruiter'||ME.accountType==='creator'&&(txt.toLowerCase().includes('hiring')||txt.toLowerCase().includes('job'))||txt.toLowerCase().includes('hiring')||txt.toLowerCase().includes('job'),time:'Just now',likes:0,shares:0,accountType:ME.accountType};
+  if(txt){ // Fix: post even without image; ME always checked
+    const _jobKw=['hiring','job post','vacancy','opening','apply now','we are hiring','urgent requirement','full time','part time','remote opportunity','internship'];
+    const _isJobPost=ME.accountType==='recruiter'||_jobKw.some(kw=>txt.toLowerCase().includes(kw));
+    const post={id:'p_'+Date.now(),userId:ME.userId,content:txt,isJob:_isJobPost,time:'Just now',likes:0,shares:0,views:0,accountType:ME.accountType,createdAt:new Date().toISOString()};
     if(_postImg) post.image=_postImg;
 posts.unshift(post);
     save.posts();
@@ -2594,7 +2860,7 @@ function renderJobs(){
   const q=(document.getElementById('jobSearch')?.value||'').toLowerCase();
   // Jobs come from posts where isJob=true — no hardcoded data
   let jobPosts=posts.filter(p=>p.isJob);
-  if(q) jobPosts=jobPosts.filter(p=>p.content.toLowerCase().includes(q)||(getMember(p.userId)?.company||'').toLowerCase().includes(q)||(getMember(p.userId)?.name||'').toLowerCase().includes(q));
+  if(q) jobPosts=jobPosts.filter(p=>(p.content||'').toLowerCase().includes(q)||(getMember(p.userId)?.company||'').toLowerCase().includes(q)||(getMember(p.userId)?.name||'').toLowerCase().includes(q)||(getMember(p.userId)?.city||'').toLowerCase().includes(q));
   if(state.jobFilter==='remote') jobPosts=jobPosts.filter(p=>p.content.toLowerCase().includes('remote'));
   if(state.jobFilter==='hybrid') jobPosts=jobPosts.filter(p=>p.content.toLowerCase().includes('hybrid'));
   if(state.jobFilter==='onsite') jobPosts=jobPosts.filter(p=>p.content.toLowerCase().includes('on-site')||p.content.toLowerCase().includes('onsite'));
@@ -2602,6 +2868,12 @@ function renderJobs(){
   if(state.jobFilter==='experience') jobPosts=jobPosts.filter(p=>!p.content.toLowerCase().includes('fresher'));
   if(state.jobTab==='saved') jobPosts=jobPosts.filter(p=>savedJobs.includes(p.id));
   if(state.jobTab==='applied') jobPosts=jobPosts.filter(p=>appliedJobs.includes(p.id));
+  // Sort jobs: newest first
+  jobPosts.sort((a,b)=>{
+    const ta=new Date(a.createdAt||0).getTime()||0;
+    const tb=new Date(b.createdAt||0).getTime()||0;
+    return tb-ta;
+  });
   const jl=document.getElementById('jobsList');
   if(!jobPosts.length){
     const emptyMsg=state.jobTab==='saved'?'No saved jobs yet':(state.jobTab==='applied'?'No applied jobs yet':'No job posts yet');
@@ -2663,7 +2935,8 @@ function renderReels(){
     return `<div class="playlist-card" data-level="${val}"><span style="font-size:18px;">${em}</span><span style="color:#fff;font-size:12px;font-weight:700;">${lv}</span></div>`;
   }).join('');
   // Gather reels: sample + user uploaded
-  let allReels=[];
+  // Start with sample reels so page is never empty
+  let allReels=[...SAMPLE_REELS.map(r=>({...r,isUserVideo:false}))];
   Object.keys(userVideos).forEach(uid=>{
     (userVideos[uid]||[]).forEach(v=>{
       allReels.push({id:v.id,title:v.title,cat:v.category||'Other',level:v.level||'intermediate',
@@ -2709,8 +2982,8 @@ function renderReels(){
       <div style="color:var(--text2);font-size:13px;line-height:1.6;">Content creators upload చేసిన తర్వాత<br/>ఇక్కడ videos appear అవుతాయి</div>
     </div>
   `:filtered.map(r=>{
-    const lc=r.level==='beginner'?'beg':r.level==='advanced'?'adv':'int';
-    const le=r.level==='beginner'?'🟢':r.level==='advanced'?'🔴':'🟡';
+    const lc=r.level==='beginner'?'beg':(r.level==='advanced'?'adv':'int');
+    const le=r.level==='beginner'?'🟢':(r.level==='advanced'?'🔴':'🟡');
     return `<div class="reel-card" data-rid="${r.id}">
 <div class="reel-thumb" style="background:linear-gradient(135deg,rgba(30,27,75,.9),${r.authorColor||'#6366f1'}33);">
 <span class="r-emoji">${r.emoji||'🎬'}</span>
@@ -2734,11 +3007,30 @@ document.addEventListener('click',e=>{
   if(rc&&document.getElementById('reels-screen').classList.contains('active')){openReelViewer(rc.dataset.rid);return;}
   // Courses grid — both creator and guest grids
   const cv=e.target.closest('#coursesGrid .reel-card[data-rid],#coursesGuestGrid .reel-card[data-rid]');
-  if(cv){openReelViewer(cv.dataset.rid);return;}
+  if(cv&&!e.target.closest('button')){openReelViewer(cv.dataset.rid);return;}
 });
 
 function openReelViewer(reelId){
-  // Find only in user videos
+  // Check SAMPLE_REELS first
+  const _sr=SAMPLE_REELS.find(x=>x.id===reelId);
+  if(_sr){
+    document.getElementById('rvCat').textContent=_sr.cat||'Reels';
+    document.getElementById('rvEmoji').textContent=_sr.emoji||'🎬';
+    document.getElementById('rvLikeCount').textContent=((_sr.likes||0)/1000).toFixed(1)+'K';
+    document.getElementById('rvAuthorAv').textContent=_sr.authorName?.[0]||'?';
+    document.getElementById('rvAuthorAv').style.background=`linear-gradient(135deg,${_sr.authorColor||'#6366f1'},${_sr.authorColor||'#6366f1'}cc)`;
+    document.getElementById('rvAuthorName').textContent=_sr.authorName||'Creator';
+    document.getElementById('rvDesc').textContent=_sr.title;
+    document.getElementById('rvTags').innerHTML=`<span>#${(_sr.cat||'tech').replace(/\s+/g,'')}</span><span>#${_sr.level||'all'}</span><span>#tutorial</span>`;
+    const vp=document.getElementById('rvVideoPlayer');
+    const ph=document.getElementById('rvPlaceholder');
+    vp.src='';vp.style.display='none';ph.style.display='flex';
+    document.getElementById('rvPlaceholder').style.background=`linear-gradient(135deg,rgba(30,27,75,.9),${_sr.authorColor||'#6366f1'}33)`;
+    document.getElementById('reel-viewer').classList.add('open');
+    state.currentReelId=reelId;
+    return;
+  }
+  // Find in user videos
   let r=null;
   let vd=null;
   for(const uid in userVideos){
@@ -2759,6 +3051,11 @@ function openReelViewer(reelId){
   const ph=document.getElementById('rvPlaceholder');
   if(r.videoData){vp.src=r.videoData;vp.style.display='block';ph.style.display='none';vp.play().catch(()=>{});}
   else{vp.src='';vp.style.display='none';ph.style.display='flex';}
+  // Restore like state for this reel
+  if(ME){
+    const _lr2=JSON.parse(localStorage.getItem('cg_liked_reels_'+ME.userId)||'[]');
+    document.getElementById('rvLikeIc').textContent=_lr2.includes(reelId)?'❤️':'🤍';
+  }
   document.getElementById('reel-viewer').classList.add('open');
   state.currentReelId=reelId;
 }
@@ -2766,7 +3063,16 @@ document.getElementById('rvBack').addEventListener('click',()=>{
   document.getElementById('reel-viewer').classList.remove('open');
   const vp=document.getElementById('rvVideoPlayer');vp.pause();vp.src='';
 });
-document.getElementById('rvLike').addEventListener('click',function(){const ic=this.querySelector('#rvLikeIc');ic.textContent=ic.textContent==='🤍'?'❤️':'🤍';});
+document.getElementById('rvLike').addEventListener('click',function(){
+  const ic=this.querySelector('#rvLikeIc');
+  const reelId=state.currentReelId;
+  if(!reelId||!ME) return;
+  const likedReels=JSON.parse(localStorage.getItem('cg_liked_reels_'+ME.userId)||'[]');
+  const idx=likedReels.indexOf(reelId);
+  if(idx>=0){likedReels.splice(idx,1);ic.textContent='🤍';}
+  else{likedReels.push(reelId);ic.textContent='❤️';}
+  localStorage.setItem('cg_liked_reels_'+ME.userId,JSON.stringify(likedReels));
+});
 document.getElementById('rvFollowBtn').addEventListener('click',function(){this.textContent=this.textContent==='Follow'?'Following':'Follow';});
 document.getElementById('rvShare').addEventListener('click',()=>showToast('✅ Share link copied!','success'));
 // Creator channel card click — filter reels to that creator
@@ -2807,6 +3113,7 @@ let _selVidFile=null;
 document.getElementById('videoFileInp').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f||!f.type.startsWith('video/')) return;
   if(f.size>500*1024*1024){showToast('File too large! Max 500MB','error');return;}
+  if(f.size>50*1024*1024){showToast('⚠️ Large file ('+Math.round(f.size/1048576)+'MB) — upload may take a while','success');}
   _selVidFile=f;
   // Use objectURL for instant preview — no FileReader needed
   const previewUrl=URL.createObjectURL(f);
@@ -2941,13 +3248,9 @@ function renderCourses(){
         allVids.push({...v,authorName:u.name,authorColor:u.color||'#6366f1',authorId:uid});
       });
     });
+    // If no real creator videos, show sample reels as demo courses
     if(!allVids.length){
-      grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text2);">
-        <div style="font-size:48px;">📭</div>
-        <div style="color:#fff;font-size:15px;font-weight:600;margin-top:12px;">No courses yet</div>
-        <div style="color:var(--text2);font-size:13px;margin-top:8px;">Content Creators videos upload చేసినప్పుడు ఇక్కడ కనిపిస్తాయి.</div>
-      </div>`;
-      return;
+      allVids=[...SAMPLE_REELS.map(r=>({...r,authorName:r.authorName||'Creator',authorColor:r.authorColor||'#6366f1'}))];
     }
     const lc=lv=>lv==='beginner'?'beg':lv==='advanced'?'adv':'int';
     const le=lv=>lv==='beginner'?'🟢':lv==='advanced'?'🔴':'🟡';
@@ -2980,8 +3283,26 @@ function deleteCourseVideo(vidId){
 // =============================================
 // SEARCH
 // =============================================
-function renderSearch(q){
+async function renderSearch(q){
   const el=document.getElementById('searchResults');
+  // If Supabase valid and query given, fetch from DB too
+  if(window._sbKeyValid&&q.trim().length>1){
+    try{
+      const {data}=await sb.from('cg_users').select('*')
+        .or(`name.ilike.%${q}%,role.ilike.%${q}%,user_id.ilike.%${q}%`).limit(20);
+      if(data&&data.length){
+        data.forEach(u=>{
+          if(!registeredUsers.find(x=>x.userId===u.user_id)&&!getDeletedIds().includes(u.user_id)){
+            registeredUsers.push({userId:u.user_id,name:u.name,email:u.email||'',
+              accountType:u.account_type||'jobseeker',role:u.role||'',city:u.city||'',
+              avatar:u.avatar||'??',color:u.color||'#6366f1',bio:u.bio||'',
+              skills:u.skills||[],company:u.company||'',online:u.online!==false});
+            rebuildUserMap();
+          }
+        });
+      }
+    }catch(e){}
+  }
   const allUsers=[...registeredUsers.filter(u=>!getDeletedIds().includes(u.userId)),RISHI];
   if(!q.trim()){
     el.innerHTML=`<div class="sec-title">👥 All Users (${allUsers.length})</div>`+
@@ -2994,7 +3315,11 @@ function renderSearch(q){
   const ppl=allUsers.filter(m=>m.name.toLowerCase().includes(ql)||m.role.toLowerCase().includes(ql)||(m.skills||[]).some(s=>s.toLowerCase().includes(ql)));
   let html='';
   if(ppl.length) html+=`<div class="sec-title">👤 People (${ppl.length})</div>`+ppl.map(m=>peopleRowHTML(m)).join('');
-  if(!ppl.length) html=`<p style="color:var(--text2);text-align:center;margin-top:40px;">No results for "${q}"</p>`;
+  if(!ppl.length) html=`<div style="text-align:center;padding:40px 20px;">
+    <div style="font-size:48px;margin-bottom:12px;">🔍</div>
+    <div style="color:#fff;font-size:15px;font-weight:700;">No results for "${q}"</div>
+    <div style="color:var(--text2);font-size:13px;margin-top:8px;">Try a different name or skill</div>
+  </div>`;
   el.innerHTML=html;
 }
 function peopleRowHTML(m){
@@ -3004,7 +3329,7 @@ function peopleRowHTML(m){
   const avEl=pic?`<div class="av" style="width:40px;height:40px;overflow:hidden;cursor:pointer;" data-uid="${m.userId}"><img src="${pic}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/></div>`:avHTML(m.color,m.avatar,40,m.online,m.isAI,m.accountType).replace('<div class="av','<div class="av" data-uid="'+m.userId+'"');
   return `<div class="people-row" data-uid="${m.userId}">${avEl}<div class="info"><div class="name">${m.name}<span class="badge ${at.badge}">${at.name}</span></div><div class="sub">${m.role||''}${m.company?' • '+m.company:''}</div></div><button class="conn-btn${isF?' connected':''}" data-uid="${m.userId}" onclick="event.stopPropagation();toggleFollow('${m.userId}')">${isF?'Following':'+ Follow'}</button></div>`;
 }
-document.getElementById('searchInput').addEventListener('input',e=>renderSearch(e.target.value));
+document.getElementById('searchInput').addEventListener('input',e=>renderSearch(e.target.value.trim()));
 document.addEventListener('click',e=>{
   const pr=e.target.closest('.people-row[data-uid]');
   if(pr&&!e.target.closest('.conn-btn')&&!e.target.closest('.av[data-uid]')) {openMiniProfile(pr.dataset.uid);return;}
@@ -3030,6 +3355,13 @@ function toggleFollow(userId){
     btn.classList.toggle('connected',!isF);btn.textContent=isF?'+ Follow':'Following';
   });
   showToast(isF?'Unfollowed':'✅ Following!','success');
+  // Notify the followed user
+  if(!isF&&userId!==ME?.userId){
+    const _fk='cg_notifs_'+userId;
+    const _fa=JSON.parse(localStorage.getItem(_fk)||'[]');
+    _fa.unshift({id:'n_'+Date.now(),icon:'👤',text:ME.name+' started following you',time:'Just now',unread:true});
+    localStorage.setItem(_fk,JSON.stringify(_fa.slice(0,50)));
+  }
   if(document.getElementById('profile-screen').classList.contains('active')) renderConnections(state.currentProfileId||ME.userId);
 }
 
@@ -3037,6 +3369,19 @@ function toggleFollow(userId){
 // NOTIFICATIONS
 // =============================================
 function renderNotifications(){
+  // Merge any new per-user notifications from localStorage
+  if(ME){
+    const _nk='cg_notifs_'+ME.userId;
+    const _na=JSON.parse(localStorage.getItem(_nk)||'[]');
+    if(_na.length){
+      const existIds=new Set(notifications.map(n=>n.id));
+      _na.filter(n=>!existIds.has(n.id)).forEach(n=>notifications.unshift(n));
+      notifications=notifications.slice(0,100);
+      save.notifs();
+      // Clear the temp key
+      localStorage.removeItem(_nk);
+    }
+  }
   const list=document.getElementById('notifList');if(!list) return;
   const unread=notifications.filter(n=>n.unread).length;
   document.getElementById('notifDot').style.display=unread?'block':'none';
@@ -3124,10 +3469,11 @@ function renderChatList(){
   const rishiKey=`cg_chat_${ME?.userId}_rishi`;
   const rishiMsgs=JSON.parse(localStorage.getItem(rishiKey)||'[]');
   const rishiLast=rishiMsgs.length?rishiMsgs[rishiMsgs.length-1].text.slice(0,50)+'…':'I can help with job searches, skill recs & more!';
+  // Show unread only if never chatted before
+  const rishiUnread=chatUnread['rishi']!==undefined?chatUnread['rishi']:(rishiMsgs.length===0?1:0);
   items.push({id:'rishi',name:'Rishi AI',avatar:'🤖',color:'#ec4899',online:true,
     lastMsg:rishiLast,time:rishiMsgs.length?rishiMsgs[rishiMsgs.length-1].time:'Now',
-    // FIX BUG 7: unread count cleared when chat opened
-    unread:chatUnread['rishi']??1,isAI:true,accountType:'creator'});
+    unread:rishiUnread,isAI:true,accountType:'creator'});
 
   // Show registered users — only those with existing chat history first, rest below
   const withHistory=[];
@@ -3137,13 +3483,14 @@ function renderChatList(){
     const msgs=JSON.parse(localStorage.getItem(key)||'[]');
     const obj={id:m.userId,name:m.name,avatar:m.avatar,color:m.color,online:m.online,
       lastMsg:msgs.length?msgs[msgs.length-1].text?.slice(0,50)||'📷 Image':CHAT_REPLIES[i%CHAT_REPLIES.length],
-      time:msgs.length?msgs[msgs.length-1].time:(i<3?'2m':i<6?'15m':'1h'),
+      time:msgs.length?msgs[msgs.length-1].time:'',
       unread:chatUnread[m.userId]??(msgs.length?0:0),
       isAI:false,accountType:m.accountType};
     if(msgs.length) withHistory.push(obj);
     else withoutHistory.push(obj);
   });
-  items.push(...withHistory,...withoutHistory.slice(0,8));
+  // Only show users with chat history + first 5 without (to avoid clutter)
+  items.push(...withHistory,...withoutHistory.slice(0,5));
 
   el.innerHTML=items.map(it=>`<div class="chat-item${it.isAI?' ai-item':''}" data-cid="${it.id}" data-isuser="true">
 ${avHTML(it.color,it.avatar,44,it.online,it.isAI,it.accountType)}
@@ -3284,7 +3631,7 @@ function sendMsg(){
   // FIX BUG 3: guard against sending without an open chat
   if(!window._chatMsgs||!window._chatKey){showToast('Open a chat first','error');return;}
   const inp=document.getElementById('chatInput');
-  const txt=inp.value.trim();
+  const txt=inp?.value.trim()||'';
   if(!txt&&!state.selectedImage) return;
   inp.value='';
   // Add unique msgId to prevent real-time duplicate
@@ -3297,6 +3644,13 @@ function sendMsg(){
   if(!window._chatIsAI&&window._chatRoomId){
     const sbMsg={...msg,from:ME.userId};
     sbSendMessage(window._chatRoomId,sbMsg);
+    // Notify recipient
+    if(window._chatUserId&&window._chatUserId!==ME.userId){
+      const _mk='cg_notifs_'+window._chatUserId;
+      const _ma=JSON.parse(localStorage.getItem(_mk)||'[]');
+      _ma.unshift({id:'n_'+Date.now(),icon:'💬',text:ME.name+' sent you a message',time:'Just now',unread:true});
+      localStorage.setItem(_mk,JSON.stringify(_ma.slice(0,50)));
+    }
   }
   state.selectedImage=null;
   document.getElementById('imgPrevWrap').classList.remove('show');
@@ -3375,7 +3729,7 @@ function createGroup(){
 }
 
 document.getElementById('sendBtn').addEventListener('click',sendMsg);
-document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();sendMsg();}});
+document.getElementById('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();}});
 document.getElementById('chatBack').addEventListener('click',()=>{document.getElementById('chat-window').classList.remove('open');showScreen('chat');});
 document.getElementById('chatAv').addEventListener('click',function(){if(this.dataset.uid) openMiniProfile(this.dataset.uid);});
 document.getElementById('chatInfo').addEventListener('click',()=>{if(window._chatUserId&&!window._chatIsGroup) openMiniProfile(window._chatUserId);});
@@ -3402,6 +3756,7 @@ document.getElementById('imgModal').addEventListener('click',e=>{if(e.target===d
 // PROFILE
 // =============================================
 function openFullProfile(userId){
+  state._prevTab=state.currentTab||'home';
   state.currentProfileId=userId;
   const m=getMember(userId);if(!m) return;
   const isMe=ME&&userId===ME.userId;
@@ -3419,9 +3774,16 @@ function openFullProfile(userId){
   document.getElementById('profRole').textContent=m.role||'';
   document.getElementById('profMeta').textContent=`${m.company||''}${m.city?' • '+m.city:''}${m.experience?' • '+m.experience:''}`;
   document.getElementById('profBio').innerHTML=(m.bio||'')+(isMe?` <span style="color:var(--accent2);cursor:pointer;font-size:12px;" onclick="openEditModal()">✏️ Edit</span>`:'');
-  document.getElementById('profActions').innerHTML=isMe?`<button class="btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`:(m.isAI?`<button class="btn-accent" data-uid="${userId}">💬 Chat</button>`:`<button class="btn-accent" data-uid="${userId}" onclick="openChat('${userId}')">💬 Message</button>`);
+  document.getElementById('profActions').innerHTML=isMe?`<button class="btn-outline" onclick="openEditModal()">✏️ Edit Profile</button>`:(m.isAI?`<button class="btn-accent" onclick="openChat('${userId}')">💬 Chat</button>`:`<button class="btn-accent" data-uid="${userId}" onclick="openChat('${userId}')">💬 Message</button>`);
   const uPosts=posts.filter(p=>p.userId===userId).length;
-  document.getElementById('profStats').innerHTML=[{l:'Connections',v:m.connections||0},{l:'Followers',v:userConnections[userId]?.followers?.length||0},{l:'Posts',v:uPosts}].map(s=>`<div><div class="stat-val">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('');
+  const uJobPosts=posts.filter(p=>p.userId===userId&&p.isJob).length;
+  const uVids=(userVideos[userId]||[]).length;
+  const statItems=m.accountType==='recruiter'?
+    [{l:'Connections',v:m.connections||0},{l:'Followers',v:userConnections[userId]?.followers?.length||0},{l:'Jobs Posted',v:uJobPosts}]:
+    m.accountType==='creator'?
+    [{l:'Followers',v:userConnections[userId]?.followers?.length||0},{l:'Videos',v:uVids},{l:'Posts',v:uPosts}]:
+    [{l:'Connections',v:m.connections||0},{l:'Followers',v:userConnections[userId]?.followers?.length||0},{l:'Posts',v:uPosts}];
+  document.getElementById('profStats').innerHTML=statItems.map(s=>`<div><div class="stat-val">${s.v}</div><div class="stat-label">${s.l}</div></div>`).join('');
   document.getElementById('profSkills').innerHTML=(m.skills||[]).map((s,i)=>`<span class="skill-tag">${s}${isMe?`<span class="sk-rm" data-idx="${i}">✕</span>`:''}</span>`).join('');
   document.getElementById('skillInputRow').style.display=isMe?'flex':'none';
   const featuresMap={
@@ -3443,8 +3805,33 @@ function openFullProfile(userId){
   if(isMe){renderWorkExp2();renderEdu2();renderCerts2();}
   renderHighlights();
   renderProfileViews(userId);
+  // Show saved posts section for own profile
+  const spSection=document.getElementById('savedPostsSection');
+  if(spSection){
+    spSection.style.display=isMe?'block':'none';
+    if(isMe){
+      const ui=postInteractions[ME?.userId]||{};
+      const savedIds=Object.keys(ui.saved||{}).filter(id=>ui.saved[id]);
+      const savedPosts=posts.filter(p=>savedIds.includes(p.id));
+      const spList=document.getElementById('savedPostsList');
+      if(!savedPosts.length){spList.innerHTML='<p style="color:var(--text2);font-size:13px;">No saved posts yet. Save posts from your feed!</p>';}
+      else{spList.innerHTML=savedPosts.map(p=>{
+        const a=getMember(p.userId)||{name:'User',color:'#6366f1',avatar:'?'};
+        return `<div style="padding:10px;background:rgba(99,102,241,.05);border-radius:8px;margin-bottom:8px;border:1px solid var(--border);">
+          <div style="color:var(--text2);font-size:11px;margin-bottom:4px;">${a.name} • ${p.time}</div>
+          <div style="color:var(--text);font-size:13px;line-height:1.5;">${p.content.slice(0,120)}${p.content.length>120?'…':''}</div>
+        </div>`;
+      }).join('');}
+    }
+  }
   document.getElementById('logoutSection').style.display=isMe?'block':'none';
 }
+
+// Creator videos section card click — open reel viewer
+document.addEventListener('click',e=>{
+  const cv2=e.target.closest('#creatorVideosSection .vid-thumb[data-vid]');
+  if(cv2){openReelViewer(cv2.dataset.vid);return;}
+});
 
 function renderCreatorVideos(userId){
   const grid=document.getElementById('creatorVideosGrid');
@@ -3549,9 +3936,13 @@ document.getElementById('emSave').addEventListener('click',()=>{
 document.getElementById('ppInput').addEventListener('change',e=>{
   const f=e.target.files[0];if(!f||!ME) return;
   const r=new FileReader();
-  r.onload=ev=>{
+  r.onload=async ev=>{
     localStorage.setItem(`cg_pic_${ME.userId}`,ev.target.result);
     document.getElementById('ppPreview').innerHTML=`<img src="${ev.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`;
+    // Upload to Supabase Storage so cross-device pic works
+    const _picPath=`profile_pics/${ME.userId}`;
+    const _cloudUrl=await uploadFileToStorage(f,'avatars',_picPath);
+    if(_cloudUrl){ME.profilePic=_cloudUrl;save.me();sbSaveUser(ME);}
     updateTopAvatar();showToast('✅ Photo updated!','success');
   };
   r.readAsDataURL(f);
@@ -3592,6 +3983,7 @@ function downloadResume(uid){const d=localStorage.getItem(`cg_resume_${uid}`);if
 
 // Mini Profile
 function openMiniProfile(userId){
+  document.body.classList.add('modal-open');
   const m=getMember(userId);if(!m) return;
   const isMe=ME&&userId===ME.userId;
   const at=ACCOUNT_TYPES[m.accountType]||ACCOUNT_TYPES.jobseeker;
@@ -3611,11 +4003,11 @@ function openMiniProfile(userId){
   if(m.isAI) mpMsgBtn=`<button class="btn-msg" data-uid="${userId}">💬 Chat with AI</button>`;
   else if(!isMe) mpMsgBtn=canMsg?`<button class="btn-msg" data-uid="${userId}">💬 Message</button>`:`<button class="btn-outline" onclick="sendMessageRequest('${userId}')">📨 Request</button>`;
   document.getElementById('mpAbns').innerHTML=mpMsgBtn+`<button class="btn-view" data-uid="${userId}">View Full</button>`;
-  if(!isMe&&!m.isAI){const isF=userConnections[ME?.userId]?.following?.includes(userId)||false;document.getElementById('mpBtns').innerHTML=`<button class="btn-connect${isF?' connected':''}" data-uid="${userId}">${isF?'Connected ✓':'Connect'}</button><button class="btn-follow${isF?' followed':''}" data-uid="${userId}">${isF?'Following ✓':'Follow'}</button>`;}
+  if(!isMe&&!m.isAI){const isF=userConnections[ME?.userId]?.following?.includes(userId)||false;const isPriv=m.isPrivate&&!isF;document.getElementById('mpBtns').innerHTML=`<button class="btn-connect${isF?' connected':''}" data-uid="${userId}" onclick="event.stopPropagation();toggleFollow('${userId}')">${isF?'Connected ✓':'Connect'}</button><button class="btn-follow${isF?' followed':''}" data-uid="${userId}" onclick="event.stopPropagation();toggleFollow('${userId}')">${isF?'Following ✓':'Follow'}</button>`;}
   else document.getElementById('mpBtns').innerHTML='';
   document.getElementById('miniModal').classList.add('open');
 }
-document.getElementById('miniModal').addEventListener('click',e=>{if(e.target===document.getElementById('miniModal')) document.getElementById('miniModal').classList.remove('open');});
+document.getElementById('miniModal').addEventListener('click',e=>{if(e.target===document.getElementById('miniModal')){document.getElementById('miniModal').classList.remove('open');document.body.classList.remove('modal-open');}});
 document.addEventListener('click',e=>{
   const bmsg=e.target.closest('.btn-msg[data-uid]');if(bmsg){document.getElementById('miniModal').classList.remove('open');openChat(bmsg.dataset.uid);return;}
   const bview=e.target.closest('.btn-view[data-uid]');if(bview){document.getElementById('miniModal').classList.remove('open');openFullProfile(bview.dataset.uid);return;}
@@ -3675,7 +4067,7 @@ function updateSettingsUI(){
   const sbWarn=document.getElementById('sbKeyWarning');
   const sbStatus=document.getElementById('sbStatusText');
   if(sbWarn) sbWarn.style.display=window._sbKeyValid?'none':'block';
-  if(sbStatus){sbStatus.textContent=window._sbKeyValid?'✅ Connected':'⚠️ Key invalid — local only';sbStatus.style.color=window._sbKeyValid?'var(--green)':'var(--warn)';}
+  if(sbStatus){sbStatus.textContent=window._sbKeyValid?'✅ Supabase Connected — Real-time sync ON':'⚠️ Running offline — local storage only';sbStatus.style.color=window._sbKeyValid?'var(--green)':'var(--red)';}
   if(document.getElementById('settingsUserId')) document.getElementById('settingsUserId').textContent=ME.userId;
   if(document.getElementById('settingsAccType')) document.getElementById('settingsAccType').textContent=ME.accountType;
   if(document.getElementById('settingsJoined')) document.getElementById('settingsJoined').textContent=ME.createdAt?new Date(ME.createdAt).toLocaleDateString():'Unknown';
@@ -3756,6 +4148,21 @@ function deleteStory(storyId){
 // Logout
 document.getElementById('logoutBtn').addEventListener('click',logout);
 
+// ESC closes all open modals
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Escape') return;
+  ['createModal','storyModal','videoUploadModal','editModal','workExpModal','educationModal','certModal','miniModal'].forEach(id=>{
+    document.getElementById(id)?.classList.remove('open');
+  });
+  document.getElementById('notifPanel')?.classList.remove('open');
+  document.getElementById('emojiPicker')?.classList.remove('show');
+  document.getElementById('story-viewer')?.classList.remove('open');
+  document.getElementById('reel-viewer')?.classList.remove('open');
+  document.getElementById('imgModal')?.classList.remove('show');
+  const rvVid=document.getElementById('rvVideoPlayer');if(rvVid){rvVid.pause();rvVid.src='';}
+  clearTimeout(window._svTimer);
+});
+
 // Theme
 let isLight=localStorage.getItem('cg_theme')==='light';
 function applyTheme(){
@@ -3775,22 +4182,51 @@ document.addEventListener('click',e=>{
   }
 });
 
+// ── AUTO-REFRESH FEED every 30s ──
+setInterval(()=>{
+  if(ME&&document.getElementById('home-screen')?.classList.contains('active')){
+    sbLoadPosts().then(()=>{renderFeed();});
+    // Merge fresh notifications
+    renderNotifications();
+  }
+},30000);
+
+// =============================================
+// AUTO-REFRESH: Cross-device post sync every 60s
+// =============================================
+let _autoRefreshTimer=null;
+function startAutoRefresh(){
+  clearInterval(_autoRefreshTimer);
+  _autoRefreshTimer=setInterval(async()=>{
+    if(!ME||!window._sbKeyValid) return;
+    await sbLoadPosts();
+    if(state.currentTab==='home') renderFeed();
+    if(state.currentTab==='jobs') renderJobs();
+  },60000); // every 60 seconds
+}
+
 // =============================================
 // INIT
 // =============================================
 document.addEventListener('DOMContentLoaded',async ()=>{
   rebuildUserMap();
-  // Wait for Supabase key validation (max 2s)
-  for(let i=0;i<10;i++){
+  // Wait for Supabase key validation (max 3s)
+  for(let i=0;i<15;i++){
     if(typeof window._sbKeyValid !== 'undefined') break;
     await new Promise(r=>setTimeout(r,200));
   }
+  console.log('Supabase key valid:',window._sbKeyValid);
   checkSession();
   setTimeout(()=>{if(posts.length===0) initDemoPosts();},100);
 });
 </script>
 
 <script>
+// Offline detection
+window.addEventListener('online', ()=>{const b=document.getElementById('offlineBanner');if(b)b.style.display='none';showToast('✅ Back online!','success');});
+window.addEventListener('offline',()=>{const b=document.getElementById('offlineBanner');if(b)b.style.display='block';});
+if(!navigator.onLine){const b=document.getElementById('offlineBanner');if(b)b.style.display='block';}
+
 // PWA: Register Service Worker with dynamic base path
 if('serviceWorker' in navigator){
   const swPath = location.pathname.endsWith('/') ? location.pathname + 'sw.js'
