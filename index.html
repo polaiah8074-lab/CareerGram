@@ -551,7 +551,8 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
     const res = await fetch(SUPABASE_URL + '/rest/v1/cg_users?select=user_id&limit=1', {
       headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
     });
-    window._sbKeyValid = res.status !== 401 && res.status !== 403;
+    // 401 = wrong key, 403 = RLS/CORS (key still valid — RLS needs to be configured in Supabase)
+    window._sbKeyValid = res.status !== 401;
   } catch(e) { /* keep format-based value */ }
 })();
 </script>
@@ -995,7 +996,7 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
 <!-- REEL VIEWER (FIX: has <video> element + .open class system) -->
 <div id="reel-viewer">
   <div class="rv-header">
-    <span class="rv-back" id="rvBack">←</span>
+    <span class="rv-back" id="rvBack" data-close-reel="true">✕</span>
     <span style="color:#fff;font-size:14px;font-weight:600;" id="rvCat">Reels</span>
     <span></span>
   </div>
@@ -1196,7 +1197,7 @@ window._sbKeyValid = SUPABASE_KEY.startsWith('eyJ') || SUPABASE_KEY.startsWith('
         <div>Multi-user sync: <span id="sbStatusText" style="color:var(--red);">Key invalid — local only</span></div>
       </div>
     </div>
-    <div id="sbKeyWarning" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px;margin-bottom:14px;">
+    <div id="sbKeyWarning" style="display:none;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);border-radius:12px;padding:14px;margin-bottom:14px;"><div style="font-size:11px;color:#94a3b8;margin-top:8px;">⚠️ Also make sure Supabase RLS policies allow anon SELECT on all cg_ tables</div>
       <div style="color:#f59e0b;font-size:13px;font-weight:700;margin-bottom:8px;">⚠️ Supabase Key Invalid</div>
       <div style="color:#94a3b8;font-size:12px;line-height:1.7;">Multi-user sync పని చేయడం లేదు. Fix చేయడానికి:<br/>1. <a href="https://supabase.com" target="_blank" style="color:var(--accent2);">supabase.com</a> → నీ project open చేయి<br/>2. Settings → API → <b>anon public</b> key copy చేయి<br/>3. Code లో <code style="background:rgba(99,102,241,.2);padding:2px 6px;border-radius:4px;">SUPABASE_KEY</code> replace చేయి</div>
     </div>
@@ -1257,7 +1258,29 @@ if(!localStorage.getItem('cg_users')){
 // GLOBAL STATE
 // =============================================
 let ME=null;
+// Default test accounts — always available even on fresh load
+const DEFAULT_USERS=[
+  {id:'u_poli',userId:'poli',password:'poli123',name:'Poli Raju',email:'poli@test.com',
+   accountType:'jobseeker',role:'Full Stack Developer',city:'Hyderabad',
+   avatar:'PR',color:'#6366f1',bio:'Building CareerGram 🚀',skills:['React','Node.js','Python'],
+   company:'TechStartup',experience:'1-3 years',connections:0,online:true},
+  {id:'u_teja',userId:'teja',password:'teja123',name:'Teja Kumar',email:'teja@test.com',
+   accountType:'recruiter',role:'HR Manager',city:'Bangalore',
+   avatar:'TK',color:'#10b981',bio:'Connecting talent with opportunity 💼',skills:['Recruitment','HR'],
+   company:'HirePro',experience:'3-5 years',connections:0,online:true},
+  {id:'u_ravi',userId:'ravi',password:'ravi123',name:'Ravi Shankar',email:'ravi@test.com',
+   accountType:'creator',role:'Tech Content Creator',city:'Chennai',
+   avatar:'RS',color:'#f59e0b',bio:'Teaching Telugu lo coding! 🎥',skills:['Python','React','Teaching'],
+   company:'',experience:'3-5 years',connections:0,online:true},
+];
 let registeredUsers=JSON.parse(localStorage.getItem('cg_users')||'[]');
+// Seed default users if not already present
+DEFAULT_USERS.forEach(du=>{
+  if(!registeredUsers.find(u=>u.userId===du.userId)){
+    registeredUsers.unshift(du);
+  }
+});
+localStorage.setItem('cg_users',JSON.stringify(registeredUsers));
 let userVideos=JSON.parse(localStorage.getItem('cg_videos')||'{}');
 let userConnections=JSON.parse(localStorage.getItem('cg_connections')||'{}');
 let posts=JSON.parse(localStorage.getItem('cg_posts')||'[]');
@@ -1386,22 +1409,7 @@ const SAMPLE_REELS=[
 ];
 
 // Demo stories — always visible, all account types can see them
-const DEMO_STORIES=[
-  // Creator stories
-  {id:'ds1',_isDemo:true,userId:'demo_creator1',type:'emoji',emoji:'🐍',caption:'Just published Python Async tutorial! 🔥',postedAt:Date.now()-3600000,expiresAt:Date.now()+82800000,
-   _user:{userId:'demo_creator1',name:'Arjun Dev',avatar:'AD',color:'#10b981',accountType:'creator'}},
-  {id:'ds2',_isDemo:true,userId:'demo_creator2',type:'emoji',emoji:'⚛️',caption:'React 19 is mind-blowing! Check my new video',postedAt:Date.now()-7200000,expiresAt:Date.now()+79200000,
-   _user:{userId:'demo_creator2',name:'Priya Sharma',avatar:'PS',color:'#6366f1',accountType:'creator'}},
-  {id:'ds3',_isDemo:true,userId:'demo_creator3',type:'emoji',emoji:'🤖',caption:'ML model hit 98% accuracy today 🎉',postedAt:Date.now()-1800000,expiresAt:Date.now()+86000000,
-   _user:{userId:'demo_creator3',name:'AI Guru',avatar:'AG',color:'#a855f7',accountType:'creator'}},
-  // Recruiter stories
-  {id:'ds4',_isDemo:true,userId:'demo_recruiter1',type:'emoji',emoji:'💼',caption:'Hiring 5 React Developers! 25-35 LPA. Apply now!',postedAt:Date.now()-5400000,expiresAt:Date.now()+81000000,
-   _user:{userId:'demo_recruiter1',name:'TechCorp HR',avatar:'TC',color:'#10b981',accountType:'recruiter'}},
-  {id:'ds5',_isDemo:true,userId:'demo_recruiter2',type:'emoji',emoji:'🚀',caption:'Urgent: AWS Architects needed. Remote OK. 40+ LPA!',postedAt:Date.now()-900000,expiresAt:Date.now()+85500000,
-   _user:{userId:'demo_recruiter2',name:'CloudNine Hire',avatar:'CN',color:'#f59e0b',accountType:'recruiter'}},
-  {id:'ds6',_isDemo:true,userId:'demo_recruiter3',type:'emoji',emoji:'🎯',caption:'Walk-in interviews this Saturday — Python roles!',postedAt:Date.now()-3000000,expiresAt:Date.now()+83400000,
-   _user:{userId:'demo_recruiter3',name:'DataFlow HR',avatar:'DF',color:'#ec4899',accountType:'recruiter'}},
-];
+const DEMO_STORIES=[]; // Removed — only real user stories shown
 
 const GROUPS=[
   {id:'g1',name:'AWS Learners India',icon:'☁️',count:38,lastMsg:'Anyone preparing for SAA cert?',time:'2m'},
@@ -1650,7 +1658,9 @@ async function sbLoadPosts(){
     const {data,error}=await sb.from('cg_posts').select('*').order('created_at',{ascending:false});
     if(error) return;
     if(data&&data.length>0){
-      const sbPosts=data.map(p=>({
+      // Filter out posts the current user has deleted (prevents re-import after delete)
+      const _deletedPostIds=new Set(JSON.parse(localStorage.getItem('cg_deleted_posts')||'[]'));
+      const sbPosts=data.filter(p=>!_deletedPostIds.has(p.id)).map(p=>({
         id:p.id,userId:p.user_id,content:p.content,
         isJob:p.is_job||false,likes:p.likes||0,shares:p.shares||0,
         views:p.views||0,
@@ -1659,7 +1669,7 @@ async function sbLoadPosts(){
       }));
       // FIX: merge instead of overwrite — local posts (not yet synced) preserve చేయి
       const sbIds=new Set(sbPosts.map(p=>p.id));
-      const localOnly=posts.filter(p=>!sbIds.has(p.id));
+      const localOnly=posts.filter(p=>!sbIds.has(p.id)&&!_deletedPostIds.has(p.id));
       posts=[...localOnly,...sbPosts];
       save.posts();
     }
@@ -1682,8 +1692,17 @@ async function sbSavePost(post){
 
 async function sbDeletePost(postId){
   if(!window._sbKeyValid) return;
-  try{await sb.from('cg_posts').delete().eq('id',postId);}
-  catch(e){}
+  try{
+    await sb.from('cg_posts').delete().eq('id',postId);
+    // Also try deleting post image from localStorage
+    localStorage.removeItem('cg_post_img_'+postId);
+  }catch(e){}
+  // Always track deleted post ID locally to prevent re-import on refresh/auto-sync
+  try{
+    const _dp=JSON.parse(localStorage.getItem('cg_deleted_posts')||'[]');
+    if(!_dp.includes(postId)) _dp.push(postId);
+    localStorage.setItem('cg_deleted_posts',JSON.stringify(_dp.slice(-500)));
+  }catch(e){}
 }
 
 // ── STORIES ──
@@ -1835,7 +1854,14 @@ function startRealtimeSync(){
   ).on('postgres_changes',
     {event:'DELETE',schema:'public',table:'cg_posts'},
     (payload)=>{
-      posts=posts.filter(x=>x.id!==payload.old.id);
+      const deletedId=payload.old.id;
+      posts=posts.filter(x=>x.id!==deletedId);
+      // Also add to local deleted blocklist so it doesn't re-appear
+      try{
+        const _dp=JSON.parse(localStorage.getItem('cg_deleted_posts')||'[]');
+        if(!_dp.includes(deletedId)) _dp.push(deletedId);
+        localStorage.setItem('cg_deleted_posts',JSON.stringify(_dp.slice(-500)));
+      }catch(e){}
       save.posts();
       if(document.getElementById('home-screen')?.classList.contains('active')) renderFeed();
     }
@@ -1989,12 +2015,22 @@ function updateTopAvatar(){
 // AUTH
 // =============================================
 function checkSession(){
+  // Make sure default users exist before checking session
+  DEFAULT_USERS.forEach(du=>{
+    if(!registeredUsers.find(u=>u.userId===du.userId)){
+      registeredUsers.unshift(du);
+    }
+  });
   rebuildUserMap();
   const saved=JSON.parse(localStorage.getItem('cg_session')||'null');
   if(saved&&saved.userId){
+    // Re-fetch latest user data (in case profile was updated)
     const u=registeredUsers.find(u=>u.userId===saved.userId)||saved;
-    if(u){ME=u;showApp();return;}
+    if(u){ME=u;localStorage.setItem('cg_session',JSON.stringify(ME));showApp();return;}
   }
+  // No session — show login
+  const ls=document.getElementById('login-screen');
+  ls.style.display='flex';ls.classList.add('active');
 }
 
 function showApp(){
@@ -2051,32 +2087,51 @@ document.getElementById('signInBtn').addEventListener('click',async ()=>{
   const btn=document.getElementById('signInBtn');
   if(!id||!pw){err.classList.add('show');err.textContent='⚠️ Please enter User ID and Password.';return;}
   btn.textContent='Signing in...';btn.disabled=true;
-  // Try Supabase first if key valid
+
+  // Wait up to 2s for Supabase validation to complete
+  for(let i=0;i<10;i++){
+    if(typeof window._sbKeyValid!=='undefined') break;
+    await new Promise(r=>setTimeout(r,200));
+  }
+
+  // STEP 1: Try Supabase if connected
   if(window._sbKeyValid){
     try{
       const {data}=await sb.from('cg_users').select('*').eq('user_id',id).maybeSingle();
       if(data&&data.password===pw){
-        const u={id:data.id,userId:data.user_id,password:data.password,name:data.name,
-          email:data.email||'',accountType:data.account_type||'jobseeker',
+        const u={
+          id:data.id,userId:data.user_id,password:data.password,
+          name:data.name,email:data.email||'',
+          accountType:data.account_type||'jobseeker',
           role:data.role||'',city:data.city||'',
           avatar:data.avatar||data.name?.slice(0,2).toUpperCase()||'??',
           color:data.color||'#6366f1',bio:data.bio||'',
           skills:Array.isArray(data.skills)?data.skills:[],
           company:data.company||'',experience:data.experience||'Fresher',
-          online:true,profilePic:data.profile_pic||''};
-        // Merge into local
+          online:true,profilePic:data.profile_pic||''
+        };
         const li=registeredUsers.findIndex(x=>x.userId===u.userId);
         if(li>=0) registeredUsers[li]=u; else registeredUsers.unshift(u);
         save.users();rebuildUserMap();
         ME=u;localStorage.setItem('cg_session',JSON.stringify(ME));
         btn.textContent='Sign In';btn.disabled=false;
-        err.classList.remove('show');showApp();
+        err.classList.remove('show');
+        showApp();
         showToast('Welcome back, '+ME.name+'! 👋','success');
-        if(posts.length===0) initDemoPosts();return;
+        if(posts.length===0) initDemoPosts();
+        return;
+      } else if(data&&data.password!==pw){
+        // User exists in Supabase but wrong password
+        btn.textContent='Sign In';btn.disabled=false;
+        err.classList.add('show');err.textContent='⚠️ Wrong password. Please try again.';
+        return;
       }
-    }catch(e){}
+    }catch(e){
+      // Supabase error — fall through to local
+    }
   }
-  // Fallback: local check
+
+  // STEP 2: Local check (works offline + test accounts)
   const user=registeredUsers.find(u=>u.userId===id&&u.password===pw);
   btn.textContent='Sign In';btn.disabled=false;
   if(user){
@@ -2087,7 +2142,8 @@ document.getElementById('signInBtn').addEventListener('click',async ()=>{
     showToast('Welcome back, '+ME.name+'! 👋','success');
     if(posts.length===0) initDemoPosts();
   } else {
-    err.classList.add('show');err.textContent='⚠️ Invalid credentials. Please try again.';
+    err.classList.add('show');
+    err.textContent='⚠️ User not found. Check User ID & password, or create an account.';
   }
 });
 document.getElementById('loginPw').addEventListener('keydown',e=>{if(e.key==='Enter') document.getElementById('signInBtn').click();});
@@ -2118,6 +2174,12 @@ document.getElementById('sendOtpBtn').addEventListener('click',()=>{
   document.getElementById('signupCard').style.display='none';
   document.getElementById('otpCard').style.display='block';
   document.getElementById('otpSentTo').textContent=`OTP sent to ${email}`;
+  // Show OTP on screen (since no email service)
+  const otpBox=document.getElementById('otpDisplayBox');
+  if(otpBox){
+    otpBox.style.display='block';
+    otpBox.innerHTML=`<div style="font-size:11px;color:#94a3b8;margin-bottom:4px;">Your OTP (no email service — use this):</div><div style="font-size:28px;font-weight:900;letter-spacing:6px;color:#818cf8;">${otp}</div>`;
+  }
   startOtpTimer();
   setTimeout(()=>document.querySelectorAll('.otp-input')[0]?.focus(),100);
   // Show OTP in card (no browser alert — works on mobile)
@@ -2278,15 +2340,15 @@ function renderStories(){
   if(ME?.accountType==='recruiter'){
     rRow.innerHTML=`<div class="story-item" id="addRecruiterStoryBtn" style="cursor:pointer;"><div class="story-ring recruiter" style="background:rgba(16,185,129,.3);border:2px dashed rgba(16,185,129,.5);padding:2px;"><div class="story-av" style="background:rgba(16,185,129,.15);font-size:24px;">➕</div></div><div class="story-name" style="color:#10b981;">Add Story</div></div>`;
   }
-  // Include demo stories + real uploaded stories
+  // Only show REAL uploaded stories — no dummy stories
   const _storyNow=Date.now();
-  const allStories=[...DEMO_STORIES.filter(s=>s.expiresAt>_storyNow),...stories];
+  const allStories=[...stories.filter(s=>s.expiresAt>_storyNow)];
   const byUser={};
   allStories.forEach(s=>{
     if(!byUser[s.userId]) byUser[s.userId]=[];
     byUser[s.userId].push(s);
   });
-  const getStoryUser=(s)=>s._user||getMember(s.userId);
+  const getStoryUser=(s)=>getMember(s.userId);
   Object.keys(byUser).forEach(uid=>{
     const storyList=byUser[uid];
     const latest=storyList[storyList.length-1];
@@ -2426,7 +2488,7 @@ function resetStoryModal(){
 // FIX BUG 3: Story viewer uses display:flex via .open class
 function openStoryViewer(storyId){
   // Check real stories first, then demo stories
-  const s=stories.find(x=>x.id===storyId&&(x.expiresAt>Date.now()||x.id.startsWith('ds')))||DEMO_STORIES.find(x=>x.id===storyId);
+  const s=stories.find(x=>x.id===storyId&&(x.expiresAt>Date.now()||x.id.startsWith('ds')));
   if(!s) return;
   const u=s._user||getMember(s.userId);if(!u) return;
   document.getElementById('svAv').style.background=`linear-gradient(135deg,${u.color},${u.color}cc)`;
@@ -2711,7 +2773,29 @@ document.addEventListener('click',e=>{
   }
   // Post delete
   const del=e.target.closest('.post-del-btn[data-pid]');
-  if(del){if(confirm('Delete this post?')){const idx=posts.findIndex(p=>p.id===del.dataset.pid);if(idx>=0){const delId=del.dataset.pid;posts.splice(idx,1);save.posts();sbDeletePost(delId);renderFeed();}}return;}
+  if(del){if(confirm('Delete this post?')){const idx=posts.findIndex(p=>p.id===del.dataset.pid);if(idx>=0){
+      const delId=del.dataset.pid;
+      posts.splice(idx,1);
+      // Remove from postInteractions for all users
+      Object.keys(postInteractions).forEach(uid=>{
+        if(postInteractions[uid]?.comments?.[delId]) delete postInteractions[uid].comments[delId];
+        if(postInteractions[uid]?.liked?.[delId]) delete postInteractions[uid].liked[delId];
+        if(postInteractions[uid]?.saved?.[delId]) delete postInteractions[uid].saved[delId];
+      });
+      // Remove post image from localStorage
+      localStorage.removeItem('cg_post_img_'+delId);
+      // FIX: Track deleted post ID immediately so it never re-appears after refresh or auto-sync
+      try{
+        const _dp=JSON.parse(localStorage.getItem('cg_deleted_posts')||'[]');
+        if(!_dp.includes(delId)) _dp.push(delId);
+        localStorage.setItem('cg_deleted_posts',JSON.stringify(_dp.slice(-500)));
+      }catch(e){}
+      save.posts();
+      save.postint();
+      sbDeletePost(delId);
+      showToast('🗑️ Post deleted','success');
+      renderFeed();
+    }}return;}
   // Post stats
   const ps=e.target.closest('.post-stats[data-pid]');
   if(ps){state.expandedPost=state.expandedPost===ps.dataset.pid?null:ps.dataset.pid;renderFeed();return;}
@@ -3350,6 +3434,18 @@ function toggleFollow(userId){
     userConnections[userId].followers.push(ME.userId);
   }
   save.connections();
+  // Sync to Supabase cg_connections
+  if(window._sbKeyValid){
+    if(isF){
+      sb.from('cg_connections').delete()
+        .eq('follower_id',ME.userId).eq('following_id',userId).then(()=>{}).catch(()=>{});
+    } else {
+      sb.from('cg_connections').upsert({
+        follower_id:ME.userId, following_id:userId,
+        created_at:new Date().toISOString()
+      },{onConflict:'follower_id,following_id'}).then(()=>{}).catch(()=>{});
+    }
+  }
   // Update all follow buttons for this user
   document.querySelectorAll(`.conn-btn[data-uid="${userId}"]`).forEach(btn=>{
     btn.classList.toggle('connected',!isF);btn.textContent=isF?'+ Follow':'Following';
@@ -3769,7 +3865,7 @@ function openFullProfile(userId){
   const profAv=document.getElementById('profAv');
   profAv.style.background=m.isAI?'linear-gradient(135deg,#ec4899,#a855f7)':`linear-gradient(135deg,${m.color},${m.color}cc)`;
   profAv.innerHTML=pic&&!m.isAI?`<img src="${pic}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"/>`+(m.online?`<div class="dot" style="width:26px;height:26px;"></div>`:''):(m.isAI?'🤖':m.avatar)+(m.online&&!m.isAI?`<div class="dot" style="width:26px;height:26px;"></div>`:'');
-  profAv.parentElement.querySelector('.pp-edit').style.display=isMe?'flex':'none';
+  const _ppEdit=document.getElementById('profAv')?.parentElement?.querySelector('.pp-edit');if(_ppEdit) _ppEdit.style.display=isMe?'flex':'none';
   document.getElementById('profName').innerHTML=`${m.name}<span class="badge ${at.badge}">${at.name}</span>`;
   document.getElementById('profRole').textContent=m.role||'';
   document.getElementById('profMeta').textContent=`${m.company||''}${m.city?' • '+m.city:''}${m.experience?' • '+m.experience:''}`;
@@ -4122,6 +4218,15 @@ function deleteAccount(){
 function clearAllData(){
   if(!ME) return;
   if(!confirm('Delete all your posts, stories and uploaded data?')) return;
+  // FIX: Track all this user's post IDs as deleted before removing
+  try{
+    const myPostIds=posts.filter(p=>p.userId===ME.userId).map(p=>p.id);
+    if(myPostIds.length){
+      const _dp=JSON.parse(localStorage.getItem('cg_deleted_posts')||'[]');
+      myPostIds.forEach(id=>{if(!_dp.includes(id)) _dp.push(id);});
+      localStorage.setItem('cg_deleted_posts',JSON.stringify(_dp.slice(-500)));
+    }
+  }catch(e){}
   posts=posts.filter(p=>p.userId!==ME.userId);
   stories=stories.filter(s=>s.userId!==ME.userId);
   userVideos[ME.userId]=[];
